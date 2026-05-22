@@ -127,6 +127,14 @@
         border: 1px solid var(--border);
         border-radius: 999px;
         padding: 0.45rem 0.85rem;
+        text-decoration: none;
+        transition: color 0.15s, border-color 0.15s, background 0.15s;
+      }
+
+      .pill:hover {
+        color: white;
+        border-color: var(--border-strong);
+        background: rgba(189, 231, 242, 0.16);
       }
 
       .hero-grid {
@@ -498,16 +506,64 @@
         font-size: 1rem;
       }
 
+      .verse-copyright {
+        margin: 1rem 0 0;
+        font-size: 0.78rem;
+        line-height: 1.45;
+        color: var(--ink-subtle);
+      }
+
       footer {
         margin-top: 2.5rem;
         padding-top: 1.5rem;
         border-top: 1px solid var(--border);
-        text-align: center;
         font-size: 0.82rem;
         color: var(--ink-subtle);
-        max-width: 40rem;
-        margin-left: auto;
-        margin-right: auto;
+      }
+
+      .credits {
+        display: grid;
+        gap: 1rem;
+        max-width: 42rem;
+        margin: 0 auto;
+      }
+
+      .credits p {
+        margin: 0;
+        line-height: 1.55;
+      }
+
+      .credits-title {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--seateal);
+        margin-bottom: 0.35rem;
+      }
+
+      .credits a {
+        color: var(--oceanblue);
+        text-decoration: none;
+        border-bottom: 1px solid rgba(59, 167, 225, 0.35);
+        transition: color 0.15s, border-color 0.15s;
+      }
+
+      .credits a:hover {
+        color: var(--seafoam);
+        border-bottom-color: var(--seafoam);
+      }
+
+      .credits code {
+        font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+        font-size: 0.88em;
+        color: var(--seafoam);
+      }
+
+      .disclaimer {
+        text-align: center;
+        margin-top: 1.25rem;
+        font-size: 0.8rem;
       }
 
       @media (max-width: 900px) {
@@ -570,7 +626,14 @@
             <div class="brand-sub">Scripture · Guidance · Prayer</div>
           </div>
         </div>
-        <span class="pill">Powered by AI</span>
+        <a
+          class="pill"
+          href="https://blocks.ai"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Powered by PubNub Blocks.ai
+        </a>
       </header>
 
       <main>
@@ -654,6 +717,7 @@
               <div class="card-label">Scripture</div>
               <p class="verse-ref" id="verse-ref"></p>
               <blockquote class="verse-text" id="verse-text"></blockquote>
+              <p class="verse-copyright" id="verse-copyright" hidden></p>
             </article>
             <article class="card">
               <div class="card-label">Interpretation</div>
@@ -672,8 +736,45 @@
       </main>
 
       <footer>
-        Scripture text via YouVersion Platform. Responses generated with care;
-        not a substitute for pastoral care or professional help.
+        <div class="credits">
+          <div>
+            <p class="credits-title">Scripture</p>
+            <p>
+              Bible text and verse links are provided through the
+              <a
+                href="https://platform.youversion.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                >YouVersion Platform</a
+              >
+              SDK (<code>@youversion/platform-core</code>). Translation
+              copyright notices appear with each response when supplied by
+              YouVersion. Read passages on
+              <a
+                href="https://www.bible.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Bible.com</a
+              >.
+            </p>
+          </div>
+          <div>
+            <p class="credits-title">Agent infrastructure</p>
+            <p>
+              This experience is powered by
+              <a
+                href="https://blocks.ai"
+                target="_blank"
+                rel="noopener noreferrer"
+                >PubNub Blocks.ai</a
+              >, connecting prayer responses to the Blocks Network.
+            </p>
+          </div>
+        </div>
+        <p class="disclaimer">
+          Responses are generated with care and are not a substitute for
+          pastoral care or professional help.
+        </p>
       </footer>
     </div>
 
@@ -704,6 +805,14 @@
         document.getElementById('verse-ref').innerHTML =
           `<a href="${link}" target="_blank" rel="noopener noreferrer">${ref}</a>`;
         document.getElementById('verse-text').textContent = data.verse_content;
+        const copyrightEl = document.getElementById('verse-copyright');
+        if (data.verse_copyright?.trim()) {
+          copyrightEl.textContent = data.verse_copyright;
+          copyrightEl.hidden = false;
+        } else {
+          copyrightEl.textContent = '';
+          copyrightEl.hidden = true;
+        }
         document.getElementById('interpretation').textContent =
           data.verse_interpretation;
         document.getElementById('advice').textContent = data.advice;

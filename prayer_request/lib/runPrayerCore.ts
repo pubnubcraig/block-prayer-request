@@ -16,6 +16,7 @@ export type PrayerRequestResult = {
   verse_interpretation: string;
   advice: string;
   prayer: string;
+  verse_copyright?: string;
 };
 
 export type PrayerRequestError = { error: string };
@@ -86,6 +87,7 @@ export async function runPrayerCore(
       verse_interpretation: pastoral.verse_interpretation,
       advice: pastoral.advice,
       prayer: pastoral.prayer,
+      ...(version.copyright ? { verse_copyright: version.copyright } : {}),
     };
 
     for (const key of [
