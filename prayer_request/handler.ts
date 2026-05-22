@@ -1,9 +1,5 @@
 import type { StartTaskMessage, TaskContext, HandlerResult } from '@blocks-network/sdk';
-import { parseRequest } from './lib/parseRequest.js';
-import { selectVerse, generatePastoral } from './lib/openaiPrayer.js';
-import { fetchPassageWithFallback } from './lib/youversionBible.js';
-import { buildVerseLink } from './lib/bibleComLink.js';
-import { normalizeBibleVersion } from './lib/bibleVersions.js';
+import { runPrayerCore } from './lib/runPrayerCore.js';
 
 function jsonArtifact(payload: Record<string, unknown>): HandlerResult {
   return {
@@ -22,74 +18,30 @@ export default async function handler(
   ctx?: TaskContext,
 ): Promise<HandlerResult> {
   const part = ctx?.requestParts?.[0] ?? task.requestParts?.[0];
-  const input = parseRequest(part);
+  const text =
+    typeof part === 'object' && part !== null && typeof part.text === 'string'
+      ? part.text
+      : '';
 
-  if ('error' in input) {
-    return jsonArtifact({ error: input.error });
-  }
-
-  const { text, bible_version: requestedVersion } = input;
-  const bible_version = normalizeBibleVersion(requestedVersion);
-
+  let input: { text?: string; bible_version?: string };
   try {
-    ctx?.reportStatus('Selecting verse…');
-    const selection = await selectVerse(text, bible_version);
-
-    ctx?.reportStatus('Fetching Scripture…');
-    const { passage, version } = await fetchPassageWithFallback(bible_version, selection.usfm);
-
-    const bible_verse = selection.bible_verse || passage.reference;
-    const verse_content = passage.content;
-    const verse_link = buildVerseLink(
-      version.abbrev,
-      selection.usfm,
-      version.youversionDeepLink,
-    );
-
-    if (version.usedFallback) {
-      ctx?.reportStatus(
-        `Requested ${bible_version}; verse text from ${version.abbreviation} (id ${version.id}) due to YouVersion license availability.`,
-      );
-    }
-    if (version.copyright) {
-      ctx?.reportStatus(
-        JSON.stringify({ copyright: version.copyright.slice(0, 200) }),
-      );
-    }
-
-    ctx?.reportStatus('Preparing response…');
-    const pastoral = await generatePastoral({
-      text,
-      bible_version: version.abbrev,
-      bible_verse,
-      verse_content,
-    });
-
-    const result = {
-      bible_verse,
-      verse_link,
-      verse_content,
-      verse_interpretation: pastoral.verse_interpretation,
-      advice: pastoral.advice,
-      prayer: pastoral.prayer,
-    };
-
-    for (const key of [
-      'bible_verse',
-      'verse_link',
-      'verse_content',
-      'verse_interpretation',
-      'advice',
-      'prayer',
-    ] as const) {
-      if (!result[key]?.trim()) {
-        return jsonArtifact({ error: `Missing or empty field: ${key}` });
-      }
-    }
-
-    return jsonArtifact(result);
-  } catch (e) {
-    const message = e instanceof Error ? e.message : String(e);
-    return jsonArtifact({ error: message });
+    input = JSON.parse(text) as { text?: string; bible_version?: string };
+  } catch {
+    return jsonArtifact({ error: 'Invalid JSON in request part.' });
   }
+
+  if (!input.text?.trim()) {
+    return jsonArtifact({ error: 'text is required' });
+  }
+
+  const result = await runPrayerCore(
+    { text: input.text, bible_version: input.bible_version },
+    (message) => ctx?.reportStatus(message),
+  );
+
+  if ('error' in result) {
+    return jsonArtifact({ error: result.error });
+  }
+
+  return jsonArtifact(result);
 }

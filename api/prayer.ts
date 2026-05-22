@@ -1,5 +1,4 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { runPrayerRequest } from '../prayer_request/lib/apiAdapter.js';
 
 export const config = {
   maxDuration: 180,
@@ -9,6 +8,17 @@ type RequestBody = {
   text?: unknown;
   bible_version?: unknown;
 };
+
+type PrayerRunner = typeof import('../prayer_request/lib/runPrayerCore.js');
+
+let runnerPromise: Promise<PrayerRunner> | undefined;
+
+function loadRunner(): Promise<PrayerRunner> {
+  if (!runnerPromise) {
+    runnerPromise = import('../prayer_request/lib/runPrayerCore.js');
+  }
+  return runnerPromise;
+}
 
 function readBody(req: VercelRequest): RequestBody {
   if (req.body && typeof req.body === 'object' && !Buffer.isBuffer(req.body)) {
@@ -34,6 +44,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ok: true,
       service: 'prayer_request',
       usage: 'POST JSON { "text": "...", "bible_version": "ESV" }',
+      blocks: 'Provider must run blocks run on an always-on host (see render.yaml).',
     });
   }
 
@@ -57,16 +68,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     typeof body.bible_version === 'string' ? body.bible_version : undefined;
 
   try {
-    const result = await runPrayerRequest({ text, bible_version });
+    const { runPrayerCore } = await loadRunner();
+    const result = await runPrayerCore({ text, bible_version });
+
+    if ('error' in result) {
+      const status =
+        result.error === 'text is required' ||
+        result.error.startsWith('Missing or empty field:') ||
+        result.error === 'Invalid JSON in request part.'
+          ? 400
+          : 500;
+      return res.status(status).json(result);
+    }
+
     return res.status(200).json(result);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    const status =
-      message === 'text is required' ||
-      message.startsWith('Missing or empty field:') ||
-      message === 'Invalid JSON in request part.'
-        ? 400
-        : 500;
-    return res.status(status).json({ error: message });
+    return res.status(500).json({ error: message });
   }
 }
