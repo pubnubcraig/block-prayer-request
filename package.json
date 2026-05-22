@@ -1,0 +1,8 @@
+{
+  "name": "block-prayer-request",
+  "private": true,
+  "devDependencies": {
+    "@vercel/node": "^5.1.14",
+    "typescript": "^5.4.5"
+  }
+}

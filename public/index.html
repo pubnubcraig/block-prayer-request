@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Prayer Request</title>
+    <meta
+      name="description"
+      content="Share a concern and receive Scripture, interpretation, practical guidance, and a prayer."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Source+Sans+3:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f7f3ec;
+        --surface: #fffdf9;
+        --ink: #1e2a24;
+        --muted: #5c6b62;
+        --accent: #2d5a47;
+        --accent-soft: #e8f0eb;
+        --border: #d9e0da;
+        --error: #8b2e2e;
+        --shadow: 0 12px 40px rgba(30, 42, 36, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: 'Source Sans 3', system-ui, sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(ellipse 80% 50% at 50% -10%, #dce8e0 0%, transparent 55%),
+          var(--bg);
+        line-height: 1.55;
+      }
+
+      .wrap {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 2.5rem 1.25rem 4rem;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      h1 {
+        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-weight: 600;
+        font-size: clamp(2rem, 5vw, 2.75rem);
+        margin: 0 0 0.5rem;
+        letter-spacing: 0.02em;
+      }
+
+      .tagline {
+        color: var(--muted);
+        font-size: 1.05rem;
+        max-width: 32rem;
+        margin: 0 auto;
+      }
+
+      form {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+      }
+
+      label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 0.4rem;
+      }
+
+      .field {
+        margin-bottom: 1.25rem;
+      }
+
+      textarea,
+      select {
+        width: 100%;
+        font: inherit;
+        color: var(--ink);
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.75rem 0.85rem;
+      }
+
+      textarea {
+        min-height: 140px;
+        resize: vertical;
+      }
+
+      textarea:focus,
+      select:focus {
+        outline: 2px solid var(--accent);
+        outline-offset: 1px;
+      }
+
+      .actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      button[type='submit'] {
+        font: inherit;
+        font-weight: 600;
+        color: #fff;
+        background: var(--accent);
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        cursor: pointer;
+      }
+
+      button[type='submit']:hover:not(:disabled) {
+        filter: brightness(1.08);
+      }
+
+      button[type='submit']:disabled {
+        opacity: 0.65;
+        cursor: wait;
+      }
+
+      .status {
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      .status.error {
+        color: var(--error);
+      }
+
+      #results {
+        margin-top: 2rem;
+        display: none;
+      }
+
+      #results.visible {
+        display: block;
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: var(--shadow);
+      }
+
+      .card h2 {
+        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-size: 1.5rem;
+        margin: 0 0 0.75rem;
+        color: var(--accent);
+      }
+
+      .verse-ref {
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+
+      .verse-ref a {
+        color: var(--accent);
+        text-decoration: none;
+        border-bottom: 1px solid var(--accent-soft);
+      }
+
+      .verse-ref a:hover {
+        border-bottom-color: var(--accent);
+      }
+
+      .verse-text {
+        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-size: 1.25rem;
+        font-style: italic;
+        margin: 0.75rem 0 0;
+        padding-left: 1rem;
+        border-left: 3px solid var(--accent-soft);
+      }
+
+      .prose {
+        white-space: pre-wrap;
+      }
+
+      footer {
+        margin-top: 2.5rem;
+        text-align: center;
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>Prayer Request</h1>
+        <p class="tagline">
+          Share a concern, problem, or prayer need and receive a relevant Bible
+          verse, faithful interpretation, practical next steps, and a short prayer.
+        </p>
+      </header>
+
+      <form id="form" novalidate>
+        <div class="field">
+          <label for="text">What would you like prayer for?</label>
+          <textarea
+            id="text"
+            name="text"
+            required
+            placeholder="For example: I feel anxious about the future and need peace."
+          ></textarea>
+        </div>
+        <div class="field">
+          <label for="bible_version">Bible version</label>
+          <select id="bible_version" name="bible_version">
+            <option value="ESV" selected>ESV</option>
+            <option value="NIV">NIV</option>
+            <option value="KJV">KJV</option>
+            <option value="NKJV">NKJV</option>
+            <option value="NLT">NLT</option>
+            <option value="NASB">NASB</option>
+            <option value="CSB">CSB</option>
+            <option value="NRSV">NRSV</option>
+            <option value="MSG">MSG</option>
+            <option value="AMP">AMP</option>
+          </select>
+        </div>
+        <div class="actions">
+          <button type="submit" id="submit">Receive prayer response</button>
+          <span class="status" id="status" aria-live="polite"></span>
+        </div>
+      </form>
+
+      <section id="results" aria-live="polite">
+        <article class="card" id="verse-card">
+          <h2>Scripture</h2>
+          <p class="verse-ref" id="verse-ref"></p>
+          <blockquote class="verse-text" id="verse-text"></blockquote>
+        </article>
+        <article class="card">
+          <h2>Interpretation</h2>
+          <div class="prose" id="interpretation"></div>
+        </article>
+        <article class="card">
+          <h2>Practical guidance</h2>
+          <div class="prose" id="advice"></div>
+        </article>
+        <article class="card">
+          <h2>Prayer</h2>
+          <div class="prose" id="prayer"></div>
+        </article>
+      </section>
+
+      <footer>
+        Scripture text via YouVersion Platform. Responses generated with care;
+        not a substitute for pastoral care or professional help.
+      </footer>
+    </div>
+
+    <script>
+      const form = document.getElementById('form');
+      const submitBtn = document.getElementById('submit');
+      const statusEl = document.getElementById('status');
+      const resultsEl = document.getElementById('results');
+
+      function setStatus(message, isError) {
+        statusEl.textContent = message;
+        statusEl.classList.toggle('error', Boolean(isError));
+      }
+
+      function escapeHtml(str) {
+        return str
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;');
+      }
+
+      function showResults(data) {
+        const link = escapeHtml(data.verse_link);
+        const ref = escapeHtml(data.bible_verse);
+        document.getElementById('verse-ref').innerHTML =
+          `<a href="${link}" target="_blank" rel="noopener noreferrer">${ref}</a>`;
+        document.getElementById('verse-text').textContent = data.verse_content;
+        document.getElementById('interpretation').textContent =
+          data.verse_interpretation;
+        document.getElementById('advice').textContent = data.advice;
+        document.getElementById('prayer').textContent = data.prayer;
+        resultsEl.classList.add('visible');
+        resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const text = document.getElementById('text').value.trim();
+        const bible_version = document.getElementById('bible_version').value;
+
+        if (!text) {
+          setStatus('Please enter your prayer request.', true);
+          return;
+        }
+
+        submitBtn.disabled = true;
+        resultsEl.classList.remove('visible');
+        setStatus('Selecting a verse and preparing your response…', false);
+
+        try {
+          const res = await fetch('/api/prayer', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text, bible_version }),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            throw new Error(data.error || `Request failed (${res.status})`);
+          }
+
+          showResults(data);
+          setStatus('Response ready.', false);
+        } catch (err) {
+          setStatus(err.message || 'Something went wrong. Please try again.', true);
+        } finally {
+          submitBtn.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>

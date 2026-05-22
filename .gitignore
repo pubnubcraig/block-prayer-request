@@ -6,3 +6,4 @@ plans/
 .DS_Store
 pip.conf
 .npmrc
+.vercel

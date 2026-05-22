@@ -1,0 +1,9 @@
+{
+  "installCommand": "npm ci && npm ci --prefix prayer_request",
+  "functions": {
+    "api/prayer.ts": {
+      "maxDuration": 180,
+      "includeFiles": "prayer_request/{lib,prompts}/**"
+    }
+  }
+}
