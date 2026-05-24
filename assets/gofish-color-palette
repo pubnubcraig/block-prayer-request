@@ -1,0 +1,44 @@
+Color Name	Hex	Usage
+Deep Sea	#0D2B45	Primary dark brand color, headers, nav, dark mode backgrounds
+Sea Teal	#16A3A6	Primary accent, buttons, highlights, CTAs
+Ocean Blue	#3BA7E1	Links, gradients, interactive states
+Sea Foam	#BDE7F2	Soft backgrounds, cards, subtle UI fills
+Coral	#FF6B4A	Notifications, alerts, engagement accents
+Salt	#E6E9EC	Borders, neutral surfaces, muted backgrounds
+Shore	#2B2F33	Body text, dark UI elements
+
+Recommended gradients:
+
+Primary Brand Gradient
+background: linear-gradient(135deg, #0D2B45 0%, #16A3A6 50%, #3BA7E1 100%);
+Faith/Live Accent Gradient
+background: linear-gradient(135deg, #16A3A6 0%, #3BA7E1 100%);
+Dark Mode Background
+background: linear-gradient(180deg, #0D2B45 0%, #2B2F33 100%);
+
+Tailwind extension:
+
+colors: {
+  deepsea: '#0D2B45',
+  seateal: '#16A3A6',
+  oceanblue: '#3BA7E1',
+  seafoam: '#BDE7F2',
+  coral: '#FF6B4A',
+  salt: '#E6E9EC',
+  shore: '#2B2F33',
+}
+
+daisyUI theme example:
+
+gofish: {
+  primary: "#16A3A6",
+  secondary: "#3BA7E1",
+  accent: "#FF6B4A",
+  neutral: "#2B2F33",
+  "base-100": "#FFFFFF",
+  "base-200": "#E6E9EC",
+  info: "#3BA7E1",
+  success: "#16A3A6",
+  warning: "#FF6B4A",
+  error: "#D64545",
+}

@@ -3,6 +3,7 @@ import { selectVerse, generatePastoral } from './openaiPrayer.js';
 import { fetchPassageWithFallback } from './youversionBible.js';
 import { buildVerseLink } from './bibleComLink.js';
 import { normalizeBibleVersion } from './bibleVersions.js';
+import { moderateInput, detectCrisisKeywords } from './moderation.js';
 
 export type PrayerRequestInput = {
   text: string;
@@ -17,6 +18,7 @@ export type PrayerRequestResult = {
   advice: string;
   prayer: string;
   verse_copyright?: string;
+  crisis_resources?: boolean;
 };
 
 export type PrayerRequestError = { error: string };
@@ -42,6 +44,19 @@ export async function runPrayerCore(
 
   const { text, bible_version: requestedVersion } = parsed;
   const bible_version = normalizeBibleVersion(requestedVersion);
+
+  // --- Moderation & crisis detection ---
+  const moderation = await moderateInput(text);
+
+  if (moderation.blocked) {
+    return {
+      error:
+        "We're unable to process this request. If you need help, please contact a trusted person or call 988.",
+    };
+  }
+
+  const showCrisisResources =
+    moderation.crisis || detectCrisisKeywords(text);
 
   try {
     onStatus?.('Selecting verse…');
@@ -88,6 +103,7 @@ export async function runPrayerCore(
       advice: pastoral.advice,
       prayer: pastoral.prayer,
       ...(version.copyright ? { verse_copyright: version.copyright } : {}),
+      ...(showCrisisResources ? { crisis_resources: true } : {}),
     };
 
     for (const key of [
