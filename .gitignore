@@ -7,3 +7,6 @@ plans/
 pip.conf
 .npmrc
 .vercel
+.next
+next-env.d.ts
+drizzle/

@@ -1,9 +1,4 @@
 {
   "installCommand": "npm ci",
-  "functions": {
-    "api/prayer.ts": {
-      "maxDuration": 180,
-      "includeFiles": "prayer_request/{lib,prompts}/**"
-    }
-  }
+  "framework": "nextjs"
 }

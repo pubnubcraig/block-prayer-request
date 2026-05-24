@@ -3,11 +3,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Prayer Request</title>
+    <title>GoFish — Cast Your Faith</title>
     <meta
       name="description"
-      content="Share a concern and receive Scripture, interpretation, practical guidance, and a prayer."
+      content="GoFish — Share a concern and receive Scripture, faithful interpretation, practical guidance, and a prayer grounded in God's Word."
     />
+    <meta name="theme-color" content="#0D2B45" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -86,23 +88,14 @@
       }
 
       .brand-mark {
-        width: 42px;
-        height: 42px;
-        border-radius: 12px;
-        background: linear-gradient(135deg, var(--seateal), var(--oceanblue));
-        box-shadow: 0 8px 24px rgba(22, 163, 166, 0.35);
-        display: grid;
-        place-items: center;
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
       }
 
       .brand-mark svg {
-        width: 22px;
-        height: 22px;
-        fill: none;
-        stroke: white;
-        stroke-width: 1.75;
-        stroke-linecap: round;
-        stroke-linejoin: round;
+        width: 100%;
+        height: 100%;
       }
 
       .brand-text {
@@ -691,13 +684,27 @@
       <header class="topbar">
         <div class="brand">
           <div class="brand-mark" aria-hidden="true">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 3c-4 6-8 8-8 12a8 8 0 0 0 16 0c0-4-4-6-8-12z" />
+            <svg viewBox="0 0 64 64" aria-hidden="true">
+              <defs>
+                <linearGradient id="logo-g" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#0D2B45"/>
+                  <stop offset="100%" stop-color="#16A3A6"/>
+                </linearGradient>
+              </defs>
+              <path d="M32 4C18 4 8 14 8 28c0 10 6 18 16 22l0-8c-6-3-10-9-10-14
+                0-10 8-18 18-18 6 0 11 3 14 7l-6 0c-2-2-5-3-8-3-8 0-14 6-14 14
+                s6 14 14 14c5 0 10-3 12-7H34v-7h20c0 16-10 26-22 26S6 44 6 28
+                C6 12 18 2 32 2c8 0 16 4 20 10l-6 4C43 10 38 6 32 6Z"
+                fill="url(#logo-g)"/>
+              <circle cx="28" cy="22" r="2.5" fill="url(#logo-g)"/>
+              <path d="M48 10c-2 4-2 8 0 12 2-4 4-8 2-12Z" fill="#16A3A6" opacity="0.8"/>
+              <path d="M12 52c4-2 8-2 12 0s8 2 12 0 8-2 12 0" fill="none" stroke="#16A3A6" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+              <path d="M16 57c3-2 6-2 9 0s6 2 9 0 6-2 9 0" fill="none" stroke="#16A3A6" stroke-width="1.5" stroke-linecap="round" opacity="0.3"/>
             </svg>
           </div>
           <div>
-            <div class="brand-text">Prayer Request</div>
-            <div class="brand-sub">Scripture · Guidance · Prayer</div>
+            <div class="brand-text">GoFish</div>
+            <div class="brand-sub">Cast Your Faith.</div>
           </div>
         </div>
         <a
