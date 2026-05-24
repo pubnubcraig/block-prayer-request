@@ -2,12 +2,14 @@
   "name": "block-prayer-request",
   "private": true,
   "dependencies": {
+    "@upstash/redis": "^1.38.0",
+    "@vercel/analytics": "^2.0.1",
     "@youversion/platform-core": "latest",
     "dotenv": "^16.4.5",
     "openai": "^4.77.0"
   },
   "devDependencies": {
-    "@vercel/node": "^5.1.14",
+    "@vercel/node": "^4.0.0",
     "typescript": "^5.4.5"
   }
 }

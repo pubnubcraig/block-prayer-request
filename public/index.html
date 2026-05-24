@@ -192,6 +192,24 @@
         margin: 0 0 1.75rem;
       }
 
+      .prayer-counter {
+        display: none;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.88rem;
+        color: var(--ink-subtle);
+        margin-bottom: 1.25rem;
+      }
+
+      .prayer-counter.visible {
+        display: inline-flex;
+      }
+
+      .prayer-counter .count {
+        font-weight: 700;
+        color: var(--seafoam);
+      }
+
       .feature-list {
         display: grid;
         gap: 0.75rem;
@@ -378,6 +396,62 @@
         to {
           transform: rotate(360deg);
         }
+      }
+
+      .crisis-banner {
+        display: none;
+        margin-top: 2rem;
+        padding: 1.35rem 1.4rem;
+        background: linear-gradient(
+          145deg,
+          rgba(255, 183, 77, 0.12),
+          rgba(13, 43, 69, 0.5)
+        );
+        border: 1px solid rgba(255, 183, 77, 0.3);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-soft);
+      }
+
+      .crisis-banner.visible {
+        display: block;
+      }
+
+      .crisis-banner h3 {
+        font-family: 'Fraunces', Georgia, serif;
+        font-size: 1.15rem;
+        font-weight: 600;
+        margin: 0 0 0.65rem;
+        color: #ffd59e;
+      }
+
+      .crisis-banner p {
+        margin: 0 0 0.75rem;
+        font-size: 0.92rem;
+        color: var(--ink-muted);
+        line-height: 1.55;
+      }
+
+      .crisis-links {
+        list-style: none;
+        margin: 0 0 0.85rem;
+        padding: 0;
+        display: grid;
+        gap: 0.55rem;
+      }
+
+      .crisis-links li {
+        font-size: 0.92rem;
+        color: var(--ink);
+      }
+
+      .crisis-links strong {
+        color: #ffd59e;
+      }
+
+      .crisis-note {
+        font-size: 0.82rem;
+        color: var(--ink-subtle);
+        margin: 0;
       }
 
       #results {
@@ -646,6 +720,9 @@
               faithful interpretation, practical next steps, and a short prayer
               grounded in Scripture.
             </p>
+            <p class="prayer-counter" id="prayer-counter">
+              <span class="count" id="prayer-count">0</span> prayers served
+            </p>
             <ul class="feature-list">
               <li>
                 <span class="feature-icon" aria-hidden="true">✦</span>
@@ -705,6 +782,17 @@
             </div>
           </form>
         </section>
+
+        <aside id="crisis-banner" class="crisis-banner" role="alert" aria-live="assertive">
+          <h3>You matter deeply.</h3>
+          <p>If you're in crisis or having thoughts of self-harm, please reach out:</p>
+          <ul class="crisis-links">
+            <li><strong>988 Suicide &amp; Crisis Lifeline</strong> &mdash; Call or text 988</li>
+            <li><strong>Crisis Text Line</strong> &mdash; Text HOME to 741741</li>
+            <li><strong>Emergency</strong> &mdash; Call 911</li>
+          </ul>
+          <p class="crisis-note">This tool provides spiritual encouragement and is not a substitute for professional help.</p>
+        </aside>
 
         <section id="results" aria-live="polite">
           <div class="results-head">
@@ -784,6 +872,28 @@
       const statusEl = document.getElementById('status');
       const spinnerEl = document.getElementById('spinner');
       const resultsEl = document.getElementById('results');
+      const crisisBanner = document.getElementById('crisis-banner');
+      const prayerCounterEl = document.getElementById('prayer-counter');
+      const prayerCountEl = document.getElementById('prayer-count');
+      let currentCount = 0;
+
+      function formatNumber(n) {
+        return n.toLocaleString('en-US');
+      }
+
+      function updateCounterDisplay(count) {
+        currentCount = count;
+        prayerCountEl.textContent = formatNumber(count);
+        if (count > 0) {
+          prayerCounterEl.classList.add('visible');
+        }
+      }
+
+      // Load counter on page load
+      fetch('/api/stats')
+        .then((r) => r.json())
+        .then((data) => updateCounterDisplay(data.prayers_served || 0))
+        .catch(() => {});
 
       function setStatus(message, isError, loading) {
         statusEl.textContent = message;
@@ -800,6 +910,12 @@
       }
 
       function showResults(data) {
+        if (data.crisis_resources) {
+          crisisBanner.classList.add('visible');
+        } else {
+          crisisBanner.classList.remove('visible');
+        }
+
         const link = escapeHtml(data.verse_link);
         const ref = escapeHtml(data.bible_verse);
         document.getElementById('verse-ref').innerHTML =
@@ -818,7 +934,9 @@
         document.getElementById('advice').textContent = data.advice;
         document.getElementById('prayer').textContent = data.prayer;
         resultsEl.classList.add('visible');
-        resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        const scrollTarget = data.crisis_resources ? crisisBanner : resultsEl;
+        scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
 
       form.addEventListener('submit', async (e) => {
@@ -833,6 +951,7 @@
 
         submitBtn.disabled = true;
         resultsEl.classList.remove('visible');
+        crisisBanner.classList.remove('visible');
         setStatus('Selecting a verse and preparing your response…', false, true);
 
         try {
@@ -849,6 +968,7 @@
           }
 
           showResults(data);
+          updateCounterDisplay(currentCount + 1);
           setStatus('Response ready.', false, false);
         } catch (err) {
           setStatus(

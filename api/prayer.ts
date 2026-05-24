@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { Redis } from '@upstash/redis';
 
 export const config = {
   maxDuration: 180,
@@ -80,6 +81,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           : 500;
       return res.status(status).json(result);
     }
+
+    // Increment prayers-served counter (fire-and-forget)
+    try {
+      const url = process.env.KV_REST_API_URL;
+      const token = process.env.KV_REST_API_TOKEN;
+      if (url && token) {
+        const redis = new Redis({ url, token });
+        redis.incr('prayers_served').catch(() => {});
+      }
+    } catch { /* never break the prayer response */ }
 
     return res.status(200).json(result);
   } catch (err) {
