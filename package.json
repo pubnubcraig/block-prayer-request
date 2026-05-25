@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "next build --webpack",
+    "db:push": "drizzle-kit push",
+    "build": "npx drizzle-kit push || true && next build --webpack",
     "start": "next start"
   },
   "dependencies": {

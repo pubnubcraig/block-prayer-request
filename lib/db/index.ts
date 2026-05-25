@@ -7,7 +7,7 @@ import * as schema from './schema';
  * This allows the app to run without a database during early phases.
  */
 export function getDb() {
-  const url = process.env.DATABASE_URL;
+  const url = process.env.DATABASE_URL || process.env.POSTGRES_URL;
   if (!url) return null;
 
   const sql = neon(url);
