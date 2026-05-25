@@ -1,6 +1,5 @@
 import { createHash } from 'node:crypto';
-import { getDb } from './db/index';
-import { moderationLogs } from './db/schema';
+import { neon } from '@neondatabase/serverless';
 
 type ModerationLogEntry = {
   category: string;
@@ -11,6 +10,12 @@ type ModerationLogEntry = {
 
 function hashIp(ip: string): string {
   return createHash('sha256').update(ip).digest('hex');
+}
+
+let tableReady = false;
+
+function getDbUrl(): string | undefined {
+  return process.env.DATABASE_URL || process.env.POSTGRES_URL || undefined;
 }
 
 export async function logModeration(entry: ModerationLogEntry): Promise<void> {
@@ -27,13 +32,23 @@ export async function logModeration(entry: ModerationLogEntry): Promise<void> {
     }),
   );
 
-  const db = getDb();
-  if (db) {
-    await db.insert(moderationLogs).values({
-      category: entry.category,
-      severity: entry.severity,
-      actionTaken: entry.actionTaken,
-      ipHash,
-    });
+  const url = getDbUrl();
+  if (!url) return;
+
+  const sql = neon(url);
+
+  if (!tableReady) {
+    await sql`CREATE TABLE IF NOT EXISTS moderation_logs (
+      id SERIAL PRIMARY KEY,
+      category VARCHAR(100) NOT NULL,
+      severity VARCHAR(50) NOT NULL,
+      action_taken VARCHAR(50) NOT NULL,
+      ip_hash VARCHAR(64),
+      created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    )`;
+    tableReady = true;
   }
+
+  await sql`INSERT INTO moderation_logs (category, severity, action_taken, ip_hash)
+    VALUES (${entry.category}, ${entry.severity}, ${entry.actionTaken}, ${ipHash})`;
 }
