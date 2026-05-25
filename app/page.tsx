@@ -138,13 +138,13 @@ export default function HomePage() {
   return (
     <div className="max-w-[1180px] mx-auto px-5 pt-5 pb-12">
       {/* Header */}
-      <header className="flex items-center justify-between gap-4 pb-7 -mx-5 -mt-5 px-5 py-4 bg-salt max-[520px]:flex-col max-[520px]:items-start">
+      <header className="flex items-center justify-between gap-4 pb-7 max-[520px]:flex-col max-[520px]:items-start">
         <Link href="/" className="no-underline">
           <Image
             src="/gofish-logo-white-bg.png"
             alt="GoFish - Cast Your Faith"
-            width={512}
-            height={194}
+            width={485}
+            height={165}
             className="h-[66px] w-auto"
             priority
           />
