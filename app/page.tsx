@@ -23,6 +23,48 @@ function escapeHtml(str: string) {
     .replaceAll('"', '&quot;');
 }
 
+function GoFishLogo() {
+  return (
+    <svg viewBox="0 0 64 64" aria-hidden="true" className="w-full h-full">
+      <defs>
+        <linearGradient id="logo-g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#0D2B45" />
+          <stop offset="100%" stopColor="#16A3A6" />
+        </linearGradient>
+      </defs>
+      <path
+        d="M32 4C18 4 8 14 8 28c0 10 6 18 16 22l0-8c-6-3-10-9-10-14
+          0-10 8-18 18-18 6 0 11 3 14 7l-6 0c-2-2-5-3-8-3-8 0-14 6-14 14
+          s6 14 14 14c5 0 10-3 12-7H34v-7h20c0 16-10 26-22 26S6 44 6 28
+          C6 12 18 2 32 2c8 0 16 4 20 10l-6 4C43 10 38 6 32 6Z"
+        fill="url(#logo-g)"
+      />
+      <circle cx="28" cy="22" r="2.5" fill="url(#logo-g)" />
+      <path
+        d="M48 10c-2 4-2 8 0 12 2-4 4-8 2-12Z"
+        fill="#16A3A6"
+        opacity="0.8"
+      />
+      <path
+        d="M12 52c4-2 8-2 12 0s8 2 12 0 8-2 12 0"
+        fill="none"
+        stroke="#16A3A6"
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity="0.5"
+      />
+      <path
+        d="M16 57c3-2 6-2 9 0s6 2 9 0 6-2 9 0"
+        fill="none"
+        stroke="#16A3A6"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        opacity="0.3"
+      />
+    </svg>
+  );
+}
+
 function PrayerCounter({ count }: { count: number }) {
   if (count <= 0) return null;
   return (
@@ -139,15 +181,31 @@ export default function HomePage() {
     <div className="max-w-[1180px] mx-auto px-5 pt-5 pb-12">
       {/* Header */}
       <header className="flex items-center justify-between gap-4 pb-7 max-[520px]:flex-col max-[520px]:items-start">
-        <Link href="/" className="no-underline">
-          <Image
-            src="/gofish-logo-white-bg.png"
-            alt="GoFish - Cast Your Faith"
-            width={485}
-            height={165}
-            className="h-[66px] w-auto"
-            priority
-          />
+        <Link href="/" className="flex items-center gap-3 no-underline">
+          {theme === 'light' ? (
+            <Image
+              src="/gofish-logo-white-bg.png"
+              alt="GoFish - Cast Your Faith"
+              width={485}
+              height={165}
+              className="h-[66px] w-auto"
+              priority
+            />
+          ) : (
+            <>
+              <div className="w-[66px] h-[66px] shrink-0">
+                <GoFishLogo />
+              </div>
+              <div>
+                <div className="font-bold text-[1.55rem] tracking-tight text-[var(--ink)]">
+                  GoFish
+                </div>
+                <div className="text-[0.78rem] text-[var(--ink-subtle)] mt-0.5">
+                  Cast Your Faith.
+                </div>
+              </div>
+            </>
+          )}
         </Link>
         <ThemeToggle active={theme} onChange={setTheme} />
       </header>
