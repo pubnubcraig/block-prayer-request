@@ -67,13 +67,43 @@ function GoFishLogo() {
 function PrayerCounter({ count }: { count: number }) {
   if (count <= 0) return null;
   return (
-    <div className="prayer-counter mb-6">
+    <div className="prayer-counter">
       <span className="font-serif font-bold text-[2rem] tracking-tight text-coral leading-none">
         {count.toLocaleString('en-US')}
       </span>
       <span className="text-[0.85rem] font-semibold tracking-[0.04em] uppercase text-salt/70">
         prayers served
       </span>
+    </div>
+  );
+}
+
+const THEMES = [
+  { id: 'default', label: 'Deep Sea', color: '#0d2b45' },
+  { id: 'ember', label: 'Ember', color: '#ff6b4a' },
+  { id: 'tide', label: 'Tide', color: '#3ba7e1' },
+  { id: 'dusk', label: 'Dusk', color: '#6b4090' },
+] as const;
+
+type ThemeId = (typeof THEMES)[number]['id'];
+
+function ThemeToggle({ active, onChange }: { active: ThemeId; onChange: (t: ThemeId) => void }) {
+  return (
+    <div className="flex items-center gap-1.5 bg-[rgba(255,255,255,0.08)] rounded-full p-1 border border-[var(--border)]">
+      {THEMES.map((t) => (
+        <button
+          key={t.id}
+          type="button"
+          onClick={() => onChange(t.id)}
+          title={t.label}
+          className={`w-6 h-6 rounded-full border-2 transition-all cursor-pointer ${
+            active === t.id
+              ? 'border-white scale-110 shadow-[0_0_8px_rgba(255,255,255,0.3)]'
+              : 'border-transparent opacity-60 hover:opacity-100'
+          }`}
+          style={{ background: t.color }}
+        />
+      ))}
     </div>
   );
 }
@@ -87,6 +117,7 @@ export default function HomePage() {
   const [isError, setIsError] = useState(false);
   const [result, setResult] = useState<PrayerResult | null>(null);
   const [showCrisis, setShowCrisis] = useState(false);
+  const [theme, setTheme] = useState<ThemeId>('default');
 
   useEffect(() => {
     fetch('/api/stats')
@@ -94,6 +125,10 @@ export default function HomePage() {
       .then((data) => setPrayerCount(data.prayers_served || 0))
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme === 'default' ? '' : theme);
+  }, [theme]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -167,17 +202,22 @@ export default function HomePage() {
             </div>
           </div>
         </Link>
-        <a
-          className="pill"
-          href="https://blocks.ai"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by PubNub Blocks.ai
-        </a>
+        <div className="flex items-center gap-3">
+          <ThemeToggle active={theme} onChange={setTheme} />
+          <a
+            className="pill"
+            href="https://blocks.ai"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Powered by PubNub Blocks.ai
+          </a>
+        </div>
       </header>
 
       <main>
+        <PrayerCounter count={prayerCount} />
+
         {/* Hero + Form */}
         <section className="grid grid-cols-[1fr_1.05fr] gap-6 items-stretch max-[900px]:grid-cols-1">
           <div className="py-6 pr-2 flex flex-col justify-center max-[900px]:py-2 max-[900px]:pr-0">
@@ -194,7 +234,6 @@ export default function HomePage() {
               faithful interpretation, practical next steps, and a short prayer
               grounded in Scripture.
             </p>
-            <PrayerCounter count={prayerCount} />
             <ul className="grid gap-3 m-0 p-0 list-none">
               <li className="flex items-start gap-3 text-[0.92rem] text-[var(--ink-muted)]">
                 <span className="shrink-0 w-7 h-7 rounded-lg bg-seateal/15 border border-seateal/25 grid place-items-center text-seateal text-[0.85rem]">

@@ -44,7 +44,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Page background gradients */
+/* Page background gradients — default (Deep Sea) */
 .page-bg {
   position: fixed;
   inset: 0;
@@ -54,7 +54,38 @@ body {
     radial-gradient(ellipse 70% 50% at 100% 0%, rgba(22, 163, 166, 0.22), transparent 50%),
     radial-gradient(ellipse 60% 40% at 50% 100%, rgba(255, 107, 74, 0.08), transparent 45%),
     linear-gradient(165deg, #0a2238 0%, var(--color-deepsea) 45%, #081c2e 100%);
+  transition: background 0.4s ease;
 }
+
+/* Theme: Ember (warm charcoal with coral/amber glows) */
+[data-theme="ember"] .page-bg {
+  background:
+    radial-gradient(ellipse 90% 60% at 10% -10%, rgba(255, 107, 74, 0.3), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 100% 0%, rgba(255, 133, 102, 0.2), transparent 50%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(22, 163, 166, 0.1), transparent 45%),
+    linear-gradient(165deg, #1a1215 0%, #2b2f33 45%, #1a1a1e 100%);
+}
+[data-theme="ember"] { --bg: #2b2f33; }
+
+/* Theme: Tide (seafoam-forward with oceanblue base) */
+[data-theme="tide"] .page-bg {
+  background:
+    radial-gradient(ellipse 90% 60% at 10% -10%, rgba(189, 231, 242, 0.22), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 100% 0%, rgba(59, 167, 225, 0.28), transparent 50%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(22, 163, 166, 0.15), transparent 45%),
+    linear-gradient(165deg, #0a1e33 0%, #112a42 45%, #0d2035 100%);
+}
+[data-theme="tide"] { --bg: #112a42; }
+
+/* Theme: Dusk (deep plum with coral and teal accents) */
+[data-theme="dusk"] .page-bg {
+  background:
+    radial-gradient(ellipse 90% 60% at 10% -10%, rgba(255, 107, 74, 0.18), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 100% 0%, rgba(120, 80, 160, 0.25), transparent 50%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(22, 163, 166, 0.12), transparent 45%),
+    linear-gradient(165deg, #1a1228 0%, #221a30 45%, #16101f 100%);
+}
+[data-theme="dusk"] { --bg: #221a30; }
 
 /* Glassmorphism panel */
 .panel {
@@ -207,4 +238,18 @@ select:focus {
   color: white;
   border-color: var(--border-strong);
   background: rgba(189, 231, 242, 0.16);
+}
+
+/* Prayer counter badge */
+.prayer-counter {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.5rem 1.1rem;
+  background: var(--surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  margin-bottom: 1rem;
 }
