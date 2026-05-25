@@ -71,40 +71,31 @@ function PrayerCounter({ count }: { count: number }) {
       <span className="font-serif font-bold text-[2rem] tracking-tight text-coral leading-none">
         {count.toLocaleString('en-US')}
       </span>
-      <span className="text-[0.85rem] font-semibold tracking-[0.04em] uppercase text-salt/70">
+      <span className="text-[0.85rem] font-semibold tracking-[0.04em] uppercase text-[var(--ink-muted)]">
         prayers served
       </span>
     </div>
   );
 }
 
-const THEMES = [
-  { id: 'default', label: 'Deep Sea', color: '#0d2b45' },
-  { id: 'ember', label: 'Ember', color: '#ff6b4a' },
-  { id: 'tide', label: 'Tide', color: '#3ba7e1' },
-  { id: 'dusk', label: 'Dusk', color: '#6b4090' },
-] as const;
-
-type ThemeId = (typeof THEMES)[number]['id'];
+type ThemeId = 'dark' | 'light';
 
 function ThemeToggle({ active, onChange }: { active: ThemeId; onChange: (t: ThemeId) => void }) {
   return (
-    <div className="flex items-center gap-1.5 bg-[rgba(255,255,255,0.08)] rounded-full p-1 border border-[var(--border)]">
-      {THEMES.map((t) => (
-        <button
-          key={t.id}
-          type="button"
-          onClick={() => onChange(t.id)}
-          title={t.label}
-          className={`w-6 h-6 rounded-full border-2 transition-all cursor-pointer ${
-            active === t.id
-              ? 'border-white scale-110 shadow-[0_0_8px_rgba(255,255,255,0.3)]'
-              : 'border-transparent opacity-60 hover:opacity-100'
-          }`}
-          style={{ background: t.color }}
-        />
-      ))}
-    </div>
+    <button
+      type="button"
+      onClick={() => onChange(active === 'dark' ? 'light' : 'dark')}
+      title={active === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+      className="theme-toggle"
+      aria-label={`Switch to ${active === 'dark' ? 'light' : 'dark'} mode`}
+    >
+      <span className={`theme-toggle-track ${active === 'light' ? 'theme-toggle-light' : ''}`}>
+        <span className="theme-toggle-thumb" />
+      </span>
+      <span className="text-[0.72rem] font-semibold tracking-wide uppercase">
+        {active === 'dark' ? 'Dark' : 'Light'}
+      </span>
+    </button>
   );
 }
 
@@ -117,7 +108,7 @@ export default function HomePage() {
   const [isError, setIsError] = useState(false);
   const [result, setResult] = useState<PrayerResult | null>(null);
   const [showCrisis, setShowCrisis] = useState(false);
-  const [theme, setTheme] = useState<ThemeId>('default');
+  const [theme, setTheme] = useState<ThemeId>('dark');
 
   useEffect(() => {
     fetch('/api/stats')
@@ -127,7 +118,7 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme === 'default' ? '' : theme);
+    document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
   async function handleSubmit(e: FormEvent) {
@@ -194,7 +185,7 @@ export default function HomePage() {
             <GoFishLogo />
           </div>
           <div>
-            <div className="font-bold text-[1.05rem] tracking-tight text-salt">
+            <div className="font-bold text-[1.05rem] tracking-tight text-[var(--ink)]">
               GoFish
             </div>
             <div className="text-[0.78rem] text-[var(--ink-subtle)] mt-0.5">
@@ -202,17 +193,7 @@ export default function HomePage() {
             </div>
           </div>
         </Link>
-        <div className="flex items-center gap-3">
-          <ThemeToggle active={theme} onChange={setTheme} />
-          <a
-            className="pill"
-            href="https://blocks.ai"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Powered by PubNub Blocks.ai
-          </a>
-        </div>
+        <ThemeToggle active={theme} onChange={setTheme} />
       </header>
 
       <main>
@@ -422,7 +403,7 @@ export default function HomePage() {
                     href={escapeHtml(result.verse_link)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-seafoam no-underline border-b border-seafoam/35 hover:text-white hover:border-oceanblue transition-colors"
+                    className="text-seateal no-underline border-b border-seateal/35 hover:text-oceanblue hover:border-oceanblue transition-colors"
                   >
                     {result.bible_verse}
                   </a>
@@ -484,12 +465,12 @@ export default function HomePage() {
                 href="https://platform.youversion.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seafoam hover:border-seafoam transition-colors"
+                className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors"
               >
                 YouVersion Platform
               </a>{' '}
               SDK (
-              <code className="font-mono text-[0.88em] text-seafoam">
+              <code className="font-mono text-[0.88em] text-seateal">
                 @youversion/platform-core
               </code>
               ). Translation copyright notices appear with each response when
@@ -498,28 +479,11 @@ export default function HomePage() {
                 href="https://www.bible.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seafoam hover:border-seafoam transition-colors"
+                className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors"
               >
                 Bible.com
               </a>
               .
-            </p>
-          </div>
-          <div>
-            <p className="text-[0.72rem] font-bold tracking-[0.08em] uppercase text-seateal mb-1">
-              Agent infrastructure
-            </p>
-            <p className="m-0 leading-relaxed">
-              This experience is powered by{' '}
-              <a
-                href="https://blocks.ai"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seafoam hover:border-seafoam transition-colors"
-              >
-                PubNub Blocks.ai
-              </a>
-              , connecting prayer responses to the Blocks Network.
             </p>
           </div>
         </div>
@@ -530,13 +494,13 @@ export default function HomePage() {
         <div className="flex justify-center gap-4 mt-3 text-[0.78rem]">
           <Link
             href="/transparency"
-            className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seafoam hover:border-seafoam transition-colors"
+            className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors"
           >
             Transparency
           </Link>
           <Link
             href="/privacy"
-            className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seafoam hover:border-seafoam transition-colors"
+            className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors"
           >
             Privacy Policy
           </Link>
