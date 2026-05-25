@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "next dev --webpack",
     "db:push": "drizzle-kit push",
-    "build": "npx drizzle-kit push || true && next build --webpack",
+    "build": "next build --webpack",
     "start": "next start"
   },
   "dependencies": {
@@ -20,7 +20,8 @@
     "postcss": "^8.5.15",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "tailwindcss": "^4.3.0"
+    "tailwindcss": "^4.3.0",
+    "vercel": "^54.4.1"
   },
   "devDependencies": {
     "@types/react": "^19.2.15",

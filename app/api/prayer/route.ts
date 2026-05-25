@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
       tokensUsed: result.tokensUsed ?? 0,
       responseTimeMs,
       costCents: result.costCents ?? 0,
-    }).catch(() => {});
+    }).catch((e) => console.error('[analytics]', e));
 
     // Log moderation (fire-and-forget)
     if (result.moderationResult) {
@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
           severity: mod.crisis ? 'high' : 'medium',
           actionTaken: 'allowed',
           ip,
-        }).catch(() => {});
+        }).catch((e) => console.error('[moderation]', e));
       }
     }
 
