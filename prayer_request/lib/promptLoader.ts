@@ -13,13 +13,15 @@ export function getPromptsDir(): string {
   const candidates = [
     join(__dirname, '..', 'prompts'),
     join(__dirname, '..', '..', 'prompts'),
+    join(process.cwd(), 'prayer_request', 'prompts'),
+    join(process.cwd(), 'prompts'),
   ];
   for (const dir of candidates) {
     if (existsSync(join(dir, 'prompt_verse_selection.md'))) {
       return dir;
     }
   }
-  return candidates[1];
+  return candidates[2];
 }
 
 export function loadPromptFile(name: string): string {
