@@ -67,12 +67,14 @@ function GoFishLogo() {
 function PrayerCounter({ count }: { count: number }) {
   if (count <= 0) return null;
   return (
-    <p className="inline-flex items-center gap-2 text-[0.88rem] text-[var(--ink-subtle)] mb-5">
-      <span className="font-bold text-seafoam">
+    <div className="prayer-counter mb-6">
+      <span className="font-serif font-bold text-[2rem] tracking-tight text-coral leading-none">
         {count.toLocaleString('en-US')}
-      </span>{' '}
-      prayers served
-    </p>
+      </span>
+      <span className="text-[0.85rem] font-semibold tracking-[0.04em] uppercase text-salt/70">
+        prayers served
+      </span>
+    </div>
   );
 }
 
@@ -179,13 +181,13 @@ export default function HomePage() {
         {/* Hero + Form */}
         <section className="grid grid-cols-[1fr_1.05fr] gap-6 items-stretch max-[900px]:grid-cols-1">
           <div className="py-6 pr-2 flex flex-col justify-center max-[900px]:py-2 max-[900px]:pr-0">
-            <p className="inline-flex items-center gap-2 text-[0.8rem] font-semibold tracking-[0.06em] uppercase text-seateal mb-4 before:content-[''] before:w-7 before:h-0.5 before:bg-gradient-to-r before:from-seateal before:to-oceanblue before:rounded">
+            <p className="inline-flex items-center gap-2 text-[0.8rem] font-semibold tracking-[0.06em] uppercase text-coral mb-4 before:content-[''] before:w-7 before:h-0.5 before:bg-gradient-to-r before:from-coral before:to-seafoam before:rounded">
               A moment with God
             </p>
             <h1 className="font-serif font-semibold text-[clamp(2.25rem,4.5vw,3.35rem)] leading-[1.08] tracking-tight m-0 mb-4">
               Bring your concern.
               <br />
-              <em className="italic text-seafoam">Receive hope.</em>
+              <em className="italic text-coral">Receive hope.</em>
             </h1>
             <p className="text-[1.05rem] text-[var(--ink-muted)] max-w-[34rem] mb-7">
               Share what&apos;s on your heart and receive a relevant Bible verse,
@@ -195,19 +197,19 @@ export default function HomePage() {
             <PrayerCounter count={prayerCount} />
             <ul className="grid gap-3 m-0 p-0 list-none">
               <li className="flex items-start gap-3 text-[0.92rem] text-[var(--ink-muted)]">
-                <span className="shrink-0 w-7 h-7 rounded-lg bg-oceanblue/15 border border-oceanblue/25 grid place-items-center text-oceanblue text-[0.85rem]">
+                <span className="shrink-0 w-7 h-7 rounded-lg bg-seateal/15 border border-seateal/25 grid place-items-center text-seateal text-[0.85rem]">
                   ✦
                 </span>
                 <span>Verse selected for your specific situation</span>
               </li>
               <li className="flex items-start gap-3 text-[0.92rem] text-[var(--ink-muted)]">
-                <span className="shrink-0 w-7 h-7 rounded-lg bg-oceanblue/15 border border-oceanblue/25 grid place-items-center text-oceanblue text-[0.85rem]">
+                <span className="shrink-0 w-7 h-7 rounded-lg bg-seateal/15 border border-seateal/25 grid place-items-center text-seateal text-[0.85rem]">
                   ◎
                 </span>
                 <span>Clear interpretation in everyday language</span>
               </li>
               <li className="flex items-start gap-3 text-[0.92rem] text-[var(--ink-muted)]">
-                <span className="shrink-0 w-7 h-7 rounded-lg bg-oceanblue/15 border border-oceanblue/25 grid place-items-center text-oceanblue text-[0.85rem]">
+                <span className="shrink-0 w-7 h-7 rounded-lg bg-seateal/15 border border-seateal/25 grid place-items-center text-seateal text-[0.85rem]">
                   →
                 </span>
                 <span>Actionable guidance and a written prayer</span>
@@ -230,7 +232,7 @@ export default function HomePage() {
             <div className="mb-4">
               <label
                 htmlFor="text"
-                className="block font-semibold text-[0.82rem] tracking-wide uppercase text-seafoam mb-2"
+                className="block font-semibold text-[0.82rem] tracking-wide uppercase text-seateal mb-2"
               >
                 What would you like prayer for?
               </label>
@@ -247,7 +249,7 @@ export default function HomePage() {
             <div className="mb-4">
               <label
                 htmlFor="bible_version"
-                className="block font-semibold text-[0.82rem] tracking-wide uppercase text-seafoam mb-2"
+                className="block font-semibold text-[0.82rem] tracking-wide uppercase text-seateal mb-2"
               >
                 Bible version
               </label>
