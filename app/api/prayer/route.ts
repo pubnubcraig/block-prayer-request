@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Redis } from '@upstash/redis';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { logPrayerMetrics } from '@/lib/analytics';
+import { logModeration } from '@/lib/moderation-logger';
 
 export const maxDuration = 180;
 
@@ -79,12 +80,28 @@ export async function POST(req: NextRequest) {
     // Log analytics (fire-and-forget)
     logPrayerMetrics({
       bibleVersion: bible_version || 'ESV',
-      tokensUsed: 0, // estimated — not returned by runPrayerCore
+      tokensUsed: result.tokensUsed ?? 0,
       responseTimeMs,
-      costCents: 0, // estimated — not returned by runPrayerCore
+      costCents: result.costCents ?? 0,
     }).catch(() => {});
 
-    return NextResponse.json(result);
+    // Log moderation (fire-and-forget)
+    if (result.moderationResult) {
+      const mod = result.moderationResult;
+      if (mod.flagged || mod.crisis) {
+        logModeration({
+          category: mod.categories.join(', ') || (mod.crisis ? 'crisis' : 'unknown'),
+          severity: mod.crisis ? 'high' : 'medium',
+          actionTaken: 'allowed',
+          ip,
+        }).catch(() => {});
+      }
+    }
+
+    // Strip internal fields before sending to client
+    const { tokensUsed, costCents, moderationResult, ...clientResult } = result;
+
+    return NextResponse.json(clientResult);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: message }, { status: 500 });
