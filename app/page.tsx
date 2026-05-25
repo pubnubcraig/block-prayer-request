@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, FormEvent } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 
 type PrayerResult = {
@@ -22,57 +23,38 @@ function escapeHtml(str: string) {
     .replaceAll('"', '&quot;');
 }
 
-function GoFishLogo() {
-  return (
-    <svg viewBox="0 0 64 64" aria-hidden="true" className="w-full h-full">
-      <defs>
-        <linearGradient id="logo-g" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#0D2B45" />
-          <stop offset="100%" stopColor="#16A3A6" />
-        </linearGradient>
-      </defs>
-      <path
-        d="M32 4C18 4 8 14 8 28c0 10 6 18 16 22l0-8c-6-3-10-9-10-14
-          0-10 8-18 18-18 6 0 11 3 14 7l-6 0c-2-2-5-3-8-3-8 0-14 6-14 14
-          s6 14 14 14c5 0 10-3 12-7H34v-7h20c0 16-10 26-22 26S6 44 6 28
-          C6 12 18 2 32 2c8 0 16 4 20 10l-6 4C43 10 38 6 32 6Z"
-        fill="url(#logo-g)"
-      />
-      <circle cx="28" cy="22" r="2.5" fill="url(#logo-g)" />
-      <path
-        d="M48 10c-2 4-2 8 0 12 2-4 4-8 2-12Z"
-        fill="#16A3A6"
-        opacity="0.8"
-      />
-      <path
-        d="M12 52c4-2 8-2 12 0s8 2 12 0 8-2 12 0"
-        fill="none"
-        stroke="#16A3A6"
-        strokeWidth="2"
-        strokeLinecap="round"
-        opacity="0.5"
-      />
-      <path
-        d="M16 57c3-2 6-2 9 0s6 2 9 0 6-2 9 0"
-        fill="none"
-        stroke="#16A3A6"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        opacity="0.3"
-      />
-    </svg>
-  );
-}
-
 function PrayerCounter({ count }: { count: number }) {
   if (count <= 0) return null;
   return (
-    <p className="inline-flex items-center gap-2 text-[0.88rem] text-[var(--ink-subtle)] mb-5">
-      <span className="font-bold text-seafoam">
+    <div className="prayer-counter">
+      <span className="font-serif font-bold text-[2rem] tracking-tight text-coral leading-none">
         {count.toLocaleString('en-US')}
-      </span>{' '}
-      prayers served
-    </p>
+      </span>
+      <span className="text-[0.85rem] font-semibold tracking-[0.04em] uppercase text-[var(--ink-muted)]">
+        prayers served
+      </span>
+    </div>
+  );
+}
+
+type ThemeId = 'dark' | 'light';
+
+function ThemeToggle({ active, onChange }: { active: ThemeId; onChange: (t: ThemeId) => void }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onChange(active === 'dark' ? 'light' : 'dark')}
+      title={active === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+      className="theme-toggle"
+      aria-label={`Switch to ${active === 'dark' ? 'light' : 'dark'} mode`}
+    >
+      <span className={`theme-toggle-track ${active === 'light' ? 'theme-toggle-light' : ''}`}>
+        <span className="theme-toggle-thumb" />
+      </span>
+      <span className="text-[0.72rem] font-semibold tracking-wide uppercase">
+        {active === 'dark' ? 'Dark' : 'Light'}
+      </span>
+    </button>
   );
 }
 
@@ -85,6 +67,7 @@ export default function HomePage() {
   const [isError, setIsError] = useState(false);
   const [result, setResult] = useState<PrayerResult | null>(null);
   const [showCrisis, setShowCrisis] = useState(false);
+  const [theme, setTheme] = useState<ThemeId>('dark');
 
   useEffect(() => {
     fetch('/api/stats')
@@ -92,6 +75,10 @@ export default function HomePage() {
       .then((data) => setPrayerCount(data.prayers_served || 0))
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -153,61 +140,63 @@ export default function HomePage() {
       {/* Header */}
       <header className="flex items-center justify-between gap-4 pb-7 max-[520px]:flex-col max-[520px]:items-start">
         <Link href="/" className="flex items-center gap-3 no-underline">
-          <div className="w-11 h-11 shrink-0">
-            <GoFishLogo />
-          </div>
-          <div>
-            <div className="font-bold text-[1.05rem] tracking-tight text-salt">
-              GoFish
-            </div>
-            <div className="text-[0.78rem] text-[var(--ink-subtle)] mt-0.5">
-              Cast Your Faith.
-            </div>
-          </div>
+          {theme === 'light' ? (
+            <Image
+              src="/gofish-logo-white-bg.png"
+              alt="GoFish - Cast Your Faith"
+              width={485}
+              height={165}
+              className="h-[66px] w-auto"
+              priority
+            />
+          ) : (
+            <Image
+              src="/gofish-logo-dark-bg.png"
+              alt="GoFish - Cast Your Faith"
+              width={488}
+              height={165}
+              className="h-[66px] w-auto"
+              priority
+            />
+          )}
         </Link>
-        <a
-          className="pill"
-          href="https://blocks.ai"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by PubNub Blocks.ai
-        </a>
+        <ThemeToggle active={theme} onChange={setTheme} />
       </header>
 
       <main>
+        <PrayerCounter count={prayerCount} />
+
         {/* Hero + Form */}
         <section className="grid grid-cols-[1fr_1.05fr] gap-6 items-stretch max-[900px]:grid-cols-1">
           <div className="py-6 pr-2 flex flex-col justify-center max-[900px]:py-2 max-[900px]:pr-0">
-            <p className="inline-flex items-center gap-2 text-[0.8rem] font-semibold tracking-[0.06em] uppercase text-seateal mb-4 before:content-[''] before:w-7 before:h-0.5 before:bg-gradient-to-r before:from-seateal before:to-oceanblue before:rounded">
+            <p className="inline-flex items-center gap-2 text-[0.8rem] font-semibold tracking-[0.06em] uppercase text-coral mb-4 before:content-[''] before:w-7 before:h-0.5 before:bg-gradient-to-r before:from-coral before:to-seafoam before:rounded">
               A moment with God
             </p>
             <h1 className="font-serif font-semibold text-[clamp(2.25rem,4.5vw,3.35rem)] leading-[1.08] tracking-tight m-0 mb-4">
               Bring your concern.
               <br />
-              <em className="italic text-seafoam">Receive hope.</em>
+              <em className="italic text-coral">Receive hope.</em>
             </h1>
             <p className="text-[1.05rem] text-[var(--ink-muted)] max-w-[34rem] mb-7">
               Share what&apos;s on your heart and receive a relevant Bible verse,
               faithful interpretation, practical next steps, and a short prayer
               grounded in Scripture.
             </p>
-            <PrayerCounter count={prayerCount} />
             <ul className="grid gap-3 m-0 p-0 list-none">
               <li className="flex items-start gap-3 text-[0.92rem] text-[var(--ink-muted)]">
-                <span className="shrink-0 w-7 h-7 rounded-lg bg-oceanblue/15 border border-oceanblue/25 grid place-items-center text-oceanblue text-[0.85rem]">
+                <span className="shrink-0 w-7 h-7 rounded-lg bg-seateal/15 border border-seateal/25 grid place-items-center text-seateal text-[0.85rem]">
                   ✦
                 </span>
                 <span>Verse selected for your specific situation</span>
               </li>
               <li className="flex items-start gap-3 text-[0.92rem] text-[var(--ink-muted)]">
-                <span className="shrink-0 w-7 h-7 rounded-lg bg-oceanblue/15 border border-oceanblue/25 grid place-items-center text-oceanblue text-[0.85rem]">
+                <span className="shrink-0 w-7 h-7 rounded-lg bg-seateal/15 border border-seateal/25 grid place-items-center text-seateal text-[0.85rem]">
                   ◎
                 </span>
                 <span>Clear interpretation in everyday language</span>
               </li>
               <li className="flex items-start gap-3 text-[0.92rem] text-[var(--ink-muted)]">
-                <span className="shrink-0 w-7 h-7 rounded-lg bg-oceanblue/15 border border-oceanblue/25 grid place-items-center text-oceanblue text-[0.85rem]">
+                <span className="shrink-0 w-7 h-7 rounded-lg bg-seateal/15 border border-seateal/25 grid place-items-center text-seateal text-[0.85rem]">
                   →
                 </span>
                 <span>Actionable guidance and a written prayer</span>
@@ -230,7 +219,7 @@ export default function HomePage() {
             <div className="mb-4">
               <label
                 htmlFor="text"
-                className="block font-semibold text-[0.82rem] tracking-wide uppercase text-seafoam mb-2"
+                className="block font-semibold text-[0.82rem] tracking-wide uppercase text-seateal mb-2"
               >
                 What would you like prayer for?
               </label>
@@ -247,7 +236,7 @@ export default function HomePage() {
             <div className="mb-4">
               <label
                 htmlFor="bible_version"
-                className="block font-semibold text-[0.82rem] tracking-wide uppercase text-seafoam mb-2"
+                className="block font-semibold text-[0.82rem] tracking-wide uppercase text-seateal mb-2"
               >
                 Bible version
               </label>
@@ -381,7 +370,7 @@ export default function HomePage() {
                     href={escapeHtml(result.verse_link)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-seafoam no-underline border-b border-seafoam/35 hover:text-white hover:border-oceanblue transition-colors"
+                    className="text-seateal no-underline border-b border-seateal/35 hover:text-oceanblue hover:border-oceanblue transition-colors"
                   >
                     {result.bible_verse}
                   </a>
@@ -443,12 +432,12 @@ export default function HomePage() {
                 href="https://platform.youversion.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seafoam hover:border-seafoam transition-colors"
+                className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors"
               >
                 YouVersion Platform
               </a>{' '}
               SDK (
-              <code className="font-mono text-[0.88em] text-seafoam">
+              <code className="font-mono text-[0.88em] text-seateal">
                 @youversion/platform-core
               </code>
               ). Translation copyright notices appear with each response when
@@ -457,28 +446,11 @@ export default function HomePage() {
                 href="https://www.bible.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seafoam hover:border-seafoam transition-colors"
+                className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors"
               >
                 Bible.com
               </a>
               .
-            </p>
-          </div>
-          <div>
-            <p className="text-[0.72rem] font-bold tracking-[0.08em] uppercase text-seateal mb-1">
-              Agent infrastructure
-            </p>
-            <p className="m-0 leading-relaxed">
-              This experience is powered by{' '}
-              <a
-                href="https://blocks.ai"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seafoam hover:border-seafoam transition-colors"
-              >
-                PubNub Blocks.ai
-              </a>
-              , connecting prayer responses to the Blocks Network.
             </p>
           </div>
         </div>
@@ -489,13 +461,13 @@ export default function HomePage() {
         <div className="flex justify-center gap-4 mt-3 text-[0.78rem]">
           <Link
             href="/transparency"
-            className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seafoam hover:border-seafoam transition-colors"
+            className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors"
           >
             Transparency
           </Link>
           <Link
             href="/privacy"
-            className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seafoam hover:border-seafoam transition-colors"
+            className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors"
           >
             Privacy Policy
           </Link>
