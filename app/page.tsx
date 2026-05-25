@@ -151,10 +151,10 @@ export default function HomePage() {
             />
           ) : (
             <Image
-              src="/gofish-logo-dark-bg.svg"
+              src="/gofish-logo-dark-bg.png"
               alt="GoFish - Cast Your Faith"
-              width={360}
-              height={120}
+              width={488}
+              height={165}
               className="h-[66px] w-auto"
               priority
             />

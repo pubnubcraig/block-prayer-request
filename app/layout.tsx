@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     'Share a concern and receive Scripture, faithful interpretation, practical guidance, and a prayer grounded in God\'s Word.',
   icons: {
-    icon: '/favicon.svg',
+    icon: '/favicon.png',
   },
 };
 
