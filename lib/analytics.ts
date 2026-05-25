@@ -1,3 +1,6 @@
+import { getDb } from './db/index';
+import { prayerUsageMetrics } from './db/schema';
+
 type PrayerMetrics = {
   bibleVersion: string;
   tokensUsed: number;
@@ -5,13 +8,7 @@ type PrayerMetrics = {
   costCents: number;
 };
 
-/**
- * Log prayer usage metrics.
- * When DATABASE_URL is available, this will insert into prayer_usage_metrics.
- * For now, logs structured JSON to console for observability.
- */
 export async function logPrayerMetrics(metrics: PrayerMetrics): Promise<void> {
-  // TODO: Insert into prayer_usage_metrics table when DB is provisioned
   console.log(
     JSON.stringify({
       event: 'prayer_metrics',
@@ -22,4 +19,14 @@ export async function logPrayerMetrics(metrics: PrayerMetrics): Promise<void> {
       timestamp: new Date().toISOString(),
     }),
   );
+
+  const db = getDb();
+  if (db) {
+    await db.insert(prayerUsageMetrics).values({
+      bibleVersion: metrics.bibleVersion,
+      tokensUsed: metrics.tokensUsed,
+      responseTimeMs: Math.round(metrics.responseTimeMs),
+      costCents: metrics.costCents,
+    });
+  }
 }

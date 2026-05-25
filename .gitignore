@@ -10,3 +10,4 @@ pip.conf
 .next
 next-env.d.ts
 drizzle/
+.env*

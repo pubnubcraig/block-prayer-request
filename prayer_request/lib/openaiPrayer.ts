@@ -20,6 +20,11 @@ export type VerseSelection = {
   usfm: string;
 };
 
+export type VerseSelectionResult = {
+  selection: VerseSelection;
+  tokensUsed: number;
+};
+
 const selectionSchema = {
   type: 'object' as const,
   additionalProperties: false,
@@ -36,7 +41,7 @@ const selectionSchema = {
 export async function selectVerse(
   text: string,
   bible_version: BibleVersionAbbrev,
-): Promise<VerseSelection> {
+): Promise<VerseSelectionResult> {
   const client = getClient();
   const system = loadPrompt('prompt_verse_selection.md', { text, bible_version });
   const completion = await client.chat.completions.create({
@@ -67,8 +72,11 @@ export async function selectVerse(
     throw new Error('Invalid verse selection JSON');
   }
   return {
-    bible_verse: parsed.bible_verse.trim(),
-    usfm: normalizeUsfm(parsed.usfm, parsed.bible_verse),
+    selection: {
+      bible_verse: parsed.bible_verse.trim(),
+      usfm: normalizeUsfm(parsed.usfm, parsed.bible_verse),
+    },
+    tokensUsed: completion.usage?.total_tokens ?? 0,
   };
 }
 
@@ -76,6 +84,11 @@ export type PastoralResult = {
   verse_interpretation: string;
   advice: string;
   prayer: string;
+};
+
+export type PastoralResponse = {
+  result: PastoralResult;
+  tokensUsed: number;
 };
 
 const pastoralSchema = {
@@ -126,7 +139,7 @@ export async function generatePastoralCombined(vars: {
   bible_version: BibleVersionAbbrev;
   bible_verse: string;
   verse_content: string;
-}): Promise<PastoralResult> {
+}): Promise<PastoralResponse> {
   const client = getClient();
   const user = buildCombinedPastoralUserMessage(vars);
 
@@ -152,9 +165,12 @@ export async function generatePastoralCombined(vars: {
   if (!raw) throw new Error('OpenAI returned no pastoral content');
   const parsed = JSON.parse(raw) as PastoralResult;
   return {
-    verse_interpretation: parsed.verse_interpretation?.trim() ?? '',
-    advice: parsed.advice?.trim() ?? '',
-    prayer: parsed.prayer?.trim() ?? '',
+    result: {
+      verse_interpretation: parsed.verse_interpretation?.trim() ?? '',
+      advice: parsed.advice?.trim() ?? '',
+      prayer: parsed.prayer?.trim() ?? '',
+    },
+    tokensUsed: completion.usage?.total_tokens ?? 0,
   };
 }
 
@@ -163,9 +179,10 @@ async function generatePastoralSequential(vars: {
   bible_version: BibleVersionAbbrev;
   bible_verse: string;
   verse_content: string;
-}): Promise<PastoralResult> {
+}): Promise<PastoralResponse> {
   const client = getClient();
   const model = getModel();
+  let totalTokens = 0;
 
   const interpPrompt = loadPrompt('prompt_verse_interpretation.md', vars);
   const interp = await client.chat.completions.create({
@@ -174,6 +191,7 @@ async function generatePastoralSequential(vars: {
     max_tokens: 500,
     messages: [{ role: 'user', content: interpPrompt }],
   });
+  totalTokens += interp.usage?.total_tokens ?? 0;
   const verse_interpretation = interp.choices[0]?.message?.content?.trim() ?? '';
   if (!verse_interpretation) throw new Error('No interpretation generated');
 
@@ -187,6 +205,7 @@ async function generatePastoralSequential(vars: {
     max_tokens: 400,
     messages: [{ role: 'user', content: advicePrompt }],
   });
+  totalTokens += adviceRes.usage?.total_tokens ?? 0;
   const advice = adviceRes.choices[0]?.message?.content?.trim() ?? '';
   if (!advice) throw new Error('No advice generated');
 
@@ -202,10 +221,14 @@ async function generatePastoralSequential(vars: {
     max_tokens: 200,
     messages: [{ role: 'user', content: prayerPrompt }],
   });
+  totalTokens += prayerRes.usage?.total_tokens ?? 0;
   const prayer = prayerRes.choices[0]?.message?.content?.trim() ?? '';
   if (!prayer) throw new Error('No prayer generated');
 
-  return { verse_interpretation, advice, prayer };
+  return {
+    result: { verse_interpretation, advice, prayer },
+    tokensUsed: totalTokens,
+  };
 }
 
 export async function generatePastoral(vars: {
@@ -213,7 +236,7 @@ export async function generatePastoral(vars: {
   bible_version: BibleVersionAbbrev;
   bible_verse: string;
   verse_content: string;
-}): Promise<PastoralResult> {
+}): Promise<PastoralResponse> {
   if (process.env.OPENAI_PASTORAL_MODE === 'sequential') {
     return generatePastoralSequential(vars);
   }

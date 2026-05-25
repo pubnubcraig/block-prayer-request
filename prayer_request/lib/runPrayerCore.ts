@@ -10,6 +10,12 @@ export type PrayerRequestInput = {
   bible_version?: string;
 };
 
+export type ModerationInfo = {
+  flagged: boolean;
+  categories: string[];
+  crisis: boolean;
+};
+
 export type PrayerRequestResult = {
   bible_verse: string;
   verse_link: string;
@@ -19,6 +25,9 @@ export type PrayerRequestResult = {
   prayer: string;
   verse_copyright?: string;
   crisis_resources?: boolean;
+  tokensUsed?: number;
+  costCents?: number;
+  moderationResult?: ModerationInfo;
 };
 
 export type PrayerRequestError = { error: string };
@@ -60,19 +69,20 @@ export async function runPrayerCore(
 
   try {
     onStatus?.('Selecting verse…');
-    const selection = await selectVerse(text, bible_version);
+    const verseResult = await selectVerse(text, bible_version);
+    let totalTokens = verseResult.tokensUsed;
 
     onStatus?.('Fetching Scripture…');
     const { passage, version } = await fetchPassageWithFallback(
       bible_version,
-      selection.usfm,
+      verseResult.selection.usfm,
     );
 
-    const bible_verse = selection.bible_verse || passage.reference;
+    const bible_verse = verseResult.selection.bible_verse || passage.reference;
     const verse_content = passage.content;
     const verse_link = buildVerseLink(
       version.abbrev,
-      selection.usfm,
+      verseResult.selection.usfm,
       version.youversionDeepLink,
     );
 
@@ -94,16 +104,27 @@ export async function runPrayerCore(
       bible_verse,
       verse_content,
     });
+    totalTokens += pastoral.tokensUsed;
+
+    // GPT-4o-mini blended rate: ~$0.375 per 1M tokens
+    const costCents = Math.ceil(totalTokens * 0.0000375);
 
     const result: PrayerRequestResult = {
       bible_verse,
       verse_link,
       verse_content,
-      verse_interpretation: pastoral.verse_interpretation,
-      advice: pastoral.advice,
-      prayer: pastoral.prayer,
+      verse_interpretation: pastoral.result.verse_interpretation,
+      advice: pastoral.result.advice,
+      prayer: pastoral.result.prayer,
       ...(version.copyright ? { verse_copyright: version.copyright } : {}),
       ...(showCrisisResources ? { crisis_resources: true } : {}),
+      tokensUsed: totalTokens,
+      costCents,
+      moderationResult: {
+        flagged: moderation.flagged,
+        categories: moderation.categories,
+        crisis: moderation.crisis,
+      },
     };
 
     for (const key of [
