@@ -242,6 +242,9 @@ export async function getResolvedVersion(
   if (!resolved) {
     throw new Error(`No Bible version resolved for ${requested}`);
   }
+  console.log(
+    `[Bible] Requested: ${requested} → Resolved: ${resolved.abbreviation} (id=${resolved.id}, fallback=${resolved.usedFallback})`,
+  );
   return resolved;
 }
 

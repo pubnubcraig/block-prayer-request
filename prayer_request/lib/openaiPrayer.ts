@@ -119,6 +119,7 @@ function buildCombinedPastoralUserMessage(vars: {
   });
   const prayer = loadPrompt('prompt_prayer.md', {
     text: vars.text,
+    bible_version: vars.bible_version,
     bible_verse: vars.bible_verse,
     verse_interpretation: '(Write this in verse_interpretation in your JSON response.)',
     advice: '(Write this in advice in your JSON response.)',
@@ -211,6 +212,7 @@ async function generatePastoralSequential(vars: {
 
   const prayerPrompt = loadPrompt('prompt_prayer.md', {
     text: vars.text,
+    bible_version: vars.bible_version,
     bible_verse: vars.bible_verse,
     verse_interpretation,
     advice,

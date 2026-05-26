@@ -23,6 +23,8 @@ export type PrayerRequestResult = {
   verse_interpretation: string;
   advice: string;
   prayer: string;
+  bible_version_used?: string;
+  bible_version_fallback?: boolean;
   verse_copyright?: string;
   crisis_resources?: boolean;
   tokensUsed?: number;
@@ -116,6 +118,8 @@ export async function runPrayerCore(
       verse_interpretation: pastoral.result.verse_interpretation,
       advice: pastoral.result.advice,
       prayer: pastoral.result.prayer,
+      bible_version_used: version.abbreviation,
+      bible_version_fallback: version.usedFallback,
       ...(version.copyright ? { verse_copyright: version.copyright } : {}),
       ...(showCrisisResources ? { crisis_resources: true } : {}),
       tokensUsed: totalTokens,
