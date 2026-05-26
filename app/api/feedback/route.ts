@@ -31,6 +31,7 @@ async function checkRateLimit(ip: string): Promise<boolean> {
 export async function POST(request: NextRequest) {
   const token = process.env.GITHUB_FEEDBACK_TOKEN;
   if (!token) {
+    console.error('[feedback] GITHUB_FEEDBACK_TOKEN is not set');
     return NextResponse.json(
       { error: 'Feedback is temporarily unavailable.' },
       { status: 503 },
