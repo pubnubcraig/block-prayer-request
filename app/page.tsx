@@ -11,6 +11,8 @@ type PrayerResult = {
   verse_interpretation: string;
   advice: string;
   prayer: string;
+  bible_version_used?: string;
+  bible_version_fallback?: boolean;
   verse_copyright?: string;
   crisis_resources?: boolean;
 };
@@ -374,6 +376,11 @@ export default function HomePage() {
                   >
                     {result.bible_verse}
                   </a>
+                  {result.bible_version_used && (
+                    <span className="text-[0.78rem] font-sans font-normal text-[var(--ink-subtle)] ml-2">
+                      ({result.bible_version_used})
+                    </span>
+                  )}
                 </p>
                 <blockquote className="verse-text">
                   {result.verse_content}

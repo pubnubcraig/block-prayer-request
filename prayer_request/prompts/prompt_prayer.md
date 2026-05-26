@@ -2,6 +2,7 @@ You are writing a short Christian prayer rooted in biblical truth and pastoral c
 
 INPUTS:
 - User concern/topic: {{text}}
+- Bible version: {{bible_version}}
 - Bible verse: {{bible_verse}}
 - Verse interpretation: {{verse_interpretation}}
 - Advice: {{advice}}
@@ -29,7 +30,7 @@ STYLE:
 - Modern readable language.
 - Suitable for someone anxious, grieving, struggling, thankful, confused, or seeking comfort.
 - Avoid denominational jargon.
-- Avoid archaic language unless the selected Bible version is KJV and the tone naturally fits.
+- Avoid archaic language unless {{bible_version}} is KJV and the tone naturally fits.
 
 OUTPUT REQUIREMENTS:
 - 1 short paragraph.

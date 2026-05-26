@@ -12,6 +12,7 @@
     "@tailwindcss/postcss": "^4.3.0",
     "@upstash/redis": "^1.38.0",
     "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "@youversion/platform-core": "latest",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.45.2",
