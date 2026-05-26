@@ -28,9 +28,20 @@ async function checkRateLimit(ip: string): Promise<boolean> {
   return count <= 5;
 }
 
+// Temporary debug endpoint — remove after confirming env var works
+export async function GET() {
+  const token = process.env.GITHUB_FEEDBACK_TOKEN;
+  return NextResponse.json({
+    hasToken: !!token,
+    tokenLength: token?.length ?? 0,
+    tokenPrefix: token?.slice(0, 8) ?? 'missing',
+  });
+}
+
 export async function POST(request: NextRequest) {
   const token = process.env.GITHUB_FEEDBACK_TOKEN;
   if (!token) {
+    console.error('[feedback] GITHUB_FEEDBACK_TOKEN is not set');
     return NextResponse.json(
       { error: 'Feedback is temporarily unavailable.' },
       { status: 503 },
