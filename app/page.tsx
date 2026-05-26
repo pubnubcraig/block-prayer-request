@@ -471,6 +471,12 @@ export default function HomePage() {
           >
             Privacy Policy
           </Link>
+          <Link
+            href="/feedback"
+            className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors"
+          >
+            Feedback
+          </Link>
         </div>
       </footer>
     </div>
