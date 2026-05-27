@@ -16,17 +16,20 @@ export type ResolvedVersion = {
   usedFallback: boolean;
 };
 
-/** Known YouVersion version IDs to probe (app license may allow subset). */
+/** Known YouVersion version IDs to probe (app license may allow subset).
+ *  Only include IDs that genuinely correspond to each translation.
+ *  Generic / unrelated IDs (e.g. 12=ASV, 3034=misc) must NOT appear
+ *  here — let VERSION_FALLBACK and UNIVERSAL_FALLBACK_IDS handle misses. */
 const VERSION_CANDIDATE_IDS: Record<BibleVersionAbbrev, number[]> = {
-  ESV: [59, 2969, 12, 3034],
+  ESV: [59, 2969],
   NIV: [111],
-  KJV: [1, 12],
-  NKJV: [114, 201, 12],
-  NLT: [116, 131, 206],
+  KJV: [1],
+  NKJV: [114, 201],
+  NLT: [116, 131],
   NASB: [100, 346],
-  CSB: [1713, 1849, 3034],
-  NRSV: [2016, 2015, 12],
-  MSG: [97, 98, 206],
+  CSB: [1713, 1849],
+  NRSV: [2016, 2015],
+  MSG: [97, 98],
   AMP: [1588],
 };
 

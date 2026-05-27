@@ -91,9 +91,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (description.length > 2000) {
+  if (description.length > 5000) {
     return NextResponse.json(
-      { error: 'Description must be 2,000 characters or fewer.' },
+      { error: 'Description must be 5,000 characters or fewer.' },
       { status: 400 },
     );
   }
