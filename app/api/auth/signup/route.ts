@@ -96,18 +96,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: passwordError }, { status: 400 });
   }
 
-  // Check email uniqueness
-  const existing = await db.query.users.findFirst({
-    where: eq(users.email, email.toLowerCase()),
-  });
-  if (existing) {
-    return NextResponse.json(
-      { error: 'An account with this email already exists.' },
-      { status: 409 },
-    );
-  }
-
   try {
+    // Check email uniqueness
+    const existing = await db.query.users.findFirst({
+      where: eq(users.email, email.toLowerCase()),
+    });
+    if (existing) {
+      return NextResponse.json(
+        { error: 'An account with this email already exists.' },
+        { status: 409 },
+      );
+    }
     const hashedPassword = await bcrypt.hash(password, 12);
 
     // Insert user
