@@ -56,20 +56,20 @@ export async function runPrayerCore(
   const { text, bible_version: requestedVersion } = parsed;
   const bible_version = normalizeBibleVersion(requestedVersion);
 
-  // --- Moderation & crisis detection ---
-  const moderation = await moderateInput(text);
-
-  if (moderation.blocked) {
-    return {
-      error:
-        "We're unable to process this request. If you need help, please contact a trusted person or call 988.",
-    };
-  }
-
-  const showCrisisResources =
-    moderation.crisis || detectCrisisKeywords(text);
-
   try {
+    // --- Moderation & crisis detection ---
+    const moderation = await moderateInput(text);
+
+    if (moderation.blocked) {
+      return {
+        error:
+          "We're unable to process this request. If you need help, please contact a trusted person or call 988.",
+      };
+    }
+
+    const showCrisisResources =
+      moderation.crisis || detectCrisisKeywords(text);
+
     onStatus?.('Selecting verse…');
     const verseResult = await selectVerse(text, bible_version);
     let totalTokens = verseResult.tokensUsed;
@@ -147,6 +147,7 @@ export async function runPrayerCore(
     return result;
   } catch (e) {
     const message = e instanceof Error ? e.message : String(e);
+    console.error('[prayer] runPrayerCore error:', message);
     return { error: message };
   }
 }

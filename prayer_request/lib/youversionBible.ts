@@ -149,11 +149,18 @@ function matchesTarget(
 async function resolveOne(target: BibleVersionAbbrev): Promise<ResolvedVersion | null> {
   const client = getBibleClient();
 
-  const { data } = await client.getVersions('en*', undefined, { page_size: 50 });
-  const fromList = data.find((v) => matchesTarget(v, target));
-  if (fromList) {
-    const matched = matchesTarget(fromList, target);
-    return versionFromApi(target, fromList, !matched);
+  try {
+    const { data } = await client.getVersions('en*', undefined, { page_size: 50 });
+    const fromList = data.find((v) => matchesTarget(v, target));
+    if (fromList) {
+      const matched = matchesTarget(fromList, target);
+      return versionFromApi(target, fromList, !matched);
+    }
+  } catch (err) {
+    console.warn(
+      `[Bible] getVersions call failed for ${target}:`,
+      err instanceof Error ? err.message : err,
+    );
   }
 
   for (const id of VERSION_CANDIDATE_IDS[target] ?? []) {
@@ -279,9 +286,32 @@ export async function fetchPassageWithFallback(
     const passage = await fetchPassage(version.id, usfm);
     return { passage, version };
   } catch (err) {
-    if (abbrev === DEFAULT_BIBLE_VERSION) throw err;
-    const defaultVer = await getResolvedVersion(DEFAULT_BIBLE_VERSION);
-    const passage = await fetchPassage(defaultVer.id, usfm);
-    return { passage, version: { ...defaultVer, requestedAbbrev: abbrev, usedFallback: true } };
+    console.warn(
+      `[Bible] fetchPassage failed for ${version.abbreviation} (id=${version.id}, usfm=${usfm}):`,
+      err instanceof Error ? err.message : err,
+    );
+    // Try the default version if different from what we already tried
+    if (abbrev !== DEFAULT_BIBLE_VERSION || version.usedFallback) {
+      const defaultVer = await getResolvedVersion(DEFAULT_BIBLE_VERSION);
+      if (defaultVer.id !== version.id) {
+        const passage = await fetchPassage(defaultVer.id, usfm);
+        return { passage, version: { ...defaultVer, requestedAbbrev: abbrev, usedFallback: true } };
+      }
+    }
+    // Try universal fallback IDs as last resort
+    for (const id of UNIVERSAL_FALLBACK_IDS) {
+      if (id === version.id) continue;
+      try {
+        const passage = await fetchPassage(id, usfm);
+        const fallbackVer = await fetchVersionById(id);
+        const resolvedVersion: ResolvedVersion = fallbackVer
+          ? { ...fallbackVer, requestedAbbrev: abbrev, usedFallback: true }
+          : { ...version, id, requestedAbbrev: abbrev, usedFallback: true };
+        return { passage, version: resolvedVersion };
+      } catch {
+        continue;
+      }
+    }
+    throw err;
   }
 }

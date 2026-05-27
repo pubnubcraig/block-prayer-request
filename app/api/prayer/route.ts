@@ -62,6 +62,9 @@ export async function POST(req: NextRequest) {
         result.error === 'Invalid JSON in request part.'
           ? 400
           : 500;
+      if (status >= 500) {
+        console.error('[prayer] API error:', result.error);
+      }
       return NextResponse.json(result, { status });
     }
 
