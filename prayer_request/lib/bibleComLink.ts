@@ -7,16 +7,10 @@ import type { BibleVersionAbbrev } from './bibleVersions.js';
 const BIBLE_COM_READER: Partial<
   Record<BibleVersionAbbrev, { readerPathId: number; suffix: string }>
 > = {
-  ESV: { readerPathId: 59, suffix: 'ESV' },
+  ASV: { readerPathId: 12, suffix: 'ASV' },
   NIV: { readerPathId: 111, suffix: 'NIV' },
-  KJV: { readerPathId: 1, suffix: 'KJV' },
-  NKJV: { readerPathId: 114, suffix: 'NKJV' },
-  NLT: { readerPathId: 116, suffix: 'NLT' },
-  NASB: { readerPathId: 100, suffix: 'NASB' },
-  CSB: { readerPathId: 1713, suffix: 'CSB' },
-  NRSV: { readerPathId: 2016, suffix: 'NRSV' },
-  MSG: { readerPathId: 97, suffix: 'MSG' },
-  AMP: { readerPathId: 1588, suffix: 'AMP' },
+  EASY: { readerPathId: 2079, suffix: 'EASY' },
+  NASB: { readerPathId: 2692, suffix: 'NASB' },
 };
 
 export function buildVerseLink(

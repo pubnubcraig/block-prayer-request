@@ -16,35 +16,22 @@ export type ResolvedVersion = {
   usedFallback: boolean;
 };
 
-/** Known YouVersion version IDs to probe (app license may allow subset).
- *  Only include IDs that genuinely correspond to each translation.
- *  Generic / unrelated IDs (e.g. 12=ASV, 3034=misc) must NOT appear
- *  here — let VERSION_FALLBACK and UNIVERSAL_FALLBACK_IDS handle misses. */
+/** Known YouVersion version IDs to probe (app license may allow subset). */
 const VERSION_CANDIDATE_IDS: Record<BibleVersionAbbrev, number[]> = {
-  ESV: [59, 2969],
+  ASV: [12],
   NIV: [111],
-  KJV: [1],
-  NKJV: [114, 201],
-  NLT: [116, 131],
-  NASB: [100, 346],
-  CSB: [1713, 1849],
-  NRSV: [2016, 2015],
-  MSG: [97, 98],
-  AMP: [1588],
+  EASY: [2079],
+  NASB: [2692, 100],
 };
 
 /** Prefer another allowlisted translation when direct license is missing. */
 const VERSION_FALLBACK: Partial<Record<BibleVersionAbbrev, BibleVersionAbbrev>> = {
-  ESV: 'NASB',
-  KJV: 'NASB',
-  NKJV: 'NASB',
-  NLT: 'NIV',
-  CSB: 'NASB',
-  NRSV: 'NASB',
-  MSG: 'NIV',
+  EASY: 'NIV',
+  NASB: 'NIV',
+  ASV: 'NIV',
 };
 
-const UNIVERSAL_FALLBACK_IDS = [12, 3034, 111, 100, 1588];
+const UNIVERSAL_FALLBACK_IDS = [111, 12, 2079, 2692, 100];
 
 let bibleClient: BibleClient | null = null;
 const versionByIdCache = new Map<number, ResolvedVersion>();
@@ -114,11 +101,10 @@ function normalizeAbbrevFromApi(
       ab === allowed ||
       ab.startsWith(allowed) ||
       ti.includes(allowed) ||
-      (allowed === 'MSG' && ti.includes('MESSAGE')) ||
-      (allowed === 'ESV' && ti.includes('STANDARD VERSION') && !ti.includes('AMERICAN')) ||
+      (allowed === 'ASV' && ti.includes('AMERICAN STANDARD')) ||
       (allowed === 'NIV' && ti.includes('NEW INTERNATIONAL') && !ti.includes('UK')) ||
       (allowed === 'NASB' && ti.includes('NEW AMERICAN STANDARD')) ||
-      (allowed === 'KJV' && ti.includes('KING JAMES'))
+      (allowed === 'EASY' && ti.includes('EASYENGLISH'))
     ) {
       return allowed;
     }
@@ -140,9 +126,10 @@ function matchesTarget(
     loc === t ||
     loc.startsWith(t) ||
     ti.includes(t) ||
-    (target === 'MSG' && ti.includes('MESSAGE')) ||
+    (target === 'ASV' && ti.includes('AMERICAN STANDARD')) ||
     (target === 'NASB' && ti.includes('NEW AMERICAN STANDARD')) ||
-    (target === 'NIV' && ti.includes('NEW INTERNATIONAL'))
+    (target === 'NIV' && ti.includes('NEW INTERNATIONAL')) ||
+    (target === 'EASY' && ti.includes('EASYENGLISH'))
   );
 }
 

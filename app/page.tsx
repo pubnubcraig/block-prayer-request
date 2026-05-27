@@ -63,7 +63,7 @@ function ThemeToggle({ active, onChange }: { active: ThemeId; onChange: (t: Them
 export default function HomePage() {
   const [prayerCount, setPrayerCount] = useState(0);
   const [text, setText] = useState('');
-  const [bibleVersion, setBibleVersion] = useState('ESV');
+  const [bibleVersion, setBibleVersion] = useState('NIV');
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('');
   const [isError, setIsError] = useState(false);
@@ -313,16 +313,10 @@ export default function HomePage() {
                 value={bibleVersion}
                 onChange={(e) => setBibleVersion(e.target.value)}
               >
-                <option value="ESV">ESV</option>
-                <option value="NIV">NIV</option>
-                <option value="KJV">KJV</option>
-                <option value="NKJV">NKJV</option>
-                <option value="NLT">NLT</option>
-                <option value="NASB">NASB</option>
-                <option value="CSB">CSB</option>
-                <option value="NRSV">NRSV</option>
-                <option value="MSG">MSG</option>
-                <option value="AMP">AMP</option>
+                <option value="NIV">NIV - New International Version</option>
+                <option value="ASV">ASV - American Standard Version</option>
+                <option value="EASY">EASY - EasyEnglish Bible</option>
+                <option value="NASB">NASB - New American Standard Bible</option>
               </select>
             </div>
 

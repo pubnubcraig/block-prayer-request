@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
 
     // Log analytics (fire-and-forget)
     logPrayerMetrics({
-      bibleVersion: bible_version || 'ESV',
+      bibleVersion: bible_version || 'NIV',
       tokensUsed: result.tokensUsed ?? 0,
       responseTimeMs,
       costCents: result.costCents ?? 0,
@@ -115,7 +115,7 @@ export async function GET() {
   return NextResponse.json({
     ok: true,
     service: 'prayer_request',
-    usage: 'POST JSON { "text": "...", "bible_version": "ESV" }',
+    usage: 'POST JSON { "text": "...", "bible_version": "NIV" }',
     blocks:
       'Provider must run blocks run on an always-on host (see render.yaml).',
   });
