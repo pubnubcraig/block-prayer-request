@@ -447,6 +447,11 @@ export default function HomePage() {
                     </span>
                   )}
                 </p>
+                {result.bible_version_fallback && result.bible_version_used && (
+                  <p className="text-[0.82rem] text-[var(--ink-subtle)] mt-1 mb-0 italic">
+                    {result.bible_version_used} was used because the requested version is not currently available through YouVersion.
+                  </p>
+                )}
                 <blockquote className="verse-text">
                   {result.verse_content}
                 </blockquote>
@@ -545,6 +550,16 @@ export default function HomePage() {
           </Link>
           <Link
             href="/feedback"
+            onClick={() => {
+              if (result) {
+                sessionStorage.setItem(
+                  'gofish_feedback_context',
+                  JSON.stringify({ text, bibleVersion, result }),
+                );
+              } else {
+                sessionStorage.removeItem('gofish_feedback_context');
+              }
+            }}
             className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors"
           >
             Feedback

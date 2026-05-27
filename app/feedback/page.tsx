@@ -1,7 +1,42 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import Link from 'next/link';
+
+type PrayerContext = {
+  text: string;
+  bibleVersion: string;
+  result: {
+    bible_verse: string;
+    verse_content: string;
+    verse_interpretation: string;
+    advice: string;
+    prayer: string;
+    bible_version_used?: string;
+  };
+};
+
+function buildDescriptionFromContext(ctx: PrayerContext): string {
+  const version = ctx.result.bible_version_used || ctx.bibleVersion;
+  const divider = '--- Prayer Request & Response ---';
+  const lines = [
+    '',
+    '',
+    divider,
+    '',
+    `Prayer Request: ${ctx.text}`,
+    '',
+    `Verse: ${ctx.result.bible_verse} (${version})`,
+    ctx.result.verse_content,
+    '',
+    `Interpretation: ${ctx.result.verse_interpretation}`,
+    '',
+    `Guidance: ${ctx.result.advice}`,
+    '',
+    `Prayer: ${ctx.result.prayer}`,
+  ];
+  return lines.join('\n');
+}
 
 export default function FeedbackPage() {
   const [category, setCategory] = useState('');
@@ -15,6 +50,21 @@ export default function FeedbackPage() {
   const [isError, setIsError] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [issueNumber, setIssueNumber] = useState(0);
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem('gofish_feedback_context');
+      if (raw) {
+        const parsed = JSON.parse(raw) as PrayerContext;
+        if (parsed?.text && parsed?.result?.bible_verse) {
+          setDescription(buildDescriptionFromContext(parsed));
+        }
+        sessionStorage.removeItem('gofish_feedback_context');
+      }
+    } catch {
+      // ignore parse errors
+    }
+  }, []);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -170,11 +220,12 @@ export default function FeedbackPage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe the issue, idea, or feedback in detail"
-                maxLength={2000}
+                maxLength={5000}
                 required
+                style={{ minHeight: description.length > 200 ? '320px' : undefined }}
               />
               <span className="text-[0.72rem] text-[var(--ink-subtle)] mt-1 block">
-                {description.length}/2,000
+                {description.length}/5,000
               </span>
             </div>
           </div>
