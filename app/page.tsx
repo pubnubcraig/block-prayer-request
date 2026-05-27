@@ -3,6 +3,7 @@
 import { useState, useEffect, FormEvent } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import UserMenu from '@/components/auth/user-menu';
 
 type PrayerResult = {
   bible_verse: string;
@@ -227,6 +228,7 @@ export default function HomePage() {
           </div>
 
           <ThemeToggle active={theme} onChange={setTheme} />
+          <UserMenu />
         </div>
       </header>
 
