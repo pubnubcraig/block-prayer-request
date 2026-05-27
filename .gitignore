@@ -3,6 +3,8 @@
 node_modules/
 **/node_modules/
 plans/
+assets/
+.claude/
 .DS_Store
 pip.conf
 .npmrc
