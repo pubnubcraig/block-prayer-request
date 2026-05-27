@@ -292,10 +292,14 @@ export async function fetchPassageWithFallback(
     );
     // Try the default version if different from what we already tried
     if (abbrev !== DEFAULT_BIBLE_VERSION || version.usedFallback) {
-      const defaultVer = await getResolvedVersion(DEFAULT_BIBLE_VERSION);
-      if (defaultVer.id !== version.id) {
-        const passage = await fetchPassage(defaultVer.id, usfm);
-        return { passage, version: { ...defaultVer, requestedAbbrev: abbrev, usedFallback: true } };
+      try {
+        const defaultVer = await getResolvedVersion(DEFAULT_BIBLE_VERSION);
+        if (defaultVer.id !== version.id) {
+          const passage = await fetchPassage(defaultVer.id, usfm);
+          return { passage, version: { ...defaultVer, requestedAbbrev: abbrev, usedFallback: true } };
+        }
+      } catch {
+        // Default version also failed, continue to universal fallbacks
       }
     }
     // Try universal fallback IDs as last resort
