@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import AuthSessionProvider from '@/components/providers/session-provider';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -40,8 +41,10 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <div className="page-bg" aria-hidden="true" />
-        {children}
+        <AuthSessionProvider>
+          <div className="page-bg" aria-hidden="true" />
+          {children}
+        </AuthSessionProvider>
       </body>
     </html>
   );
