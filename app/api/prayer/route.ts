@@ -3,6 +3,10 @@ import { Redis } from '@upstash/redis';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { logPrayerMetrics } from '@/lib/analytics';
 import { logModeration } from '@/lib/moderation-logger';
+import { auth } from '@/lib/auth';
+import { getDb } from '@/lib/db';
+import { prayerHistory, userProfiles } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
 
 export const maxDuration = 180;
 
@@ -103,6 +107,35 @@ export async function POST(req: NextRequest) {
 
     // Strip internal fields before sending to client
     const { tokensUsed, costCents, moderationResult, ...clientResult } = result;
+
+    // Save to prayer history (fire-and-forget)
+    try {
+      const session = await auth();
+      if (session?.user?.id) {
+        const db = getDb();
+        if (db) {
+          const profile = await db.query.userProfiles.findFirst({
+            where: eq(userProfiles.userId, session.user.id),
+            columns: { prayerHistoryMode: true },
+          });
+          const mode = profile?.prayerHistoryMode ?? 'save-per-request';
+          if (mode === 'save-all' || mode === 'save-per-request') {
+            await db.insert(prayerHistory).values({
+              userId: session.user.id,
+              requestText: text,
+              bibleVerse: result.bible_verse,
+              verseContent: result.verse_content,
+              interpretation: result.verse_interpretation,
+              advice: result.advice,
+              prayer: result.prayer,
+              bibleVersionUsed: result.bible_version_used ?? null,
+            });
+          }
+        }
+      }
+    } catch (e) {
+      console.error('[prayer] Failed to save history:', e instanceof Error ? e.message : e);
+    }
 
     return NextResponse.json(clientResult);
   } catch (err) {
