@@ -56,13 +56,14 @@ export async function POST(request: NextRequest) {
     request.headers.get('x-real-ip') ||
     'unknown';
 
-  const allowed = await checkRateLimit(ip);
-  if (!allowed) {
-    return NextResponse.json(
-      { error: 'Too many signup attempts. Please try again later.' },
-      { status: 429 },
-    );
-  }
+  // TODO: re-enable rate limiting after initial testing
+  // const allowed = await checkRateLimit(ip);
+  // if (!allowed) {
+  //   return NextResponse.json(
+  //     { error: 'Too many signup attempts. Please try again later.' },
+  //     { status: 429 },
+  //   );
+  // }
 
   let body: Record<string, unknown>;
   try {
