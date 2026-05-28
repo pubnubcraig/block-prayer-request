@@ -39,7 +39,7 @@ export const MARITAL_STATUSES = [
   'Prefer not to say',
 ] as const;
 
-export const OCCUPATIONS = [
+export const EMPLOYMENT_STATUSES = [
   'Student',
   'Employed (Full-time)',
   'Employed (Part-time)',
@@ -76,12 +76,14 @@ export const PRAYER_HISTORY_MODES = [
 
 export const BIBLE_VERSIONS = ['ASV', 'NIV', 'EASY', 'NASB'] as const;
 
+export const TIMEZONES = Intl.supportedValuesOf('timeZone');
+
 // Derive types from the const arrays
 export type Denomination = (typeof DENOMINATIONS)[number];
 export type FaithStage = (typeof FAITH_STAGES)[number];
 export type SexOption = (typeof SEX_OPTIONS)[number];
 export type MaritalStatus = (typeof MARITAL_STATUSES)[number];
-export type Occupation = (typeof OCCUPATIONS)[number];
+export type EmploymentStatus = (typeof EMPLOYMENT_STATUSES)[number];
 export type PrayerTopic = (typeof PRAYER_TOPICS)[number];
 export type PrayerHistoryMode = (typeof PRAYER_HISTORY_MODES)[number];
 export type BibleVersion = (typeof BIBLE_VERSIONS)[number];

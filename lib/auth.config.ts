@@ -17,15 +17,40 @@ export const authConfig: NextAuthConfig = {
   },
   providers: [], // Populated in lib/auth.ts (not here, to avoid Edge issues)
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id;
+        token.image = user.image;
+      }
+      // When updateSession() is called, refresh image from DB
+      if (trigger === 'update') {
+        try {
+          const { getDb } = await import('@/lib/db');
+          const { users } = await import('@/lib/db/schema');
+          const { eq } = await import('drizzle-orm');
+          const db = getDb();
+          if (db && token.id) {
+            const dbUser = await db.query.users.findFirst({
+              where: eq(users.id, token.id as string),
+              columns: { image: true, name: true },
+            });
+            if (dbUser) {
+              token.image = dbUser.image;
+              token.name = dbUser.name;
+            }
+          }
+        } catch {
+          // Fail silently — image will update on next full refresh
+        }
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user && token.id) {
         session.user.id = token.id as string;
+      }
+      if (session.user && token.image) {
+        session.user.image = token.image as string;
       }
       return session;
     },

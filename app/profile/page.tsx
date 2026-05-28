@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect, useRef, FormEvent } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import {
@@ -8,10 +8,11 @@ import {
   FAITH_STAGES,
   SEX_OPTIONS,
   MARITAL_STATUSES,
-  OCCUPATIONS,
+  EMPLOYMENT_STATUSES,
   PRAYER_TOPICS,
   PRAYER_HISTORY_MODES,
   BIBLE_VERSIONS,
+  TIMEZONES,
 } from '@/lib/constants/profile-options';
 
 const inputClass =
@@ -30,7 +31,7 @@ const HISTORY_MODE_LABELS: Record<string, string> = {
 };
 
 export default function ProfilePage() {
-  const { data: session } = useSession();
+  const { data: session, update: updateSession } = useSession();
 
   const [favoriteVerse, setFavoriteVerse] = useState('');
   const [bibleVersion, setBibleVersion] = useState('NIV');
@@ -49,6 +50,12 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
+
+  // Profile picture state
+  const [avatarUrl, setAvatarUrl] = useState('');
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarError, setAvatarError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Change password state
   const [currentPassword, setCurrentPassword] = useState('');
@@ -89,12 +96,75 @@ export default function ProfilePage() {
     loadProfile();
   }, []);
 
+  useEffect(() => {
+    if (session?.user?.image) {
+      setAvatarUrl(session.user.image);
+    }
+  }, [session?.user?.image]);
+
   function toggleTopic(topic: string) {
     setPrayerTopics((prev) =>
       prev.includes(topic)
         ? prev.filter((t) => t !== topic)
         : [...prev, topic],
     );
+  }
+
+  async function handleAvatarUpload(file: File) {
+    if (!file.type.startsWith('image/')) {
+      setAvatarError('Please select an image file.');
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setAvatarError('Image must be under 2 MB.');
+      return;
+    }
+
+    setUploadingAvatar(true);
+    setAvatarError('');
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await fetch('/api/profile/avatar', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        setAvatarError(data.error || 'Failed to upload image.');
+        return;
+      }
+
+      const data = await res.json();
+      setAvatarUrl(data.url);
+      await updateSession();
+    } catch {
+      setAvatarError('Network error. Please try again.');
+    } finally {
+      setUploadingAvatar(false);
+    }
+  }
+
+  async function handleRemoveAvatar() {
+    setUploadingAvatar(true);
+    setAvatarError('');
+    try {
+      const res = await fetch('/api/profile/avatar', { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json();
+        setAvatarError(data.error || 'Failed to remove image.');
+        return;
+      }
+      setAvatarUrl('');
+      await updateSession();
+    } catch {
+      setAvatarError('Network error. Please try again.');
+    } finally {
+      setUploadingAvatar(false);
+    }
   }
 
   async function handleSaveProfile(e: FormEvent) {
@@ -197,6 +267,13 @@ export default function ProfilePage() {
     );
   }
 
+  const initials = (session?.user?.name || session?.user?.email || '?')
+    .split(' ')
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+
   return (
     <div className="max-w-[560px] mx-auto px-5 pt-12 pb-16">
       <div className="flex items-center justify-between gap-4 mb-8">
@@ -214,6 +291,64 @@ export default function ProfilePage() {
         >
           Back to home
         </Link>
+      </div>
+
+      {/* Profile Picture */}
+      <div className="card p-6 mb-8">
+        <span className={labelClass}>Profile picture</span>
+        <div className="flex items-center gap-5 mt-3">
+          <div className="w-16 h-16 rounded-full bg-seateal/20 border border-seateal/40 text-seateal text-xl font-bold flex items-center justify-center overflow-hidden shrink-0">
+            {avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={avatarUrl}
+                alt=""
+                className="w-16 h-16 rounded-full object-cover"
+              />
+            ) : (
+              initials
+            )}
+          </div>
+          <div className="flex flex-col gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleAvatarUpload(file);
+                e.target.value = '';
+              }}
+            />
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                disabled={uploadingAvatar}
+                onClick={() => fileInputRef.current?.click()}
+                className="text-oceanblue text-[0.85rem] bg-transparent border border-oceanblue/35 rounded-[var(--radius-sm)] px-3 py-1.5 cursor-pointer font-[inherit] hover:bg-oceanblue/10 transition-colors disabled:opacity-50"
+              >
+                {uploadingAvatar ? 'Uploading...' : 'Upload photo'}
+              </button>
+              {avatarUrl && (
+                <button
+                  type="button"
+                  disabled={uploadingAvatar}
+                  onClick={handleRemoveAvatar}
+                  className="text-coral text-[0.85rem] bg-transparent border-0 cursor-pointer font-[inherit] hover:underline disabled:opacity-50"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+            <p className="text-[0.75rem] text-[var(--ink-subtle)] m-0">
+              JPG, PNG or WebP. Max 2 MB.
+            </p>
+            {avatarError && (
+              <p className="text-coral text-[0.8rem] m-0">{avatarError}</p>
+            )}
+          </div>
+        </div>
       </div>
 
       <form onSubmit={handleSaveProfile} className="grid gap-8">
@@ -373,7 +508,7 @@ export default function ProfilePage() {
 
           <div>
             <label htmlFor="occupation" className={labelClass}>
-              Occupation
+              Employment status
             </label>
             <select
               id="occupation"
@@ -382,7 +517,7 @@ export default function ProfilePage() {
               className={selectClass}
             >
               <option value="">Select...</option>
-              {OCCUPATIONS.map((o) => (
+              {EMPLOYMENT_STATUSES.map((o) => (
                 <option key={o} value={o}>
                   {o}
                 </option>
@@ -415,14 +550,19 @@ export default function ProfilePage() {
             <label htmlFor="timezone" className={labelClass}>
               Timezone
             </label>
-            <input
+            <select
               id="timezone"
-              type="text"
               value={timezone}
               onChange={(e) => setTimezone(e.target.value)}
-              placeholder="e.g. America/New_York"
-              className={inputClass}
-            />
+              className={selectClass}
+            >
+              <option value="">Select...</option>
+              {TIMEZONES.map((tz) => (
+                <option key={tz} value={tz}>
+                  {tz.replace(/_/g, ' ')}
+                </option>
+              ))}
+            </select>
           </div>
         </fieldset>
 

@@ -7,9 +7,10 @@ import {
   FAITH_STAGES,
   SEX_OPTIONS,
   MARITAL_STATUSES,
-  OCCUPATIONS,
+  EMPLOYMENT_STATUSES,
   PRAYER_TOPICS,
   BIBLE_VERSIONS,
+  TIMEZONES,
 } from '@/lib/constants/profile-options';
 
 const inputClass =
@@ -255,7 +256,7 @@ export default function ProfileSetupPage() {
 
           <div>
             <label htmlFor="occupation" className={labelClass}>
-              Occupation
+              Employment status
             </label>
             <select
               id="occupation"
@@ -264,7 +265,7 @@ export default function ProfileSetupPage() {
               className={selectClass}
             >
               <option value="">Select...</option>
-              {OCCUPATIONS.map((o) => (
+              {EMPLOYMENT_STATUSES.map((o) => (
                 <option key={o} value={o}>
                   {o}
                 </option>
@@ -297,14 +298,19 @@ export default function ProfileSetupPage() {
             <label htmlFor="timezone" className={labelClass}>
               Timezone
             </label>
-            <input
+            <select
               id="timezone"
-              type="text"
               value={timezone}
               onChange={(e) => setTimezone(e.target.value)}
-              placeholder="e.g. America/New_York"
-              className={inputClass}
-            />
+              className={selectClass}
+            >
+              <option value="">Select...</option>
+              {TIMEZONES.map((tz) => (
+                <option key={tz} value={tz}>
+                  {tz.replace(/_/g, ' ')}
+                </option>
+              ))}
+            </select>
           </div>
         </fieldset>
 
