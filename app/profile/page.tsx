@@ -140,7 +140,7 @@ export default function ProfilePage() {
 
       const data = await res.json();
       setAvatarUrl(data.url);
-      await updateSession();
+      await updateSession({ image: data.url });
     } catch {
       setAvatarError('Network error. Please try again.');
     } finally {
@@ -159,7 +159,7 @@ export default function ProfilePage() {
         return;
       }
       setAvatarUrl('');
-      await updateSession();
+      await updateSession({ image: null });
     } catch {
       setAvatarError('Network error. Please try again.');
     } finally {
