@@ -13,3 +13,4 @@ pip.conf
 next-env.d.ts
 drizzle/
 .env*
+*.tsbuildinfo
