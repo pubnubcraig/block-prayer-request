@@ -166,11 +166,11 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'Account created. Please check your email to verify.',
     });
-  } catch (err) {
-    console.error(
-      '[signup] Error:',
-      err instanceof Error ? err.message : err,
-    );
+  } catch (err: unknown) {
+    const e = err instanceof Error ? err : new Error(String(err));
+    const cause = (e as Error & { cause?: Error }).cause;
+    console.error('[signup] Error:', e.message);
+    if (cause) console.error('[signup] Cause:', cause.message, JSON.stringify({ code: (cause as unknown as Record<string, unknown>).code, detail: (cause as unknown as Record<string, unknown>).detail }));
     return NextResponse.json(
       { error: 'Failed to create account. Please try again.' },
       { status: 500 },
