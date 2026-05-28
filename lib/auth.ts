@@ -20,25 +20,44 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
+        const email = (credentials?.email as string)?.toLowerCase?.();
+        const password = credentials?.password as string;
+
+        if (!email || !password) {
+          console.error('[auth] Missing email or password');
+          return null;
+        }
 
         const db = getDb();
-        if (!db) return null;
+        if (!db) {
+          console.error('[auth] No database connection');
+          return null;
+        }
 
         const user = await db.query.users.findFirst({
-          where: eq(users.email, credentials.email as string),
+          where: eq(users.email, email),
         });
 
-        if (!user?.hashedPassword) return null;
+        if (!user) {
+          console.error('[auth] No user found for email:', email);
+          return null;
+        }
 
-        // Reject unverified email accounts
-        if (!user.emailVerified) return null;
+        if (!user.hashedPassword) {
+          console.error('[auth] User has no hashed password:', email);
+          return null;
+        }
 
-        const valid = await bcrypt.compare(
-          credentials.password as string,
-          user.hashedPassword,
-        );
-        if (!valid) return null;
+        if (!user.emailVerified) {
+          console.error('[auth] Email not verified:', email, '- emailVerified:', user.emailVerified);
+          return null;
+        }
+
+        const valid = await bcrypt.compare(password, user.hashedPassword);
+        if (!valid) {
+          console.error('[auth] Invalid password for:', email);
+          return null;
+        }
 
         return {
           id: user.id,
