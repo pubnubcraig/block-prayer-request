@@ -7,7 +7,10 @@ import * as schema from './schema';
  * This allows the app to run without a database during early phases.
  */
 export function getDb() {
-  const url = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+  // NEON_DATABASE_URL takes priority — it always points to the main branch
+  // where auth tables exist. The Neon integration may inject DATABASE_URL
+  // pointing to per-branch databases that lack the schema.
+  const url = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL || process.env.POSTGRES_URL;
   if (!url) return null;
 
   const sql = neon(url);
