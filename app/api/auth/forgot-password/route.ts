@@ -60,7 +60,9 @@ export async function POST(request: NextRequest) {
       const baseUrl =
         process.env.AUTH_URL ||
         process.env.NEXTAUTH_URL ||
-        'http://localhost:3000';
+        (process.env.VERCEL_PROJECT_PRODUCTION_URL
+          ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+          : 'http://localhost:3000');
       const resetUrl = `${baseUrl}/reset-password?token=${token}&email=${encodeURIComponent(email.toLowerCase())}`;
 
       await resend.emails.send({
