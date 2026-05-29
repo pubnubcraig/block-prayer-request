@@ -1,4 +1,4 @@
-const GRAPH_API_BASE = 'https://graph.facebook.com/v21.0';
+const GRAPH_API_BASE = 'https://graph.facebook.com/v25.0';
 
 export type FacebookPostResult = {
   postId: string;
