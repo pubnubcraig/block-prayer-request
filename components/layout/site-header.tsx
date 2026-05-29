@@ -73,6 +73,9 @@ export default function SiteHeader() {
           <Link href="/privacy" className={navLinkClass}>
             Privacy
           </Link>
+          <a href="https://www.facebook.com/gofishlife" target="_blank" rel="noopener noreferrer" className={navLinkClass}>
+            Facebook
+          </a>
         </nav>
 
         {/* Mobile hamburger */}
@@ -110,6 +113,15 @@ export default function SiteHeader() {
               >
                 Privacy
               </Link>
+              <a
+                href="https://www.facebook.com/gofishlife"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMenuOpen(false)}
+                className={`${navLinkClass} text-[0.88rem] py-1`}
+              >
+                Facebook
+              </a>
             </nav>
           )}
         </div>

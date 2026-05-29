@@ -32,6 +32,14 @@ export default function SiteFooter() {
         >
           Feedback
         </Link>
+        <a
+          href="https://www.facebook.com/gofishlife"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors"
+        >
+          Facebook
+        </a>
       </div>
     </footer>
   );
