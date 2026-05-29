@@ -42,26 +42,23 @@ export default function HomePage() {
     document.getElementById('prayer-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, []);
 
-  const scrollToForm = useCallback(() => {
-    document.getElementById('prayer-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, []);
-
   return (
     <div className="max-w-[1180px] mx-auto px-5 pt-5 pb-12">
       <SiteHeader />
 
       <main>
-        <HeroSection
-          prayerCount={prayerCount}
-          onRequestPrayer={scrollToForm}
-          isAuthenticated={isAuthenticated}
-        />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+          <HeroSection
+            prayerCount={prayerCount}
+            isAuthenticated={isAuthenticated}
+          />
 
-        <PrayerFormSection
-          prefillText={prefillText}
-          onResult={handleResult}
-          onPrayerCountIncrement={() => setPrayerCount((c) => c + 1)}
-        />
+          <PrayerFormSection
+            prefillText={prefillText}
+            onResult={handleResult}
+            onPrayerCountIncrement={() => setPrayerCount((c) => c + 1)}
+          />
+        </div>
 
         <CrisisBanner visible={showCrisis} />
         <ResultsSection result={result} />

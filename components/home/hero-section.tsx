@@ -18,11 +18,9 @@ function PrayerCounter({ count }: { count: number }) {
 
 export default function HeroSection({
   prayerCount,
-  onRequestPrayer,
   isAuthenticated,
 }: {
   prayerCount: number;
-  onRequestPrayer: () => void;
   isAuthenticated: boolean;
 }) {
   return (
@@ -66,23 +64,16 @@ export default function HeroSection({
         </li>
       </ul>
 
-      <div className="flex items-center gap-4 flex-wrap">
-        <button
-          type="button"
-          onClick={onRequestPrayer}
-          className="btn-submit"
-        >
-          Request Prayer
-        </button>
-        {!isAuthenticated && (
+      {!isAuthenticated && (
+        <div className="flex items-center gap-4 flex-wrap">
           <Link
             href="/signup"
             className="btn-secondary"
           >
             Create Free Account
           </Link>
-        )}
-      </div>
+        </div>
+      )}
     </section>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, FormEvent } from 'react';
+import Link from 'next/link';
 import { PrayerResult } from '@/lib/types';
 
 export default function PrayerFormSection({
@@ -75,7 +76,7 @@ export default function PrayerFormSection({
 
   return (
     <section id="prayer-form">
-      <form onSubmit={handleSubmit} className="panel max-w-[640px]" noValidate>
+      <form onSubmit={handleSubmit} className="panel" noValidate>
         <div className="flex items-center justify-between gap-4 mb-5">
           <div>
             <h2 className="text-[1.1rem] font-bold m-0 tracking-tight">
@@ -144,10 +145,18 @@ export default function PrayerFormSection({
           </div>
         </div>
 
-        <p className="mt-4 mb-0 text-[0.78rem] text-[var(--ink-subtle)] leading-relaxed">
-          Your request is processed securely and is not stored unless you have an account.
-          If you are in crisis, please call <strong>988</strong> or text <strong>HOME</strong> to <strong>741741</strong>.
-        </p>
+        <div className="flex items-center justify-between gap-4 mt-4">
+          <p className="mb-0 text-[0.78rem] text-[var(--ink-subtle)] leading-relaxed">
+            Your request is processed securely and is not stored unless you have an account.
+            If you are in crisis, please call <strong>988</strong> or text <strong>HOME</strong> to <strong>741741</strong>.
+          </p>
+          <Link
+            href="/feedback"
+            className="shrink-0 text-[0.78rem] font-medium text-seateal hover:underline"
+          >
+            Feedback
+          </Link>
+        </div>
       </form>
     </section>
   );

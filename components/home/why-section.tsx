@@ -9,12 +9,7 @@ const values = [
     description:
       "Your prayer requests are yours. We don't share, sell, or publicly display them.",
   },
-  {
-    title: 'Always free',
-    description:
-      'No paywall. No premium tier. GoFish.Life is a ministry, not a product.',
-  },
-  {
+{
     title: 'Practical, not preachy',
     description:
       'Receive clear interpretation, actionable guidance, and a prayer you can actually use.',
