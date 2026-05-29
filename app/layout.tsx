@@ -3,9 +3,9 @@ import AuthSessionProvider from '@/components/providers/session-provider';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'GoFish — Cast Your Faith',
+  title: 'GoFish.Life \u2014 Scripture-Based Prayer Responses',
   description:
-    'Share a concern and receive Scripture, faithful interpretation, practical guidance, and a prayer grounded in God\'s Word.',
+    'Bring your concern and receive a Bible verse, faithful interpretation, practical guidance, and a prayer grounded in Scripture. Free, private, and always available.',
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -14,6 +14,12 @@ export const metadata: Metadata = {
       { url: '/favicon-512x512.png', sizes: '512x512', type: 'image/png' },
     ],
     apple: '/apple-touch-icon.png',
+  },
+  openGraph: {
+    title: 'GoFish.Life \u2014 Scripture-Based Prayer Responses',
+    description: "Bring your concern and receive hope from God's Word.",
+    siteName: 'GoFish.Life',
+    type: 'website',
   },
 };
 

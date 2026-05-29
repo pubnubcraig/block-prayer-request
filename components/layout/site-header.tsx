@@ -73,6 +73,9 @@ export default function SiteHeader() {
           <Link href="/privacy" className={navLinkClass}>
             Privacy
           </Link>
+          <Link href="/data-deletion" className={navLinkClass}>
+            Data Deletion
+          </Link>
           <a href="https://www.facebook.com/gofishlife" target="_blank" rel="noopener noreferrer" className={navLinkClass}>
             Facebook
           </a>
@@ -112,6 +115,13 @@ export default function SiteHeader() {
                 className={`${navLinkClass} text-[0.88rem] py-1`}
               >
                 Privacy
+              </Link>
+              <Link
+                href="/data-deletion"
+                onClick={() => setMenuOpen(false)}
+                className={`${navLinkClass} text-[0.88rem] py-1`}
+              >
+                Data Deletion
               </Link>
               <a
                 href="https://www.facebook.com/gofishlife"
