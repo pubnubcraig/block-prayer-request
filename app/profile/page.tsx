@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef, FormEvent } from 'react';
 import { useSession, signOut } from 'next-auth/react';
-import Link from 'next/link';
+import SiteHeader from '@/components/layout/site-header';
+import SiteFooter from '@/components/layout/site-footer';
 import {
   DENOMINATIONS,
   FAITH_STAGES,
@@ -276,21 +277,15 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-[560px] mx-auto px-5 pt-12 pb-16">
-      <div className="flex items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="font-serif font-semibold text-3xl mt-6 mb-1 tracking-tight">
-            Profile settings
-          </h1>
-          <p className="text-[var(--ink-muted)] text-[0.9rem]">
-            {session?.user?.email}
-          </p>
-        </div>
-        <Link
-          href="/"
-          className="text-oceanblue no-underline text-[0.88rem] border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors"
-        >
-          Back to home
-        </Link>
+      <SiteHeader />
+
+      <div className="mb-8">
+        <h1 className="font-serif font-semibold text-3xl mt-6 mb-1 tracking-tight">
+          Profile settings
+        </h1>
+        <p className="text-[var(--ink-muted)] text-[0.9rem]">
+          {session?.user?.email}
+        </p>
       </div>
 
       {/* Profile Picture */}
@@ -703,6 +698,8 @@ export default function ProfilePage() {
           Sign out
         </button>
       </div>
+
+      <SiteFooter />
     </div>
   );
 }

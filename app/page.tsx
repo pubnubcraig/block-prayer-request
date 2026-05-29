@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect, FormEvent } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import UserMenu from '@/components/auth/user-menu';
+import SiteHeader from '@/components/layout/site-header';
+import SiteFooter from '@/components/layout/site-footer';
 
 type PrayerResult = {
   bible_verse: string;
@@ -40,27 +39,6 @@ function PrayerCounter({ count }: { count: number }) {
   );
 }
 
-type ThemeId = 'dark' | 'light';
-
-function ThemeToggle({ active, onChange }: { active: ThemeId; onChange: (t: ThemeId) => void }) {
-  return (
-    <button
-      type="button"
-      onClick={() => onChange(active === 'dark' ? 'light' : 'dark')}
-      title={active === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-      className="theme-toggle"
-      aria-label={`Switch to ${active === 'dark' ? 'light' : 'dark'} mode`}
-    >
-      <span className={`theme-toggle-track ${active === 'light' ? 'theme-toggle-light' : ''}`}>
-        <span className="theme-toggle-thumb" />
-      </span>
-      <span className="text-[0.72rem] font-semibold tracking-wide uppercase">
-        {active === 'dark' ? 'Dark' : 'Light'}
-      </span>
-    </button>
-  );
-}
-
 export default function HomePage() {
   const [prayerCount, setPrayerCount] = useState(0);
   const [text, setText] = useState('');
@@ -70,8 +48,6 @@ export default function HomePage() {
   const [isError, setIsError] = useState(false);
   const [result, setResult] = useState<PrayerResult | null>(null);
   const [showCrisis, setShowCrisis] = useState(false);
-  const [theme, setTheme] = useState<ThemeId>('dark');
-  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     fetch('/api/stats')
@@ -79,10 +55,6 @@ export default function HomePage() {
       .then((data) => setPrayerCount(data.prayers_served || 0))
       .catch(() => {});
   }, []);
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -141,96 +113,7 @@ export default function HomePage() {
 
   return (
     <div className="max-w-[1180px] mx-auto px-5 pt-5 pb-12">
-      {/* Header */}
-      <header className="flex items-center justify-between gap-4 pb-7 max-[520px]:flex-col max-[520px]:items-start">
-        <Link href="/" className="flex items-center gap-3 no-underline">
-          {theme === 'light' ? (
-            <Image
-              src="/gofish-logo-white-bg.png"
-              alt="GoFish - Cast Your Faith"
-              width={485}
-              height={165}
-              className="h-[66px] w-auto"
-              priority
-            />
-          ) : (
-            <Image
-              src="/gofish-logo-dark-bg.png"
-              alt="GoFish - Cast Your Faith"
-              width={488}
-              height={165}
-              className="h-[66px] w-auto"
-              priority
-            />
-          )}
-        </Link>
-
-        <div className="flex items-center gap-5">
-          {/* Desktop nav */}
-          <nav className="hidden min-[521px]:flex items-center gap-4 text-[0.85rem]">
-            <Link
-              href="/feedback"
-              className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors"
-            >
-              Feedback
-            </Link>
-            <Link
-              href="/transparency"
-              className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors"
-            >
-              Transparency
-            </Link>
-            <Link
-              href="/privacy"
-              className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors"
-            >
-              Privacy
-            </Link>
-          </nav>
-
-          {/* Mobile hamburger */}
-          <div className="relative min-[521px]:hidden">
-            <button
-              type="button"
-              onClick={() => setMenuOpen((o) => !o)}
-              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-              className="flex flex-col justify-center items-center w-9 h-9 gap-[5px] bg-transparent border border-[var(--border)] rounded-[var(--radius-sm)] cursor-pointer"
-            >
-              <span className={`block w-[18px] h-[2px] bg-[var(--ink-muted)] rounded transition-transform duration-200 ${menuOpen ? 'translate-y-[7px] rotate-45' : ''}`} />
-              <span className={`block w-[18px] h-[2px] bg-[var(--ink-muted)] rounded transition-opacity duration-200 ${menuOpen ? 'opacity-0' : ''}`} />
-              <span className={`block w-[18px] h-[2px] bg-[var(--ink-muted)] rounded transition-transform duration-200 ${menuOpen ? '-translate-y-[7px] -rotate-45' : ''}`} />
-            </button>
-            {menuOpen && (
-              <nav className="absolute right-0 top-11 z-50 card grid gap-2 min-w-[160px] py-3 px-4">
-                <Link
-                  href="/feedback"
-                  onClick={() => setMenuOpen(false)}
-                  className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors text-[0.88rem] py-1"
-                >
-                  Feedback
-                </Link>
-                <Link
-                  href="/transparency"
-                  onClick={() => setMenuOpen(false)}
-                  className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors text-[0.88rem] py-1"
-                >
-                  Transparency
-                </Link>
-                <Link
-                  href="/privacy"
-                  onClick={() => setMenuOpen(false)}
-                  className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors text-[0.88rem] py-1"
-                >
-                  Privacy
-                </Link>
-              </nav>
-            )}
-          </div>
-
-          <ThemeToggle active={theme} onChange={setTheme} />
-          <UserMenu />
-        </div>
-      </header>
+      <SiteHeader />
 
       <main>
         <PrayerCounter count={prayerCount} />
@@ -492,8 +375,8 @@ export default function HomePage() {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="mt-10 pt-6 border-t border-[var(--border)] text-[0.82rem] text-[var(--ink-subtle)]">
+      {/* Scripture attribution */}
+      <div className="mt-10 pt-6 border-t border-[var(--border)] text-[0.82rem] text-[var(--ink-subtle)]">
         <div className="grid gap-4 max-w-[42rem] mx-auto">
           <div>
             <p className="text-[0.72rem] font-bold tracking-[0.08em] uppercase text-seateal mb-1">
@@ -527,41 +410,9 @@ export default function HomePage() {
             </p>
           </div>
         </div>
-        <p className="text-center mt-5 text-[0.8rem]">
-          Responses are generated with care and are not a substitute for pastoral
-          care or professional help.
-        </p>
-        <div className="flex justify-center gap-4 mt-3 text-[0.78rem]">
-          <Link
-            href="/transparency"
-            className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors"
-          >
-            Transparency
-          </Link>
-          <Link
-            href="/privacy"
-            className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors"
-          >
-            Privacy Policy
-          </Link>
-          <Link
-            href="/feedback"
-            onClick={() => {
-              if (result) {
-                sessionStorage.setItem(
-                  'gofish_feedback_context',
-                  JSON.stringify({ text, bibleVersion, result }),
-                );
-              } else {
-                sessionStorage.removeItem('gofish_feedback_context');
-              }
-            }}
-            className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors"
-          >
-            Feedback
-          </Link>
-        </div>
-      </footer>
+      </div>
+
+      <SiteFooter />
     </div>
   );
 }

@@ -2,6 +2,8 @@
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import SiteHeader from '@/components/layout/site-header';
+import SiteFooter from '@/components/layout/site-footer';
 import {
   DENOMINATIONS,
   FAITH_STAGES,
@@ -90,6 +92,8 @@ export default function ProfileSetupPage() {
 
   return (
     <div className="max-w-[560px] mx-auto px-5 pt-12 pb-16">
+      <SiteHeader />
+
       <h1 className="font-serif font-semibold text-3xl mt-6 mb-2 tracking-tight">
         Welcome to GoFish
       </h1>
@@ -338,6 +342,8 @@ export default function ProfileSetupPage() {
           </button>
         </div>
       </form>
+
+      <SiteFooter />
     </div>
   );
 }

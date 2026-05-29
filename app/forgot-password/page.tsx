@@ -2,6 +2,8 @@
 
 import { useState, FormEvent } from 'react';
 import Link from 'next/link';
+import SiteHeader from '@/components/layout/site-header';
+import SiteFooter from '@/components/layout/site-footer';
 
 const inputClass =
   'w-full font-[inherit] text-[var(--ink)] bg-[rgba(13,43,69,0.55)] border border-[var(--border)] rounded-[var(--radius-sm)] px-4 py-[0.85rem] transition-[border-color,box-shadow] duration-150 focus:outline-none focus:border-oceanblue focus:shadow-[0_0_0_3px_rgba(59,167,225,0.22)] placeholder:text-[var(--ink-subtle)]';
@@ -40,12 +42,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="max-w-[440px] mx-auto px-5 pt-12 pb-16">
-      <Link
-        href="/login"
-        className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors text-[0.85rem]"
-      >
-        &larr; Back to sign in
-      </Link>
+      <SiteHeader />
 
       <h1 className="font-serif font-semibold text-3xl mt-6 mb-2 tracking-tight">
         Reset password
@@ -105,6 +102,8 @@ export default function ForgotPasswordPage() {
           </button>
         </form>
       )}
+
+      <SiteFooter />
     </div>
   );
 }

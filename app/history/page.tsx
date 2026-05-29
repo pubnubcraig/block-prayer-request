@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback, Fragment } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import SiteHeader from '@/components/layout/site-header';
+import SiteFooter from '@/components/layout/site-footer';
 
 type HistoryEntry = {
   id: string;
@@ -98,12 +100,7 @@ export default function HistoryPage() {
 
   return (
     <div className="max-w-[960px] mx-auto px-5 pt-8 pb-16">
-      <Link
-        href="/"
-        className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors text-[0.85rem]"
-      >
-        &larr; Back to GoFish
-      </Link>
+      <SiteHeader />
 
       <div className="flex items-end justify-between gap-4 mt-6 mb-6 max-[600px]:flex-col max-[600px]:items-start">
         <h1 className="font-serif font-semibold text-3xl tracking-tight m-0">
@@ -363,6 +360,8 @@ export default function HistoryPage() {
           </p>
         </div>
       )}
+
+      <SiteFooter />
     </div>
   );
 }

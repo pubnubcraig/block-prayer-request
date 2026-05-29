@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import SiteHeader from '@/components/layout/site-header';
+import SiteFooter from '@/components/layout/site-footer';
 
 export const metadata = {
   title: 'Terms of Service — GoFish',
@@ -8,12 +10,7 @@ export const metadata = {
 export default function TermsPage() {
   return (
     <div className="max-w-[720px] mx-auto px-5 pt-8 pb-16">
-      <Link
-        href="/"
-        className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seafoam hover:border-seafoam transition-colors text-[0.85rem]"
-      >
-        &larr; Back to GoFish
-      </Link>
+      <SiteHeader />
 
       <h1 className="font-serif font-semibold text-3xl mt-6 mb-2 tracking-tight">
         Terms of Service
@@ -143,9 +140,7 @@ export default function TermsPage() {
         </p>
       </section>
 
-      <footer className="text-center text-[0.8rem] text-[var(--ink-subtle)] mt-10 pt-6 border-t border-[var(--border)]">
-        <p>Last updated: May 2026.</p>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

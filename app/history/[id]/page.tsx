@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
+import SiteHeader from '@/components/layout/site-header';
+import SiteFooter from '@/components/layout/site-footer';
 
 type HistoryEntry = {
   id: string;
@@ -85,30 +86,21 @@ export default function HistoryDetailPage() {
   if (notFound || !entry) {
     return (
       <div className="max-w-[720px] mx-auto px-5 pt-8 pb-16">
-        <Link
-          href="/history"
-          className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors text-[0.85rem]"
-        >
-          &larr; Back to history
-        </Link>
+        <SiteHeader />
         <h1 className="font-serif font-semibold text-3xl mt-6 mb-2 tracking-tight">
           Prayer not found
         </h1>
         <p className="text-[var(--ink-muted)] text-[0.95rem]">
           This prayer may have been deleted or does not exist.
         </p>
+        <SiteFooter />
       </div>
     );
   }
 
   return (
     <div className="max-w-[720px] mx-auto px-5 pt-8 pb-16">
-      <Link
-        href="/history"
-        className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors text-[0.85rem]"
-      >
-        &larr; Back to history
-      </Link>
+      <SiteHeader />
 
       {/* Header */}
       <div className="flex items-end justify-between gap-4 mt-6 mb-6">
@@ -189,6 +181,8 @@ export default function HistoryDetailPage() {
           </article>
         )}
       </div>
+
+      <SiteFooter />
     </div>
   );
 }
