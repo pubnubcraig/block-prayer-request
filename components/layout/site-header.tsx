@@ -64,17 +64,8 @@ export default function SiteHeader() {
       <div className="flex items-center gap-5">
         {/* Desktop nav */}
         <nav className="hidden min-[521px]:flex items-center gap-4 text-[0.85rem]">
-          <Link href="/feedback" className={navLinkClass}>
-            Feedback
-          </Link>
-          <Link href="/transparency" className={navLinkClass}>
-            Transparency
-          </Link>
-          <Link href="/privacy" className={navLinkClass}>
-            Privacy
-          </Link>
-          <a href="https://www.facebook.com/gofishlife" target="_blank" rel="noopener noreferrer" className={navLinkClass}>
-            Facebook
+          <a href="https://www.facebook.com/gofishlife" target="_blank" rel="noopener noreferrer" className="text-oceanblue hover:text-seateal transition-colors" aria-label="Facebook">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
           </a>
         </nav>
 
@@ -92,34 +83,15 @@ export default function SiteHeader() {
           </button>
           {menuOpen && (
             <nav className="absolute right-0 top-11 z-50 card grid gap-2 min-w-[160px] py-3 px-4">
-              <Link
-                href="/feedback"
-                onClick={() => setMenuOpen(false)}
-                className={`${navLinkClass} text-[0.88rem] py-1`}
-              >
-                Feedback
-              </Link>
-              <Link
-                href="/transparency"
-                onClick={() => setMenuOpen(false)}
-                className={`${navLinkClass} text-[0.88rem] py-1`}
-              >
-                Transparency
-              </Link>
-              <Link
-                href="/privacy"
-                onClick={() => setMenuOpen(false)}
-                className={`${navLinkClass} text-[0.88rem] py-1`}
-              >
-                Privacy
-              </Link>
               <a
                 href="https://www.facebook.com/gofishlife"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setMenuOpen(false)}
-                className={`${navLinkClass} text-[0.88rem] py-1`}
+                className="text-oceanblue hover:text-seateal transition-colors flex items-center gap-2 py-1"
+                aria-label="Facebook"
               >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                 Facebook
               </a>
             </nav>
