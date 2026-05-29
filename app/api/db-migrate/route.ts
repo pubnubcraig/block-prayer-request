@@ -117,6 +117,29 @@ export async function POST(req: NextRequest) {
       deleted_at TIMESTAMP
     )`;
 
+    // Facebook prayer post tables
+    await sql`CREATE TABLE IF NOT EXISTS prayer_topics (
+      id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+      topic VARCHAR(255) NOT NULL,
+      category VARCHAR(100) NOT NULL,
+      verse_reference VARCHAR(100) NOT NULL,
+      verse_text TEXT NOT NULL,
+      active BOOLEAN NOT NULL DEFAULT true,
+      last_used_at TIMESTAMP,
+      created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    )`;
+
+    await sql`CREATE TABLE IF NOT EXISTS facebook_post_log (
+      id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+      topic_id UUID REFERENCES prayer_topics(id),
+      post_content TEXT,
+      facebook_post_id VARCHAR(255),
+      posted_at TIMESTAMP,
+      status VARCHAR(20) NOT NULL,
+      error_message TEXT,
+      created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    )`;
+
     // List tables to confirm
     const tables = await sql`SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name`;
 

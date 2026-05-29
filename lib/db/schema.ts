@@ -8,6 +8,7 @@ import {
   text,
   uuid,
   date,
+  boolean,
   primaryKey,
 } from 'drizzle-orm/pg-core';
 
@@ -135,4 +136,28 @@ export const prayerHistory = pgTable('prayer_history', {
   bibleVersionUsed: varchar('bible_version_used', { length: 50 }),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   deletedAt: timestamp('deleted_at', { mode: 'date' }),
+});
+
+// ── Facebook prayer posts ──────────────────────────────────────────
+
+export const prayerTopics = pgTable('prayer_topics', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  topic: varchar('topic', { length: 255 }).notNull(),
+  category: varchar('category', { length: 100 }).notNull(),
+  verseReference: varchar('verse_reference', { length: 100 }).notNull(),
+  verseText: text('verse_text').notNull(),
+  active: boolean('active').notNull().default(true),
+  lastUsedAt: timestamp('last_used_at'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const facebookPostLog = pgTable('facebook_post_log', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  topicId: uuid('topic_id').references(() => prayerTopics.id),
+  postContent: text('post_content'),
+  facebookPostId: varchar('facebook_post_id', { length: 255 }),
+  postedAt: timestamp('posted_at'),
+  status: varchar('status', { length: 20 }).notNull(),
+  errorMessage: text('error_message'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
 });
