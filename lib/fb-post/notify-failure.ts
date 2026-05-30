@@ -1,23 +1,19 @@
-import { Resend } from 'resend';
+import { sendEmail } from '@/lib/email';
 
 export async function notifyPostFailure(
   error: string,
   context: Record<string, unknown>,
 ): Promise<void> {
-  const resendKey = process.env.RESEND_API_KEY;
   const adminEmail = process.env.ADMIN_EMAIL;
 
-  if (!resendKey || !adminEmail) {
+  if (!adminEmail) {
     console.warn(
-      '[fb-post] RESEND_API_KEY or ADMIN_EMAIL not set — skipping failure notification',
+      '[fb-post] ADMIN_EMAIL not set — skipping failure notification',
     );
     return;
   }
 
-  const resend = new Resend(resendKey);
-
-  await resend.emails.send({
-    from: process.env.EMAIL_FROM || 'GoFish <noreply@gofish.app>',
+  await sendEmail({
     to: adminEmail,
     subject: 'GoFish: Daily Facebook Post Failed',
     html: `

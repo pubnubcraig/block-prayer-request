@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Redis } from '@upstash/redis';
-import { Resend } from 'resend';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { getDb } from '@/lib/db';
 import { users, userProfiles, verificationTokens } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
+import { sendEmail } from '@/lib/email';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_MIN_LENGTH = 8;
@@ -135,34 +135,25 @@ export async function POST(request: NextRequest) {
     });
 
     // Send verification email
-    const resendKey = process.env.RESEND_API_KEY;
-    if (resendKey) {
-      const resend = new Resend(resendKey);
-      const baseUrl =
-        process.env.AUTH_URL ||
-        process.env.NEXTAUTH_URL ||
-        (process.env.VERCEL_PROJECT_PRODUCTION_URL
-          ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-          : 'http://localhost:3000');
-      const verifyUrl = `${baseUrl}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(email.toLowerCase())}`;
+    const baseUrl =
+      process.env.AUTH_URL ||
+      process.env.NEXTAUTH_URL ||
+      (process.env.VERCEL_PROJECT_PRODUCTION_URL
+        ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+        : 'http://localhost:3000');
+    const verifyUrl = `${baseUrl}/api/auth/verify-email?token=${token}&email=${encodeURIComponent(email.toLowerCase())}`;
 
-      await resend.emails.send({
-        from: process.env.EMAIL_FROM || 'GoFish <noreply@gofish.app>',
-        to: email.toLowerCase(),
-        subject: 'Verify your GoFish account',
-        html: `
-          <h2>Welcome to GoFish!</h2>
-          <p>Please verify your email address by clicking the link below:</p>
-          <p><a href="${verifyUrl}">Verify my email</a></p>
-          <p>This link expires in 24 hours.</p>
-          <p>If you didn't create an account, you can safely ignore this email.</p>
-        `,
-      });
-    } else {
-      console.warn(
-        '[signup] RESEND_API_KEY not set — skipping verification email',
-      );
-    }
+    await sendEmail({
+      to: email.toLowerCase(),
+      subject: 'Verify your GoFish account',
+      html: `
+        <h2>Welcome to GoFish!</h2>
+        <p>Please verify your email address by clicking the link below:</p>
+        <p><a href="${verifyUrl}">Verify my email</a></p>
+        <p>This link expires in 24 hours.</p>
+        <p>If you didn't create an account, you can safely ignore this email.</p>
+      `,
+    });
 
     return NextResponse.json({
       success: true,

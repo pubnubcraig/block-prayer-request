@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Resend } from 'resend';
 import crypto from 'crypto';
 import { getDb } from '@/lib/db';
 import { users, verificationTokens } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
+import { sendEmail } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   const db = getDb();
@@ -54,34 +54,25 @@ export async function POST(request: NextRequest) {
       expires,
     });
 
-    const resendKey = process.env.RESEND_API_KEY;
-    if (resendKey) {
-      const resend = new Resend(resendKey);
-      const baseUrl =
-        process.env.AUTH_URL ||
-        process.env.NEXTAUTH_URL ||
-        (process.env.VERCEL_PROJECT_PRODUCTION_URL
-          ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-          : 'http://localhost:3000');
-      const resetUrl = `${baseUrl}/reset-password?token=${token}&email=${encodeURIComponent(email.toLowerCase())}`;
+    const baseUrl =
+      process.env.AUTH_URL ||
+      process.env.NEXTAUTH_URL ||
+      (process.env.VERCEL_PROJECT_PRODUCTION_URL
+        ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+        : 'http://localhost:3000');
+    const resetUrl = `${baseUrl}/reset-password?token=${token}&email=${encodeURIComponent(email.toLowerCase())}`;
 
-      await resend.emails.send({
-        from: process.env.EMAIL_FROM || 'GoFish <noreply@gofish.app>',
-        to: email.toLowerCase(),
-        subject: 'Reset your GoFish password',
-        html: `
-          <h2>Password Reset</h2>
-          <p>You requested a password reset for your GoFish account.</p>
-          <p><a href="${resetUrl}">Reset my password</a></p>
-          <p>This link expires in 1 hour.</p>
-          <p>If you didn't request this, you can safely ignore this email.</p>
-        `,
-      });
-    } else {
-      console.warn(
-        '[forgot-password] RESEND_API_KEY not set — skipping reset email',
-      );
-    }
+    await sendEmail({
+      to: email.toLowerCase(),
+      subject: 'Reset your GoFish password',
+      html: `
+        <h2>Password Reset</h2>
+        <p>You requested a password reset for your GoFish account.</p>
+        <p><a href="${resetUrl}">Reset my password</a></p>
+        <p>This link expires in 1 hour.</p>
+        <p>If you didn't request this, you can safely ignore this email.</p>
+      `,
+    });
 
     return successResponse;
   } catch (err) {
