@@ -36,11 +36,6 @@ export default function ResultsSection({ result }: { result: PrayerResult | null
                 </span>
               )}
             </p>
-            {result.bible_version_fallback && result.bible_version_used && (
-              <p className="text-[0.82rem] text-[var(--ink-subtle)] mt-1 mb-0 italic">
-                {result.bible_version_used} was used because the requested version is not currently available through YouVersion.
-              </p>
-            )}
             <blockquote className="verse-text">
               {result.verse_content}
             </blockquote>

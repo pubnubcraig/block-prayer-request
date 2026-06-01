@@ -125,21 +125,10 @@ export default function ProfileSetupPage() {
           </div>
 
           <div>
-            <label htmlFor="bibleVersion" className={labelClass}>
-              Preferred Bible version
-            </label>
-            <select
-              id="bibleVersion"
-              value={bibleVersion}
-              onChange={(e) => setBibleVersion(e.target.value)}
-              className={selectClass}
-            >
-              {BIBLE_VERSIONS.map((v) => (
-                <option key={v} value={v}>
-                  {v}
-                </option>
-              ))}
-            </select>
+            <span className={labelClass}>Bible version</span>
+            <p className="text-[0.82rem] text-[var(--ink-subtle)] italic mt-1">
+              ASV (American Standard Version) — more options coming soon.
+            </p>
           </div>
 
           <div>

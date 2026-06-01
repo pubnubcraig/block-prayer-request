@@ -14,7 +14,7 @@ export default function PrayerFormSection({
   onPrayerCountIncrement: () => void;
 }) {
   const [text, setText] = useState('');
-  const [bibleVersion, setBibleVersion] = useState('NIV');
+  const [bibleVersion] = useState('ASV');
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('');
   const [isError, setIsError] = useState(false);
@@ -105,25 +105,9 @@ export default function PrayerFormSection({
           />
         </div>
 
-        <div className="mb-4">
-          <label
-            htmlFor="bible_version"
-            className="block font-semibold text-[0.82rem] tracking-wide uppercase text-seateal mb-2"
-          >
-            Bible version
-          </label>
-          <select
-            id="bible_version"
-            name="bible_version"
-            value={bibleVersion}
-            onChange={(e) => setBibleVersion(e.target.value)}
-          >
-            <option value="NIV">NIV - New International Version</option>
-            <option value="ASV">ASV - American Standard Version</option>
-            <option value="EASY">EASY - EasyEnglish Bible</option>
-            <option value="NASB">NASB - New American Standard Bible</option>
-          </select>
-        </div>
+        <p className="text-[0.78rem] text-[var(--ink-subtle)] italic mb-4">
+          Scripture passages use the American Standard Version (ASV). More version options coming soon.
+        </p>
 
         <div className="flex items-center gap-4 flex-wrap mt-1 max-[520px]:flex-col max-[520px]:items-stretch">
           <button
