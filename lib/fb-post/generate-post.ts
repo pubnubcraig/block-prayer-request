@@ -54,14 +54,23 @@ function composePost(parts: {
   verseReference: string;
   prayer: string;
   category: string;
+  usfm?: string;
 }): string {
+  const scriptureLines = [
+    `📖 ${toBold('Scripture')}`,
+    `"${parts.verseText}" — ${parts.verseReference}`,
+  ];
+  if (parts.usfm) {
+    scriptureLines.push(`Read on Bible.com: https://www.bible.com/bible/12/${parts.usfm}.ASV`);
+  }
+
   return [
     `🙏 ${toBold('The Daily Prayer')} 🙏`,
     '',
-    parts.interpretation,
+    ...scriptureLines,
     '',
-    `📖 ${toBold('Scripture')}`,
-    `"${parts.verseText}" — ${parts.verseReference}`,
+    `📝 ${toBold('Interpretation')}`,
+    parts.interpretation,
     '',
     `🙏 ${toBold('Prayer')}`,
     parts.prayer,
@@ -148,6 +157,7 @@ export async function generateFacebookPost(
     verseReference: bibleVerse,
     prayer: parsed.prayer.trim(),
     category: topic.category,
+    usfm: verseResult.selection.usfm,
   });
 
   return { content, tokensUsed: totalTokens };
