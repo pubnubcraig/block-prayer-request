@@ -3,6 +3,7 @@ import AuthSessionProvider from '@/components/providers/session-provider';
 import './globals.css';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://gofish.life'),
   title: 'GoFish.Life \u2014 Scripture-Based Prayer Responses',
   description:
     'Bring your concern and receive a Bible verse, faithful interpretation, practical guidance, and a prayer grounded in Scripture. Free, private, and always available.',
@@ -19,6 +20,7 @@ export const metadata: Metadata = {
     title: 'GoFish.Life \u2014 Scripture-Based Prayer Responses',
     description: "Bring your concern and receive hope from God's Word.",
     siteName: 'GoFish.Life',
+    url: 'https://gofish.life',
     type: 'website',
     images: [
       {
