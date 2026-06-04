@@ -20,6 +20,20 @@ export const metadata: Metadata = {
     description: "Bring your concern and receive hope from God's Word.",
     siteName: 'GoFish.Life',
     type: 'website',
+    images: [
+      {
+        url: '/gofish-og.png',
+        width: 1731,
+        height: 909,
+        alt: 'GoFish.Life — Scripture-Based Prayer Responses',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'GoFish.Life — Scripture-Based Prayer Responses',
+    description: "Bring your concern and receive hope from God's Word.",
+    images: ['/gofish-og.png'],
   },
 };
 
