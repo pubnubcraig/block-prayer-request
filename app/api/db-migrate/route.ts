@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+import postgres from 'postgres';
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
@@ -10,15 +10,14 @@ export async function POST(req: NextRequest) {
   }
 
   const url =
-    process.env.NEON_DATABASE_URL ||
-    process.env.DATABASE_URL ||
-    process.env.POSTGRES_URL;
+    process.env.SUPABASE_DATABASE_URL ||
+    process.env.DATABASE_URL;
   if (!url) {
     return NextResponse.json({ error: 'DATABASE_URL not set' }, { status: 500 });
   }
 
   try {
-    const sql = neon(url);
+    const sql = postgres(url, { prepare: false });
 
     // Original tables
     await sql`CREATE TABLE IF NOT EXISTS prayer_usage_metrics (
@@ -147,11 +146,9 @@ export async function POST(req: NextRequest) {
       ok: true,
       message: 'All tables created successfully',
       tables: tables.map((t: Record<string, string>) => t.table_name),
-      db_url_source: process.env.NEON_DATABASE_URL
-        ? 'NEON_DATABASE_URL'
-        : process.env.DATABASE_URL
-          ? 'DATABASE_URL'
-          : 'POSTGRES_URL',
+      db_url_source: process.env.SUPABASE_DATABASE_URL
+        ? 'SUPABASE_DATABASE_URL'
+        : 'DATABASE_URL',
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
