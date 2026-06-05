@@ -1,5 +1,11 @@
 import type { Metadata, Viewport } from 'next';
 import AuthSessionProvider from '@/components/providers/session-provider';
+import {
+  generateOrganizationSchema,
+  generateWebsiteSchema,
+  generateWebApplicationSchema,
+  wrapInGraph,
+} from '@/lib/utils/structured-data';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -51,6 +57,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(
+              wrapInGraph([
+                generateOrganizationSchema(),
+                generateWebsiteSchema(),
+                generateWebApplicationSchema(),
+              ]),
+            ),
+          }}
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
