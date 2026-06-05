@@ -10,6 +10,7 @@ pip.conf
 .npmrc
 .vercel
 .next
+supabase/.temp
 next-env.d.ts
 drizzle/
 .env*
