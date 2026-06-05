@@ -9,6 +9,7 @@ export type PrayerResult = {
   bible_version_fallback?: boolean;
   verse_copyright?: string;
   crisis_resources?: boolean;
+  saveStatus?: 'auto-saved' | 'save-available' | 'save-disabled' | 'unauthenticated';
 };
 
 export function escapeHtml(str: string) {

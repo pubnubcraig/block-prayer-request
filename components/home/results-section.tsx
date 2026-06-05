@@ -1,7 +1,103 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
 import { PrayerResult, escapeHtml } from '@/lib/types';
 
-export default function ResultsSection({ result }: { result: PrayerResult | null }) {
+export default function ResultsSection({
+  result,
+  requestText,
+}: {
+  result: PrayerResult | null;
+  requestText: string;
+}) {
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState('');
+
   if (!result) return null;
+
+  async function handleSave() {
+    setSaving(true);
+    setSaveError('');
+    try {
+      const res = await fetch('/api/history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          requestText,
+          bibleVerse: result!.bible_verse,
+          verseContent: result!.verse_content,
+          interpretation: result!.verse_interpretation,
+          advice: result!.advice,
+          prayer: result!.prayer,
+          bibleVersionUsed: result!.bible_version_used,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to save');
+      }
+      setSaved(true);
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Failed to save');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function renderSaveAction() {
+    const status = result?.saveStatus;
+
+    if (status === 'auto-saved') {
+      return (
+        <span className="text-[0.88rem] text-[var(--ink-subtle)] italic">
+          Saved to your prayer history
+        </span>
+      );
+    }
+
+    if (status === 'save-available') {
+      if (saved) {
+        return (
+          <span className="text-[0.88rem] text-seateal font-medium">
+            Saved to your prayer history
+          </span>
+        );
+      }
+      return (
+        <>
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={saving}
+            className="btn-submit text-[0.88rem] px-4 py-2"
+          >
+            {saving ? 'Saving\u2026' : 'Save this prayer'}
+          </button>
+          {saveError && (
+            <span className="text-[0.82rem] text-[#ff9a88]">{saveError}</span>
+          )}
+        </>
+      );
+    }
+
+    if (status === 'unauthenticated') {
+      return (
+        <Link
+          href="/login"
+          className="text-[0.88rem] text-seateal font-medium hover:underline"
+        >
+          Sign in to save this prayer
+        </Link>
+      );
+    }
+
+    // 'save-disabled' or undefined: show nothing
+    return null;
+  }
+
+  const saveAction = renderSaveAction();
 
   return (
     <>
@@ -14,6 +110,12 @@ export default function ResultsSection({ result }: { result: PrayerResult | null
             Generated from Scripture and pastoral care principles
           </p>
         </div>
+
+        {saveAction && (
+          <div className="flex items-center gap-3 mb-4">
+            {saveAction}
+          </div>
+        )}
 
         <div className="grid grid-cols-2 gap-4 max-[900px]:grid-cols-1">
           {/* Scripture card */}

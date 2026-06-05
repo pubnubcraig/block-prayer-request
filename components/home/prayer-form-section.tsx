@@ -10,7 +10,7 @@ export default function PrayerFormSection({
   onPrayerCountIncrement,
 }: {
   prefillText: string;
-  onResult: (result: PrayerResult, isCrisis: boolean) => void;
+  onResult: (result: PrayerResult, isCrisis: boolean, requestText: string) => void;
   onPrayerCountIncrement: () => void;
 }) {
   const [text, setText] = useState('');
@@ -52,7 +52,7 @@ export default function PrayerFormSection({
       }
 
       onPrayerCountIncrement();
-      onResult(data, !!data.crisis_resources);
+      onResult(data, !!data.crisis_resources, trimmed);
       setStatus('Response ready.');
       setIsError(false);
 

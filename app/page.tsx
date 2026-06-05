@@ -24,6 +24,8 @@ export default function HomePage() {
   const [result, setResult] = useState<PrayerResult | null>(null);
   const [showCrisis, setShowCrisis] = useState(false);
   const [prefillText, setPrefillText] = useState('');
+  const [requestText, setRequestText] = useState('');
+  const [resultKey, setResultKey] = useState(0);
 
   useEffect(() => {
     fetch('/api/stats')
@@ -32,9 +34,11 @@ export default function HomePage() {
       .catch(() => {});
   }, []);
 
-  const handleResult = useCallback((newResult: PrayerResult, isCrisis: boolean) => {
+  const handleResult = useCallback((newResult: PrayerResult, isCrisis: boolean, text: string) => {
     setResult(newResult);
     setShowCrisis(isCrisis);
+    setRequestText(text);
+    setResultKey((k) => k + 1);
   }, []);
 
   const handleTopicSelect = useCallback((prefill: string) => {
@@ -61,7 +65,7 @@ export default function HomePage() {
         </div>
 
         <CrisisBanner visible={showCrisis} />
-        <ResultsSection result={result} />
+        <ResultsSection key={resultKey} result={result} requestText={requestText} />
 
         <HowItWorksSection />
         <WhySection />

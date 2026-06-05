@@ -108,7 +108,8 @@ export async function POST(req: NextRequest) {
     // Strip internal fields before sending to client
     const { tokensUsed, costCents, moderationResult, ...clientResult } = result;
 
-    // Save to prayer history (fire-and-forget)
+    // Determine save status and auto-save for save-all mode
+    let saveStatus: 'auto-saved' | 'save-available' | 'save-disabled' | 'unauthenticated' = 'unauthenticated';
     try {
       const session = await auth();
       if (session?.user?.id) {
@@ -119,7 +120,7 @@ export async function POST(req: NextRequest) {
             columns: { prayerHistoryMode: true },
           });
           const mode = profile?.prayerHistoryMode ?? 'save-per-request';
-          if (mode === 'save-all' || mode === 'save-per-request') {
+          if (mode === 'save-all') {
             await db.insert(prayerHistory).values({
               userId: session.user.id,
               requestText: text,
@@ -130,6 +131,11 @@ export async function POST(req: NextRequest) {
               prayer: result.prayer,
               bibleVersionUsed: result.bible_version_used ?? null,
             });
+            saveStatus = 'auto-saved';
+          } else if (mode === 'save-per-request') {
+            saveStatus = 'save-available';
+          } else {
+            saveStatus = 'save-disabled';
           }
         }
       }
@@ -137,7 +143,7 @@ export async function POST(req: NextRequest) {
       console.error('[prayer] Failed to save history:', e instanceof Error ? e.message : e);
     }
 
-    return NextResponse.json(clientResult);
+    return NextResponse.json({ ...clientResult, saveStatus });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: message }, { status: 500 });
