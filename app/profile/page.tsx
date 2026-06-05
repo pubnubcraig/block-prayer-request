@@ -70,7 +70,10 @@ export default function ProfilePage() {
     async function loadProfile() {
       try {
         const res = await fetch('/api/profile');
-        if (!res.ok) return;
+        if (!res.ok) {
+          setError('Unable to load profile. Please try again later.');
+          return;
+        }
         const data = await res.json();
         if (data.profile) {
           setFavoriteVerse(data.profile.favoriteVerse || '');
@@ -89,7 +92,7 @@ export default function ProfilePage() {
           );
         }
       } catch {
-        // Silently fail — user sees empty form
+        setError('Unable to load profile. Please try again later.');
       } finally {
         setLoadingProfile(false);
       }
