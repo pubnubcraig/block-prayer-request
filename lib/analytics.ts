@@ -1,4 +1,4 @@
-import { neon } from '@neondatabase/serverless';
+import postgres from 'postgres';
 
 type PrayerMetrics = {
   bibleVersion: string;
@@ -10,7 +10,7 @@ type PrayerMetrics = {
 let tablesReady = false;
 
 function getDbUrl(): string | undefined {
-  return process.env.DATABASE_URL || process.env.POSTGRES_URL || undefined;
+  return process.env.SUPABASE_DATABASE_URL || process.env.DATABASE_URL || undefined;
 }
 
 export async function logPrayerMetrics(metrics: PrayerMetrics): Promise<void> {
@@ -28,7 +28,7 @@ export async function logPrayerMetrics(metrics: PrayerMetrics): Promise<void> {
   const url = getDbUrl();
   if (!url) return;
 
-  const sql = neon(url);
+  const sql = postgres(url, { prepare: false });
 
   if (!tablesReady) {
     await sql`CREATE TABLE IF NOT EXISTS prayer_usage_metrics (

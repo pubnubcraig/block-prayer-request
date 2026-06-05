@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { neon } from '@neondatabase/serverless';
+import postgres from 'postgres';
 
 type ModerationLogEntry = {
   category: string;
@@ -15,7 +15,7 @@ function hashIp(ip: string): string {
 let tableReady = false;
 
 function getDbUrl(): string | undefined {
-  return process.env.DATABASE_URL || process.env.POSTGRES_URL || undefined;
+  return process.env.SUPABASE_DATABASE_URL || process.env.DATABASE_URL || undefined;
 }
 
 export async function logModeration(entry: ModerationLogEntry): Promise<void> {
@@ -35,7 +35,7 @@ export async function logModeration(entry: ModerationLogEntry): Promise<void> {
   const url = getDbUrl();
   if (!url) return;
 
-  const sql = neon(url);
+  const sql = postgres(url, { prepare: false });
 
   if (!tableReady) {
     await sql`CREATE TABLE IF NOT EXISTS moderation_logs (

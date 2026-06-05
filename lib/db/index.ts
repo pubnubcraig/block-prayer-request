@@ -1,5 +1,5 @@
-import { drizzle } from 'drizzle-orm/neon-http';
-import { neon } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
 import * as schema from './schema';
 
 /**
@@ -7,12 +7,9 @@ import * as schema from './schema';
  * This allows the app to run without a database during early phases.
  */
 export function getDb() {
-  // NEON_DATABASE_URL takes priority — it always points to the main branch
-  // where auth tables exist. The Neon integration may inject DATABASE_URL
-  // pointing to per-branch databases that lack the schema.
-  const url = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL || process.env.POSTGRES_URL;
+  const url = process.env.SUPABASE_DATABASE_URL || process.env.DATABASE_URL;
   if (!url) return null;
 
-  const sql = neon(url);
-  return drizzle(sql, { schema });
+  const client = postgres(url, { prepare: false });
+  return drizzle(client, { schema });
 }
