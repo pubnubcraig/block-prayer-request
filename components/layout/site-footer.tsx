@@ -48,6 +48,16 @@ export default function SiteFooter() {
                 Feedback
               </Link>
             </li>
+            <li>
+              <a
+                href="https://gofishlife.instatus.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={linkClass}
+              >
+                System Status
+              </a>
+            </li>
           </ul>
         </div>
 
