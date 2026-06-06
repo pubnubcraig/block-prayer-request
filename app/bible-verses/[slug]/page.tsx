@@ -64,7 +64,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const topic = await findTopicBySlug(slug);
   if (!topic) return {};
 
-  const title = `Bible Verses About ${topic.topic} — Scripture & Guidance | GoFish.Life`;
+  const fullTitle = `Bible Verses About ${topic.topic} — Scripture & Guidance | GoFish.Life`;
+  const title = fullTitle.length > 60
+    ? `Bible Verses About ${topic.topic} | GoFish.Life`
+    : fullTitle;
   const description = `Read ${topic.verseReference} and other Bible verses about ${topic.topic.toLowerCase()}. Find Scripture-based encouragement and submit a personalized prayer request.`;
 
   return {
@@ -111,6 +114,7 @@ export default async function BibleVerseTopicPage({ params }: Props) {
       'scripture',
       topic.category.toLowerCase(),
     ],
+    about: [topic.topic, topic.category, 'Bible', 'Scripture'],
   });
 
   const faqItems = [

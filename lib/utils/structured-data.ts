@@ -94,6 +94,7 @@ export function generateArticleSchema(options: {
   datePublished?: string;
   section?: string;
   keywords?: string[];
+  about?: string[];
 }) {
   return {
     '@type': 'Article',
@@ -106,6 +107,12 @@ export function generateArticleSchema(options: {
     ...(options.datePublished && { datePublished: options.datePublished }),
     ...(options.section && { articleSection: options.section }),
     ...(options.keywords && { keywords: options.keywords }),
+    ...(options.about && {
+      about: options.about.map((term) => ({
+        '@type': 'Thing',
+        name: term,
+      })),
+    }),
   };
 }
 

@@ -65,7 +65,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const topic = await findTopicBySlug(slug);
   if (!topic) return {};
 
-  const title = `Prayer for ${topic.topic} — Scripture-Based Prayer & Guidance | GoFish.Life`;
+  const fullTitle = `Prayer for ${topic.topic} — Scripture-Based Prayer & Guidance | GoFish.Life`;
+  const title = fullTitle.length > 60
+    ? `Prayer for ${topic.topic} | GoFish.Life`
+    : fullTitle;
   const description = `Find a Scripture-based prayer for ${topic.topic.toLowerCase()}. Read ${topic.verseReference} and receive biblical guidance and a personalized prayer.`;
 
   return {
@@ -109,6 +112,7 @@ export default async function PrayerTopicPage({ params }: Props) {
       'scripture prayer',
       topic.category.toLowerCase(),
     ],
+    about: [topic.topic, topic.category, 'Prayer', 'Scripture', 'Christian Living'],
   });
 
   const faqItems = [
