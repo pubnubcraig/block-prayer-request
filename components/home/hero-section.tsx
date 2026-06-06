@@ -31,7 +31,7 @@ export default function HeroSection({
 
       <PrayerCounter count={prayerCount} />
 
-      <p className="inline-flex items-center gap-2 text-[0.8rem] font-semibold tracking-[0.06em] uppercase text-coral mb-4 before:content-[''] before:w-7 before:h-0.5 before:bg-gradient-to-r before:from-coral before:to-seafoam before:rounded">
+      <p className="text-[0.8rem] font-semibold tracking-[0.06em] uppercase text-coral mb-4">
         A moment with God
       </p>
 
