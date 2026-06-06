@@ -27,10 +27,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   if (!db) return staticPages;
 
   const topics = await db
-    .select({ topic: prayerTopics.topic })
+    .select({ topic: prayerTopics.topic, category: prayerTopics.category })
     .from(prayerTopics)
     .where(eq(prayerTopics.active, true));
 
+  // Category pages
+  const categories = Array.from(new Set(topics.map((t) => t.category))).sort();
+  const categoryPages: MetadataRoute.Sitemap = categories.flatMap((c) => {
+    const catSlug = slugify(c);
+    return [
+      {
+        url: `${BASE_URL}/prayers/category/${catSlug}`,
+        changeFrequency: 'weekly' as const,
+        priority: 0.85,
+      },
+      {
+        url: `${BASE_URL}/bible-verses/category/${catSlug}`,
+        changeFrequency: 'weekly' as const,
+        priority: 0.85,
+      },
+    ];
+  });
+
+  // Individual topic pages
   const topicPages: MetadataRoute.Sitemap = topics.flatMap((t) => {
     const slug = slugify(t.topic);
     return [
@@ -47,5 +66,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ];
   });
 
-  return [...staticPages, ...topicPages];
+  return [...staticPages, ...categoryPages, ...topicPages];
 }

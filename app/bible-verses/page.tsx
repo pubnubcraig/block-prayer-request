@@ -84,8 +84,13 @@ export default async function BibleVersesIndexPage() {
 
       {sortedCategories.map((category) => (
         <section key={category} className="mb-10">
-          <h2 className="text-lg font-bold mb-4 tracking-tight text-seateal">
-            {category}
+          <h2 className="text-lg font-bold mb-4 tracking-tight">
+            <Link
+              href={`/bible-verses/category/${slugify(category)}`}
+              className="text-seateal no-underline hover:text-oceanblue transition-colors"
+            >
+              {category} &rarr;
+            </Link>
           </h2>
           <div className="grid grid-cols-4 gap-3 max-[900px]:grid-cols-3 max-[520px]:grid-cols-2">
             {categorized[category].map((topic) => (
