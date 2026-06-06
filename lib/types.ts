@@ -12,6 +12,16 @@ export type PrayerResult = {
   saveStatus?: 'auto-saved' | 'save-available' | 'save-disabled' | 'unauthenticated';
 };
 
+export type JournalEntry = {
+  id: string;
+  prayerId: string;
+  userId: string;
+  entryText: string;
+  entryType: 'journal' | 'answered';
+  createdAt: string;
+  updatedAt: string;
+};
+
 export function escapeHtml(str: string) {
   return str
     .replaceAll('&', '&amp;')

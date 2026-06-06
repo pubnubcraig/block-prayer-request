@@ -10,6 +10,7 @@ import {
   date,
   boolean,
   primaryKey,
+  index,
 } from 'drizzle-orm/pg-core';
 
 // ── Existing tables ─────────────────────────────────────────────────
@@ -134,9 +135,34 @@ export const prayerHistory = pgTable('prayer_history', {
   advice: text('advice'),
   prayer: text('prayer'),
   bibleVersionUsed: varchar('bible_version_used', { length: 50 }),
+  status: varchar('status', { length: 20 }).default('active'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   deletedAt: timestamp('deleted_at', { mode: 'date' }),
 });
+
+// ── Prayer journal entries ─────────────────────────────────────────
+
+export const prayerJournalEntries = pgTable(
+  'prayer_journal_entries',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    prayerId: uuid('prayer_id')
+      .notNull()
+      .references(() => prayerHistory.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    entryText: text('entry_text').notNull(),
+    entryType: varchar('entry_type', { length: 20 }).notNull().default('journal'),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  (t) => [
+    index('idx_journal_prayer_id').on(t.prayerId),
+    index('idx_journal_user_id').on(t.userId),
+    index('idx_journal_prayer_created').on(t.prayerId, t.createdAt),
+  ],
+);
 
 // ── Facebook prayer posts ──────────────────────────────────────────
 

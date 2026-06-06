@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import SiteHeader from '@/components/layout/site-header';
 import SiteFooter from '@/components/layout/site-footer';
+import JournalSection from '@/components/prayer-journal/journal-section';
 
 type HistoryEntry = {
   id: string;
@@ -14,6 +15,7 @@ type HistoryEntry = {
   advice: string | null;
   prayer: string | null;
   bibleVersionUsed: string | null;
+  status: string | null;
   createdAt: string;
 };
 
@@ -104,9 +106,16 @@ export default function HistoryDetailPage() {
 
       {/* Header */}
       <div className="flex items-end justify-between gap-4 mt-6 mb-6">
-        <p className="text-[var(--ink-subtle)] text-[0.88rem] m-0">
-          {formatFullDate(entry.createdAt)}
-        </p>
+        <div className="flex items-center gap-3">
+          <p className="text-[var(--ink-subtle)] text-[0.88rem] m-0">
+            {formatFullDate(entry.createdAt)}
+          </p>
+          {entry.status === 'answered' && (
+            <span className="inline-flex items-center gap-1.5 text-[0.72rem] font-bold tracking-[0.08em] uppercase text-coral before:content-[''] before:w-1.5 before:h-1.5 before:rounded-full before:bg-coral">
+              Answered
+            </span>
+          )}
+        </div>
         <button
           type="button"
           onClick={handleDelete}
@@ -181,6 +190,14 @@ export default function HistoryDetailPage() {
           </article>
         )}
       </div>
+
+      <JournalSection
+        prayerId={entry.id}
+        prayerStatus={entry.status}
+        onStatusChange={(status) =>
+          setEntry((prev) => (prev ? { ...prev, status } : prev))
+        }
+      />
 
       <SiteFooter />
     </div>

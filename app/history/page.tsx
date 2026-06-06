@@ -15,6 +15,7 @@ type HistoryEntry = {
   advice: string | null;
   prayer: string | null;
   bibleVersionUsed: string | null;
+  status: string | null;
   createdAt: string;
 };
 
@@ -177,7 +178,12 @@ export default function HistoryPage() {
                   className="border-b border-[var(--border)] hover:bg-[var(--surface)] transition-colors"
                 >
                   <td className="py-3 pr-4 whitespace-nowrap text-[var(--ink-subtle)]">
-                    {formatDate(item.createdAt)}
+                    <span>{formatDate(item.createdAt)}</span>
+                    {item.status === 'answered' && (
+                      <span className="ml-2 text-[0.68rem] font-bold tracking-[0.06em] uppercase text-coral">
+                        Answered
+                      </span>
+                    )}
                   </td>
                   <td className="py-3 pr-4 text-[var(--ink-muted)] max-w-[300px] truncate">
                     {truncate(item.requestText, 60)}
@@ -235,7 +241,12 @@ export default function HistoryPage() {
                 <Fragment key={item.id}>
                   <tr>
                     <td className="pt-3 pr-4 whitespace-nowrap text-[var(--ink-subtle)] border-t border-[var(--border)]">
-                      {formatDate(item.createdAt)}
+                      <span>{formatDate(item.createdAt)}</span>
+                      {item.status === 'answered' && (
+                        <span className="ml-2 text-[0.68rem] font-bold tracking-[0.06em] uppercase text-coral">
+                          Answered
+                        </span>
+                      )}
                     </td>
                     <td className="pt-3 pr-4 text-seateal font-semibold whitespace-nowrap border-t border-[var(--border)]">
                       {item.bibleVerse}
@@ -298,9 +309,16 @@ export default function HistoryPage() {
                 <p className="font-serif font-semibold text-seateal text-[1.05rem] m-0 leading-tight">
                   {item.bibleVerse}
                 </p>
-                <span className="text-[0.72rem] text-[var(--ink-subtle)] whitespace-nowrap shrink-0">
-                  {formatDate(item.createdAt)}
-                </span>
+                <div className="flex flex-col items-end gap-1 shrink-0">
+                  <span className="text-[0.72rem] text-[var(--ink-subtle)] whitespace-nowrap">
+                    {formatDate(item.createdAt)}
+                  </span>
+                  {item.status === 'answered' && (
+                    <span className="text-[0.68rem] font-bold tracking-[0.06em] uppercase text-coral">
+                      Answered
+                    </span>
+                  )}
+                </div>
               </div>
               <p className="text-[var(--ink-muted)] text-[0.88rem] m-0 mb-4 flex-1">
                 {truncate(item.requestText, 120)}

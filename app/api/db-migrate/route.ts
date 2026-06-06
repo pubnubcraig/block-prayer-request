@@ -116,6 +116,24 @@ export async function POST(req: NextRequest) {
       deleted_at TIMESTAMP
     )`;
 
+    // Add status column to prayer_history (idempotent)
+    await sql`ALTER TABLE prayer_history ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'active'`;
+
+    // Prayer journal entries
+    await sql`CREATE TABLE IF NOT EXISTS prayer_journal_entries (
+      id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+      prayer_id UUID NOT NULL REFERENCES prayer_history(id) ON DELETE CASCADE,
+      user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      entry_text TEXT NOT NULL,
+      entry_type VARCHAR(20) NOT NULL DEFAULT 'journal',
+      created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+    )`;
+
+    await sql`CREATE INDEX IF NOT EXISTS idx_journal_prayer_id ON prayer_journal_entries(prayer_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_journal_user_id ON prayer_journal_entries(user_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_journal_prayer_created ON prayer_journal_entries(prayer_id, created_at)`;
+
     // Facebook prayer post tables
     await sql`CREATE TABLE IF NOT EXISTS prayer_topics (
       id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
