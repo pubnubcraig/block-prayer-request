@@ -65,7 +65,7 @@ export default function SiteHeader() {
         {/* Desktop nav */}
         <nav className="hidden min-[521px]:flex items-center gap-5 text-[0.85rem]">
           <Link href="/prayers" className={navLinkClass}>Prayers</Link>
-          <Link href="/bible-verses" className={navLinkClass}>Bible Verses</Link>
+          <Link href="/bible-verses" className={navLinkClass}>Verses</Link>
           <Link href="/about" className={navLinkClass}>About</Link>
           <Link href="/faq" className={navLinkClass}>FAQ</Link>
           <span className="w-px h-4 bg-[var(--border)]" />
@@ -92,7 +92,7 @@ export default function SiteHeader() {
           {menuOpen && (
             <nav className="absolute right-0 top-11 z-50 card grid gap-1 min-w-[180px] py-3 px-4">
               <Link href="/prayers" onClick={() => setMenuOpen(false)} className={`${navLinkClass} block py-1.5`}>Prayers</Link>
-              <Link href="/bible-verses" onClick={() => setMenuOpen(false)} className={`${navLinkClass} block py-1.5`}>Bible Verses</Link>
+              <Link href="/bible-verses" onClick={() => setMenuOpen(false)} className={`${navLinkClass} block py-1.5`}>Verses</Link>
               <Link href="/about" onClick={() => setMenuOpen(false)} className={`${navLinkClass} block py-1.5`}>About</Link>
               <Link href="/faq" onClick={() => setMenuOpen(false)} className={`${navLinkClass} block py-1.5`}>FAQ</Link>
               <span className="block h-px bg-[var(--border)] my-1.5" />
