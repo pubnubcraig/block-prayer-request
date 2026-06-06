@@ -71,6 +71,23 @@ export default function SiteFooter() {
         </div>
       </div>
 
+      {/* Popular topics row */}
+      <div className="mt-8 pt-5 border-t border-[var(--border)]">
+        <h4 className="text-[0.78rem] font-bold tracking-[0.06em] uppercase text-seateal mb-3 mt-0">
+          Popular Topics
+        </h4>
+        <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+          <Link href="/prayers/anxiety" className={linkClass}>Prayers for Anxiety</Link>
+          <Link href="/bible-verses/healing" className={linkClass}>Verses About Healing</Link>
+          <Link href="/prayers/marriage" className={linkClass}>Marriage Prayers</Link>
+          <Link href="/bible-verses/strength" className={linkClass}>Verses About Strength</Link>
+          <Link href="/prayers/peace" className={linkClass}>Prayers for Peace</Link>
+          <Link href="/bible-verses/hope" className={linkClass}>Verses About Hope</Link>
+          <Link href="/prayers/forgiveness" className={linkClass}>Prayers for Forgiveness</Link>
+          <Link href="/bible-verses/faith" className={linkClass}>Verses About Faith</Link>
+        </div>
+      </div>
+
       {/* Bottom row */}
       <div className="mt-8 pt-5 border-t border-[var(--border)] text-center">
         <p className="m-0 mb-2 text-[0.8rem]">

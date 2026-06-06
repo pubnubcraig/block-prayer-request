@@ -36,6 +36,23 @@ async function getRelatedTopics(category: string, excludeSlug: string) {
     .slice(0, 6);
 }
 
+async function getCrossCategoryTopics(
+  excludeCategory: string,
+  excludeSlug: string,
+) {
+  const topics = await getAllTopics();
+  const seen = new Set<string>();
+  return topics
+    .filter((t) => {
+      if (t.category === excludeCategory || slugify(t.topic) === excludeSlug)
+        return false;
+      if (seen.has(t.category)) return false;
+      seen.add(t.category);
+      return true;
+    })
+    .slice(0, 3);
+}
+
 export async function generateStaticParams() {
   const topics = await getAllTopics();
   return topics.map((t) => ({ slug: slugify(t.topic) }));
@@ -70,6 +87,7 @@ export default async function BibleVerseTopicPage({ params }: Props) {
   if (!topic) notFound();
 
   const related = await getRelatedTopics(topic.category, slug);
+  const crossCategory = await getCrossCategoryTopics(topic.category, slug);
 
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: 'https://gofish.life' },
@@ -193,6 +211,26 @@ export default async function BibleVerseTopicPage({ params }: Props) {
           </h2>
           <div className="grid grid-cols-3 gap-3 max-[520px]:grid-cols-2">
             {related.map((r) => (
+              <Link
+                key={r.id}
+                href={`/bible-verses/${slugify(r.topic)}`}
+                className="topic-chip text-center no-underline"
+              >
+                {r.topic}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Cross-category topics */}
+      {crossCategory.length > 0 && (
+        <section className="mb-6">
+          <h2 className="text-lg font-bold mb-4 tracking-tight">
+            You Might Also Explore
+          </h2>
+          <div className="grid grid-cols-3 gap-3 max-[520px]:grid-cols-2">
+            {crossCategory.map((r) => (
               <Link
                 key={r.id}
                 href={`/bible-verses/${slugify(r.topic)}`}
