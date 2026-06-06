@@ -66,7 +66,7 @@ export default function UserMenu() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-10 z-50 card min-w-[180px] py-2 px-0">
+        <div className="absolute right-0 top-10 z-50 card min-w-[180px] py-2 px-0" style={{ background: 'var(--surface-solid)', backdropFilter: 'none' }}>
           <div className="px-4 py-2 border-b border-[var(--border)]">
             <p className="text-[0.82rem] font-semibold text-[var(--ink)] m-0 truncate">
               {session.user.name || 'User'}
