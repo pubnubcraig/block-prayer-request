@@ -121,6 +121,37 @@ export default async function PrayerTopicPage({ params }: Props) {
         </blockquote>
       </section>
 
+      {/* Sample prayer */}
+      {topic.samplePrayer && (
+        <section className="card mb-6">
+          <h2 className="text-lg font-bold mb-3 tracking-tight">
+            A Prayer for {topic.topic}
+          </h2>
+          <p className="text-[var(--ink-muted)] text-[0.95rem] leading-relaxed m-0 whitespace-pre-line">
+            {topic.samplePrayer}
+          </p>
+        </section>
+      )}
+
+      {/* Prayer prompts */}
+      {topic.prayerPrompts && (() => {
+        const prompts = JSON.parse(topic.prayerPrompts) as string[];
+        return prompts.length > 0 ? (
+          <section className="card mb-6">
+            <h2 className="text-lg font-bold mb-3 tracking-tight">
+              Reflect &amp; Pray
+            </h2>
+            <ul className="m-0 pl-5 grid gap-2">
+              {prompts.map((prompt, i) => (
+                <li key={i} className="text-[var(--ink-muted)] text-[0.95rem] leading-relaxed">
+                  {prompt}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null;
+      })()}
+
       {/* CTA */}
       <section className="card mb-6 text-center">
         <h2 className="text-lg font-bold mb-2 tracking-tight">

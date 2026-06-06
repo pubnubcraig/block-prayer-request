@@ -5,7 +5,8 @@
     "dev": "next dev --webpack",
     "db:push": "drizzle-kit push",
     "build": "next build --webpack",
-    "start": "next start"
+    "start": "next start",
+    "seed:content": "node scripts/seed-topic-content.js"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.2",

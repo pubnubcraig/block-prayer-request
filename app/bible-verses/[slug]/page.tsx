@@ -122,7 +122,36 @@ export default async function BibleVerseTopicPage({ params }: Props) {
         <blockquote className="text-[var(--ink-muted)] text-[0.95rem] leading-relaxed m-0 border-l-3 border-seateal pl-4 italic">
           &ldquo;{topic.verseText}&rdquo;
         </blockquote>
+        {topic.verseContext && (
+          <p className="text-[var(--ink-muted)] text-[0.88rem] leading-relaxed mt-4 mb-0">
+            {topic.verseContext}
+          </p>
+        )}
       </section>
+
+      {/* Additional verses */}
+      {topic.additionalVerses && (() => {
+        const verses = JSON.parse(topic.additionalVerses) as { reference: string; text: string }[];
+        return verses.length > 0 ? (
+          <section className="mb-6">
+            <h2 className="text-lg font-bold mb-4 tracking-tight">
+              More Verses About {topic.topic}
+            </h2>
+            <div className="grid gap-4">
+              {verses.map((verse) => (
+                <div key={verse.reference} className="card">
+                  <h3 className="text-[0.95rem] font-bold mb-2 tracking-tight">
+                    {verse.reference}
+                  </h3>
+                  <blockquote className="text-[var(--ink-muted)] text-[0.95rem] leading-relaxed m-0 border-l-3 border-seateal pl-4 italic">
+                    &ldquo;{verse.text}&rdquo;
+                  </blockquote>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null;
+      })()}
 
       {/* CTA */}
       <section className="card mb-6 text-center">

@@ -175,6 +175,10 @@ export const prayerTopics = pgTable('prayer_topics', {
   active: boolean('active').notNull().default(true),
   lastUsedAt: timestamp('last_used_at'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
+  samplePrayer: text('sample_prayer'),
+  prayerPrompts: text('prayer_prompts'),
+  additionalVerses: text('additional_verses'),
+  verseContext: text('verse_context'),
 });
 
 export const facebookPostLog = pgTable('facebook_post_log', {

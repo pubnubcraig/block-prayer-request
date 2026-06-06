@@ -146,6 +146,12 @@ export async function POST(req: NextRequest) {
       created_at TIMESTAMP NOT NULL DEFAULT NOW()
     )`;
 
+    // SEO content columns for prayer/verse topic pages
+    await sql`ALTER TABLE prayer_topics ADD COLUMN IF NOT EXISTS sample_prayer TEXT`;
+    await sql`ALTER TABLE prayer_topics ADD COLUMN IF NOT EXISTS prayer_prompts TEXT`;
+    await sql`ALTER TABLE prayer_topics ADD COLUMN IF NOT EXISTS additional_verses TEXT`;
+    await sql`ALTER TABLE prayer_topics ADD COLUMN IF NOT EXISTS verse_context TEXT`;
+
     await sql`CREATE TABLE IF NOT EXISTS facebook_post_log (
       id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
       topic_id UUID REFERENCES prayer_topics(id),
