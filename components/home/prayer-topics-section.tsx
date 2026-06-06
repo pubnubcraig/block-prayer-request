@@ -1,15 +1,16 @@
 'use client';
 
 import Link from 'next/link';
+import { slugify } from '@/lib/utils/slugify';
 
 const topics = [
   { label: 'Anxiety', prefill: "I'm feeling anxious and need God's peace." },
   { label: 'Marriage', prefill: 'I need guidance and strength for my marriage.' },
   { label: 'Parenting', prefill: "I'm looking for wisdom as a parent." },
-  { label: 'Work & Career', prefill: 'I need direction for my job and career.' },
-  { label: 'Grief & Loss', prefill: "I'm grieving a loss and need comfort." },
+  { label: 'Work & Career', slug: 'career', prefill: 'I need direction for my job and career.' },
+  { label: 'Grief & Loss', slug: 'grief', prefill: "I'm grieving a loss and need comfort." },
   { label: 'Health', prefill: "I'm facing health concerns and need hope." },
-  { label: 'Finances', prefill: "I'm worried about money and need provision." },
+  { label: 'Finances', slug: 'financial-stress', prefill: "I'm worried about money and need provision." },
   { label: 'Loneliness', prefill: 'I feel alone and need to know God is near.' },
   { label: 'Forgiveness', prefill: "I'm struggling to forgive and need help letting go." },
   { label: 'Gratitude', prefill: "I want to thank God and reflect on His blessings." },
@@ -47,12 +48,41 @@ export default function PrayerTopicsSection({
         ))}
       </div>
 
+      <nav aria-label="Prayer and Bible verse topic links" className="mt-8 grid grid-cols-4 gap-x-4 gap-y-3 max-[900px]:grid-cols-3 max-[520px]:grid-cols-2">
+        {topics.map((topic) => {
+          const topicSlug = topic.slug ?? slugify(topic.label);
+          return (
+            <div key={topic.label} className="flex flex-col gap-0.5">
+              <Link
+                href={`/prayers/${topicSlug}`}
+                className="text-[0.82rem] text-oceanblue hover:text-seateal transition-colors"
+              >
+                Prayer for {topic.label}
+              </Link>
+              <Link
+                href={`/bible-verses/${topicSlug}`}
+                className="text-[0.82rem] text-[var(--ink-subtle)] hover:text-seateal transition-colors"
+              >
+                Verses About {topic.label}
+              </Link>
+            </div>
+          );
+        })}
+      </nav>
+
       <p className="mt-6 mb-0 text-[0.9rem]">
         <Link
           href="/prayers"
           className="text-oceanblue hover:text-seateal transition-colors"
         >
           Browse all prayer topics &rarr;
+        </Link>
+        <span className="mx-3 text-[var(--border)]">|</span>
+        <Link
+          href="/bible-verses"
+          className="text-oceanblue hover:text-seateal transition-colors"
+        >
+          Browse all Bible verses &rarr;
         </Link>
       </p>
     </section>

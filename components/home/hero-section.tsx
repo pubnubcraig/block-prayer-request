@@ -25,17 +25,21 @@ export default function HeroSection({
 }) {
   return (
     <section className="py-8 max-[900px]:py-4">
+      <h1 className="sr-only">
+        Free Online Prayer Requests with Bible Verses and Personalized Prayer
+      </h1>
+
       <PrayerCounter count={prayerCount} />
 
       <p className="inline-flex items-center gap-2 text-[0.8rem] font-semibold tracking-[0.06em] uppercase text-coral mb-4 before:content-[''] before:w-7 before:h-0.5 before:bg-gradient-to-r before:from-coral before:to-seafoam before:rounded">
         A moment with God
       </p>
 
-      <h1 className="font-serif font-semibold text-[clamp(2.25rem,4.5vw,3.35rem)] leading-[1.08] tracking-tight m-0 mb-4">
+      <p className="font-serif font-semibold text-[clamp(2.25rem,4.5vw,3.35rem)] leading-[1.08] tracking-tight m-0 mb-4" aria-hidden="true">
         Bring your concern.
         <br />
         <em className="italic text-coral">Receive hope.</em>
-      </h1>
+      </p>
 
       <p className="text-[1.05rem] text-[var(--ink-muted)] max-w-[38rem] mb-7">
         Share what&apos;s on your heart and receive a relevant Bible verse,
