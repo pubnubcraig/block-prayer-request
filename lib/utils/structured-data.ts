@@ -109,6 +109,24 @@ export function generateArticleSchema(options: {
   };
 }
 
+export function generateHowToSchema(options: {
+  name: string;
+  description: string;
+  steps: Array<{ name: string; text: string }>;
+}) {
+  return {
+    '@type': 'HowTo',
+    name: options.name,
+    description: options.description,
+    step: options.steps.map((s, i) => ({
+      '@type': 'HowToStep',
+      position: i + 1,
+      name: s.name,
+      text: s.text,
+    })),
+  };
+}
+
 /**
  * Wrap one or more schema objects in a JSON-LD @graph.
  */

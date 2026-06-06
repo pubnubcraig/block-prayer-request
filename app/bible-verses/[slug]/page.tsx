@@ -11,6 +11,7 @@ import { slugify } from '@/lib/utils/slugify';
 import {
   generateArticleSchema,
   generateBreadcrumbSchema,
+  generateFAQSchema,
   wrapInGraph,
 } from '@/lib/utils/structured-data';
 
@@ -112,12 +113,21 @@ export default async function BibleVerseTopicPage({ params }: Props) {
     ],
   });
 
+  const faqSchema = generateFAQSchema([
+    {
+      question: `What does the Bible say about ${topic.topic.toLowerCase()}?`,
+      answer: `${topic.verseReference} says, "${topic.verseText}" This and other passages offer Scripture-based wisdom and encouragement for ${topic.topic.toLowerCase()}.`,
+    },
+  ]);
+
   return (
     <div className="max-w-[720px] mx-auto px-5 pt-8 pb-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(wrapInGraph([breadcrumbSchema, articleSchema])),
+          __html: JSON.stringify(
+            wrapInGraph([breadcrumbSchema, articleSchema, faqSchema]),
+          ),
         }}
       />
       <SiteHeader />
@@ -143,18 +153,28 @@ export default async function BibleVerseTopicPage({ params }: Props) {
         <span>{topic.topic}</span>
       </nav>
 
-      <h1 className="font-serif font-semibold text-3xl mt-0 mb-6 tracking-tight">
+      <h1 className="font-serif font-semibold text-3xl mt-0 mb-3 tracking-tight">
         Bible Verses About {topic.topic}
       </h1>
+      <p className="text-[var(--ink-muted)] text-[0.95rem] leading-relaxed mb-6">
+        The Bible speaks directly to {topic.topic.toLowerCase()}. Read{' '}
+        {topic.verseReference} and other Scripture passages to find
+        encouragement, wisdom, and hope for your situation.
+      </p>
 
       {/* Featured Bible verse */}
-      <section className="card mb-6">
+      <section id="featured-verse" className="card mb-6">
         <h2 className="text-lg font-bold mb-3 tracking-tight">
           {topic.verseReference}
         </h2>
-        <blockquote className="text-[var(--ink-muted)] text-[0.95rem] leading-relaxed m-0 border-l-3 border-seateal pl-4 italic">
-          &ldquo;{topic.verseText}&rdquo;
-        </blockquote>
+        <figure className="m-0">
+          <blockquote className="text-[var(--ink-muted)] text-[0.95rem] leading-relaxed m-0 border-l-3 border-seateal pl-4 italic">
+            &ldquo;{topic.verseText}&rdquo;
+          </blockquote>
+          <figcaption className="text-[var(--ink-subtle)] text-[0.82rem] mt-2">
+            &mdash; {topic.verseReference}
+          </figcaption>
+        </figure>
         {topic.verseContext && (
           <p className="text-[var(--ink-muted)] text-[0.88rem] leading-relaxed mt-4 mb-0">
             {topic.verseContext}
@@ -166,19 +186,24 @@ export default async function BibleVerseTopicPage({ params }: Props) {
       {topic.additionalVerses && (() => {
         const verses = JSON.parse(topic.additionalVerses) as { reference: string; text: string }[];
         return verses.length > 0 ? (
-          <section className="mb-6">
+          <section id="additional-verses" className="mb-6">
             <h2 className="text-lg font-bold mb-4 tracking-tight">
               More Verses About {topic.topic}
             </h2>
             <div className="grid gap-4">
               {verses.map((verse) => (
                 <div key={verse.reference} className="card">
-                  <h3 className="text-[0.95rem] font-bold mb-2 tracking-tight">
-                    {verse.reference}
-                  </h3>
-                  <blockquote className="text-[var(--ink-muted)] text-[0.95rem] leading-relaxed m-0 border-l-3 border-seateal pl-4 italic">
-                    &ldquo;{verse.text}&rdquo;
-                  </blockquote>
+                  <figure className="m-0">
+                    <h3 className="text-[0.95rem] font-bold mb-2 tracking-tight">
+                      {verse.reference}
+                    </h3>
+                    <blockquote className="text-[var(--ink-muted)] text-[0.95rem] leading-relaxed m-0 border-l-3 border-seateal pl-4 italic">
+                      &ldquo;{verse.text}&rdquo;
+                    </blockquote>
+                    <figcaption className="text-[var(--ink-subtle)] text-[0.82rem] mt-2">
+                      &mdash; {verse.reference}
+                    </figcaption>
+                  </figure>
                 </div>
               ))}
             </div>

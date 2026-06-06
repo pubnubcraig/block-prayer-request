@@ -4,6 +4,7 @@ import SiteHeader from '@/components/layout/site-header';
 import SiteFooter from '@/components/layout/site-footer';
 import {
   generateBreadcrumbSchema,
+  generateHowToSchema,
   generateOrganizationSchema,
   wrapInGraph,
 } from '@/lib/utils/structured-data';
@@ -29,13 +30,37 @@ export default function AboutPage() {
     { name: 'About', url: 'https://gofish.life/about' },
   ]);
 
+  const howToSchema = generateHowToSchema({
+    name: 'How to Get a Scripture-Based Prayer on GoFish.Life',
+    description:
+      'Share a prayer concern and receive a personalized Bible verse, interpretation, guidance, and prayer.',
+    steps: [
+      {
+        name: 'Share your prayer concern',
+        text: 'Type anything on your heart — a worry, a question, a situation you are facing.',
+      },
+      {
+        name: 'Receive a Scripture-based response',
+        text: 'Our AI selects a relevant Bible verse using the YouVersion Platform and generates a faithful interpretation, practical guidance, and a personalized prayer grounded in Scripture.',
+      },
+      {
+        name: 'Read, save, and return',
+        text: 'You receive encouragement you can read, save, and return to whenever you need it.',
+      },
+    ],
+  });
+
   return (
     <div className="max-w-[720px] mx-auto px-5 pt-8 pb-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(
-            wrapInGraph([generateOrganizationSchema(), breadcrumbSchema]),
+            wrapInGraph([
+              generateOrganizationSchema(),
+              breadcrumbSchema,
+              howToSchema,
+            ]),
           ),
         }}
       />

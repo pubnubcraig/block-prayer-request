@@ -11,6 +11,7 @@ import { slugify } from '@/lib/utils/slugify';
 import {
   generateArticleSchema,
   generateBreadcrumbSchema,
+  generateFAQSchema,
   wrapInGraph,
 } from '@/lib/utils/structured-data';
 
@@ -110,12 +111,21 @@ export default async function PrayerTopicPage({ params }: Props) {
     ],
   });
 
+  const faqSchema = generateFAQSchema([
+    {
+      question: `How do I pray about ${topic.topic.toLowerCase()}?`,
+      answer: `Start with Scripture: ${topic.verseReference} says, "${topic.verseText}" Meditate on this verse, then bring your specific concern to God in honest prayer. GoFish.Life can help you receive a personalized, Scripture-based prayer for ${topic.topic.toLowerCase()}.`,
+    },
+  ]);
+
   return (
     <div className="max-w-[720px] mx-auto px-5 pt-8 pb-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(wrapInGraph([breadcrumbSchema, articleSchema])),
+          __html: JSON.stringify(
+            wrapInGraph([breadcrumbSchema, articleSchema, faqSchema]),
+          ),
         }}
       />
       <SiteHeader />
@@ -141,23 +151,33 @@ export default async function PrayerTopicPage({ params }: Props) {
         <span>{topic.topic}</span>
       </nav>
 
-      <h1 className="font-serif font-semibold text-3xl mt-0 mb-6 tracking-tight">
+      <h1 className="font-serif font-semibold text-3xl mt-0 mb-3 tracking-tight">
         Prayer for {topic.topic}
       </h1>
+      <p className="text-[var(--ink-muted)] text-[0.95rem] leading-relaxed mb-6">
+        Looking for a prayer about {topic.topic.toLowerCase()}? Read{' '}
+        {topic.verseReference}, find a Scripture-based prayer, and submit your
+        own personalized prayer request grounded in God&apos;s Word.
+      </p>
 
       {/* Featured Bible verse */}
-      <section className="card mb-6">
+      <section id="featured-verse" className="card mb-6">
         <h2 className="text-lg font-bold mb-3 tracking-tight">
           {topic.verseReference}
         </h2>
-        <blockquote className="text-[var(--ink-muted)] text-[0.95rem] leading-relaxed m-0 border-l-3 border-seateal pl-4 italic">
-          &ldquo;{topic.verseText}&rdquo;
-        </blockquote>
+        <figure className="m-0">
+          <blockquote className="text-[var(--ink-muted)] text-[0.95rem] leading-relaxed m-0 border-l-3 border-seateal pl-4 italic">
+            &ldquo;{topic.verseText}&rdquo;
+          </blockquote>
+          <figcaption className="text-[var(--ink-subtle)] text-[0.82rem] mt-2">
+            &mdash; {topic.verseReference}
+          </figcaption>
+        </figure>
       </section>
 
       {/* Sample prayer */}
       {topic.samplePrayer && (
-        <section className="card mb-6">
+        <section id="prayer" className="card mb-6">
           <h2 className="text-lg font-bold mb-3 tracking-tight">
             A Prayer for {topic.topic}
           </h2>
@@ -171,7 +191,7 @@ export default async function PrayerTopicPage({ params }: Props) {
       {topic.prayerPrompts && (() => {
         const prompts = JSON.parse(topic.prayerPrompts) as string[];
         return prompts.length > 0 ? (
-          <section className="card mb-6">
+          <section id="reflect" className="card mb-6">
             <h2 className="text-lg font-bold mb-3 tracking-tight">
               Reflect &amp; Pray
             </h2>
