@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/', '/profile/', '/history/', '/reset-password', '/forgot-password'],
+        disallow: ['/api/', '/profile/', '/history/', '/reset-password', '/forgot-password', '/login', '/signup'],
       },
     ],
     sitemap: 'https://gofish.life/sitemap.xml',

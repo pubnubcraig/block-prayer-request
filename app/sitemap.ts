@@ -7,18 +7,19 @@ import { slugify } from '@/lib/utils/slugify';
 const BASE_URL = 'https://gofish.life';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const now = new Date().toISOString();
+
   const staticPages: MetadataRoute.Sitemap = [
-    { url: BASE_URL, changeFrequency: 'daily', priority: 1.0 },
-    { url: `${BASE_URL}/prayers`, changeFrequency: 'weekly', priority: 0.9 },
-    { url: `${BASE_URL}/bible-verses`, changeFrequency: 'weekly', priority: 0.9 },
-    { url: `${BASE_URL}/faq`, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE_URL}/about`, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE_URL}/signup`, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${BASE_URL}/login`, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${BASE_URL}/feedback`, changeFrequency: 'monthly', priority: 0.3 },
-    { url: `${BASE_URL}/terms`, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${BASE_URL}/privacy`, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${BASE_URL}/transparency`, changeFrequency: 'yearly', priority: 0.3 },
+    { url: BASE_URL, lastModified: now, changeFrequency: 'daily', priority: 1.0 },
+    { url: `${BASE_URL}/prayers`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${BASE_URL}/bible-verses`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${BASE_URL}/faq`, lastModified: '2025-05-01', changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/about`, lastModified: '2025-05-01', changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/feedback`, lastModified: '2025-05-01', changeFrequency: 'monthly', priority: 0.3 },
+    { url: `${BASE_URL}/terms`, lastModified: '2025-05-01', changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${BASE_URL}/privacy`, lastModified: '2025-05-01', changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${BASE_URL}/transparency`, lastModified: '2025-05-01', changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${BASE_URL}/data-deletion`, lastModified: '2025-05-01', changeFrequency: 'yearly', priority: 0.3 },
   ];
 
   // Dynamic prayer topic pages
