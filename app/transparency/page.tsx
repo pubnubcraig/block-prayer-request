@@ -1,17 +1,57 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
 import SiteHeader from '@/components/layout/site-header';
 import SiteFooter from '@/components/layout/site-footer';
+import {
+  generateBreadcrumbSchema,
+  wrapInGraph,
+} from '@/lib/utils/structured-data';
 
-export const metadata = {
-  title: 'Transparency — GoFish',
-  description: 'How GoFish operates, our costs, and where revenue goes.',
+export const metadata: Metadata = {
+  title: 'Transparency — GoFish.Life',
+  description:
+    'How GoFish.Life operates, our costs, and where revenue goes. Full transparency on our mission and finances.',
+  openGraph: {
+    title: 'Transparency — GoFish.Life',
+    description: 'How GoFish.Life operates, our costs, and where revenue goes.',
+    url: 'https://gofish.life/transparency',
+  },
+  alternates: {
+    canonical: 'https://gofish.life/transparency',
+  },
 };
 
 export default function TransparencyPage() {
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: 'https://gofish.life' },
+    { name: 'Transparency', url: 'https://gofish.life/transparency' },
+  ]);
+
   return (
     <div className="max-w-[720px] mx-auto px-5 pt-8 pb-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(wrapInGraph([breadcrumbSchema])),
+        }}
+      />
       <SiteHeader />
 
-      <h1 className="font-serif font-semibold text-3xl mt-6 mb-2 tracking-tight">
+      <nav
+        aria-label="Breadcrumb"
+        className="text-[0.82rem] text-[var(--ink-subtle)] mt-4 mb-6"
+      >
+        <Link
+          href="/"
+          className="text-oceanblue hover:text-seateal transition-colors"
+        >
+          Home
+        </Link>
+        <span className="mx-2">/</span>
+        <span>Transparency</span>
+      </nav>
+
+      <h1 className="font-serif font-semibold text-3xl mt-0 mb-2 tracking-tight">
         Transparency
       </h1>
       <p className="text-[var(--ink-muted)] mb-8 text-[0.95rem]">

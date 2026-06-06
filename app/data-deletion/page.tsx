@@ -1,17 +1,57 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
 import SiteHeader from '@/components/layout/site-header';
 import SiteFooter from '@/components/layout/site-footer';
+import {
+  generateBreadcrumbSchema,
+  wrapInGraph,
+} from '@/lib/utils/structured-data';
 
-export const metadata = {
-  title: 'Data Deletion — GoFish',
-  description: 'How to request deletion of your data from GoFish.',
+export const metadata: Metadata = {
+  title: 'Data Deletion — GoFish.Life',
+  description:
+    'How to request deletion of your data from GoFish.Life. We respect your right to delete your account, prayer history, and preferences.',
+  openGraph: {
+    title: 'Data Deletion — GoFish.Life',
+    description: 'How to request deletion of your data from GoFish.Life.',
+    url: 'https://gofish.life/data-deletion',
+  },
+  alternates: {
+    canonical: 'https://gofish.life/data-deletion',
+  },
 };
 
 export default function DataDeletionPage() {
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: 'https://gofish.life' },
+    { name: 'Data Deletion', url: 'https://gofish.life/data-deletion' },
+  ]);
+
   return (
     <div className="max-w-[720px] mx-auto px-5 pt-8 pb-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(wrapInGraph([breadcrumbSchema])),
+        }}
+      />
       <SiteHeader />
 
-      <h1 className="font-serif font-semibold text-3xl mt-6 mb-2 tracking-tight">
+      <nav
+        aria-label="Breadcrumb"
+        className="text-[0.82rem] text-[var(--ink-subtle)] mt-4 mb-6"
+      >
+        <Link
+          href="/"
+          className="text-oceanblue hover:text-seateal transition-colors"
+        >
+          Home
+        </Link>
+        <span className="mx-2">/</span>
+        <span>Data Deletion</span>
+      </nav>
+
+      <h1 className="font-serif font-semibold text-3xl mt-0 mb-2 tracking-tight">
         Data Deletion
       </h1>
       <p className="text-[var(--ink-muted)] mb-8 text-[0.95rem]">

@@ -22,7 +22,17 @@ export function generateWebsiteSchema() {
     '@id': `${SITE_URL}/#website`,
     url: SITE_URL,
     name: 'GoFish.Life',
+    description:
+      'Free Scripture-based prayer responses. Share your concern and receive a Bible verse, interpretation, guidance, and prayer.',
     publisher: { '@id': `${SITE_URL}/#organization` },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${SITE_URL}/?q={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
+    },
   };
 }
 
@@ -74,6 +84,28 @@ export function generateFAQSchema(
         text: faq.answer,
       },
     })),
+  };
+}
+
+export function generateArticleSchema(options: {
+  title: string;
+  description: string;
+  url: string;
+  datePublished?: string;
+  section?: string;
+  keywords?: string[];
+}) {
+  return {
+    '@type': 'Article',
+    headline: options.title,
+    description: options.description,
+    url: options.url,
+    author: { '@id': `${SITE_URL}/#organization` },
+    publisher: { '@id': `${SITE_URL}/#organization` },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': options.url },
+    ...(options.datePublished && { datePublished: options.datePublished }),
+    ...(options.section && { articleSection: options.section }),
+    ...(options.keywords && { keywords: options.keywords }),
   };
 }
 

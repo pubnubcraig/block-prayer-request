@@ -9,6 +9,7 @@ import { prayerTopics } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { slugify } from '@/lib/utils/slugify';
 import {
+  generateArticleSchema,
   generateBreadcrumbSchema,
   wrapInGraph,
 } from '@/lib/utils/structured-data';
@@ -45,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const topic = await findTopicBySlug(slug);
   if (!topic) return {};
 
-  const title = `Prayer for ${topic.topic} — Bible Verses & Guidance | GoFish.Life`;
+  const title = `Prayer for ${topic.topic} — Scripture-Based Prayer & Guidance | GoFish.Life`;
   const description = `Find a Scripture-based prayer for ${topic.topic.toLowerCase()}. Read ${topic.verseReference} and receive biblical guidance and a personalized prayer.`;
 
   return {
@@ -76,12 +77,26 @@ export default async function PrayerTopicPage({ params }: Props) {
     { name: topic.topic, url: `https://gofish.life/prayers/${slug}` },
   ]);
 
+  const articleSchema = generateArticleSchema({
+    title: `Prayer for ${topic.topic}`,
+    description: `Scripture-based prayer for ${topic.topic.toLowerCase()} with ${topic.verseReference}.`,
+    url: `https://gofish.life/prayers/${slug}`,
+    datePublished: topic.createdAt?.toISOString(),
+    section: topic.category,
+    keywords: [
+      `prayer for ${topic.topic.toLowerCase()}`,
+      topic.topic.toLowerCase(),
+      'scripture prayer',
+      topic.category.toLowerCase(),
+    ],
+  });
+
   return (
     <div className="max-w-[720px] mx-auto px-5 pt-8 pb-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(wrapInGraph([breadcrumbSchema])),
+          __html: JSON.stringify(wrapInGraph([breadcrumbSchema, articleSchema])),
         }}
       />
       <SiteHeader />

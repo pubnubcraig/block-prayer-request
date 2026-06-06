@@ -1,18 +1,57 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import SiteHeader from '@/components/layout/site-header';
 import SiteFooter from '@/components/layout/site-footer';
+import {
+  generateBreadcrumbSchema,
+  wrapInGraph,
+} from '@/lib/utils/structured-data';
 
-export const metadata = {
-  title: 'Terms of Service — GoFish',
-  description: 'Terms of service for using GoFish.',
+export const metadata: Metadata = {
+  title: 'Terms of Service — GoFish.Life',
+  description:
+    'Terms of service for using GoFish.Life, a free Scripture-based prayer response platform.',
+  openGraph: {
+    title: 'Terms of Service — GoFish.Life',
+    description: 'Terms of service for using GoFish.Life.',
+    url: 'https://gofish.life/terms',
+  },
+  alternates: {
+    canonical: 'https://gofish.life/terms',
+  },
 };
 
 export default function TermsPage() {
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: 'https://gofish.life' },
+    { name: 'Terms of Service', url: 'https://gofish.life/terms' },
+  ]);
+
   return (
     <div className="max-w-[720px] mx-auto px-5 pt-8 pb-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(wrapInGraph([breadcrumbSchema])),
+        }}
+      />
       <SiteHeader />
 
-      <h1 className="font-serif font-semibold text-3xl mt-6 mb-2 tracking-tight">
+      <nav
+        aria-label="Breadcrumb"
+        className="text-[0.82rem] text-[var(--ink-subtle)] mt-4 mb-6"
+      >
+        <Link
+          href="/"
+          className="text-oceanblue hover:text-seateal transition-colors"
+        >
+          Home
+        </Link>
+        <span className="mx-2">/</span>
+        <span>Terms of Service</span>
+      </nav>
+
+      <h1 className="font-serif font-semibold text-3xl mt-0 mb-2 tracking-tight">
         Terms of Service
       </h1>
       <p className="text-[var(--ink-muted)] mb-8 text-[0.95rem]">

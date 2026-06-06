@@ -9,6 +9,7 @@ import { prayerTopics } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { slugify } from '@/lib/utils/slugify';
 import {
+  generateArticleSchema,
   generateBreadcrumbSchema,
   wrapInGraph,
 } from '@/lib/utils/structured-data';
@@ -79,12 +80,26 @@ export default async function BibleVerseTopicPage({ params }: Props) {
     },
   ]);
 
+  const articleSchema = generateArticleSchema({
+    title: `Bible Verses About ${topic.topic}`,
+    description: `Read ${topic.verseReference} and other Bible verses about ${topic.topic.toLowerCase()}.`,
+    url: `https://gofish.life/bible-verses/${slug}`,
+    datePublished: topic.createdAt?.toISOString(),
+    section: topic.category,
+    keywords: [
+      `bible verses about ${topic.topic.toLowerCase()}`,
+      topic.topic.toLowerCase(),
+      'scripture',
+      topic.category.toLowerCase(),
+    ],
+  });
+
   return (
     <div className="max-w-[720px] mx-auto px-5 pt-8 pb-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(wrapInGraph([breadcrumbSchema])),
+          __html: JSON.stringify(wrapInGraph([breadcrumbSchema, articleSchema])),
         }}
       />
       <SiteHeader />

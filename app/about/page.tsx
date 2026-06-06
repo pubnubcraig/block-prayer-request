@@ -1,29 +1,61 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import SiteHeader from '@/components/layout/site-header';
 import SiteFooter from '@/components/layout/site-footer';
 import {
+  generateBreadcrumbSchema,
   generateOrganizationSchema,
   wrapInGraph,
 } from '@/lib/utils/structured-data';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'About — GoFish.Life',
   description:
     'GoFish.Life provides free, AI-assisted prayer support grounded in Scripture. Learn about our mission, how the platform works, and our commitment to privacy.',
+  openGraph: {
+    title: 'About GoFish.Life — Our Mission',
+    description:
+      'Free, AI-assisted prayer support grounded in Scripture. Learn about our mission and commitment to privacy.',
+    url: 'https://gofish.life/about',
+  },
+  alternates: {
+    canonical: 'https://gofish.life/about',
+  },
 };
 
 export default function AboutPage() {
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: 'https://gofish.life' },
+    { name: 'About', url: 'https://gofish.life/about' },
+  ]);
+
   return (
     <div className="max-w-[720px] mx-auto px-5 pt-8 pb-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(wrapInGraph([generateOrganizationSchema()])),
+          __html: JSON.stringify(
+            wrapInGraph([generateOrganizationSchema(), breadcrumbSchema]),
+          ),
         }}
       />
       <SiteHeader />
 
-      <h1 className="font-serif font-semibold text-3xl mt-6 mb-2 tracking-tight">
+      <nav
+        aria-label="Breadcrumb"
+        className="text-[0.82rem] text-[var(--ink-subtle)] mt-4 mb-6"
+      >
+        <Link
+          href="/"
+          className="text-oceanblue hover:text-seateal transition-colors"
+        >
+          Home
+        </Link>
+        <span className="mx-2">/</span>
+        <span>About</span>
+      </nav>
+
+      <h1 className="font-serif font-semibold text-3xl mt-0 mb-2 tracking-tight">
         About GoFish.Life
       </h1>
       <p className="text-[var(--ink-muted)] mb-8 text-[0.95rem]">

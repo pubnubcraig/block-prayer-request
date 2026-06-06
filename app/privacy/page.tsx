@@ -1,17 +1,57 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
 import SiteHeader from '@/components/layout/site-header';
 import SiteFooter from '@/components/layout/site-footer';
+import {
+  generateBreadcrumbSchema,
+  wrapInGraph,
+} from '@/lib/utils/structured-data';
 
-export const metadata = {
-  title: 'Privacy Policy — GoFish',
-  description: 'How GoFish handles your data, privacy, and security.',
+export const metadata: Metadata = {
+  title: 'Privacy Policy — GoFish.Life',
+  description:
+    'How GoFish.Life handles your data, privacy, and security. Prayer requests are processed ephemerally and never stored unless you choose to save them.',
+  openGraph: {
+    title: 'Privacy Policy — GoFish.Life',
+    description: 'How GoFish.Life handles your data, privacy, and security.',
+    url: 'https://gofish.life/privacy',
+  },
+  alternates: {
+    canonical: 'https://gofish.life/privacy',
+  },
 };
 
 export default function PrivacyPage() {
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: 'https://gofish.life' },
+    { name: 'Privacy Policy', url: 'https://gofish.life/privacy' },
+  ]);
+
   return (
     <div className="max-w-[720px] mx-auto px-5 pt-8 pb-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(wrapInGraph([breadcrumbSchema])),
+        }}
+      />
       <SiteHeader />
 
-      <h1 className="font-serif font-semibold text-3xl mt-6 mb-2 tracking-tight">
+      <nav
+        aria-label="Breadcrumb"
+        className="text-[0.82rem] text-[var(--ink-subtle)] mt-4 mb-6"
+      >
+        <Link
+          href="/"
+          className="text-oceanblue hover:text-seateal transition-colors"
+        >
+          Home
+        </Link>
+        <span className="mx-2">/</span>
+        <span>Privacy Policy</span>
+      </nav>
+
+      <h1 className="font-serif font-semibold text-3xl mt-0 mb-2 tracking-tight">
         Privacy Policy
       </h1>
       <p className="text-[var(--ink-muted)] mb-8 text-[0.95rem]">
