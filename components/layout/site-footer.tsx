@@ -24,6 +24,26 @@ export default function SiteFooter() {
           </h4>
           <ul className="list-none m-0 p-0 grid gap-1.5">
             <li>
+              <Link href="/about" className={linkClass}>
+                About
+              </Link>
+            </li>
+            <li>
+              <Link href="/prayers" className={linkClass}>
+                Prayer Topics
+              </Link>
+            </li>
+            <li>
+              <Link href="/bible-verses" className={linkClass}>
+                Bible Verses
+              </Link>
+            </li>
+            <li>
+              <Link href="/faq" className={linkClass}>
+                FAQ
+              </Link>
+            </li>
+            <li>
               <Link href="/privacy" className={linkClass}>
                 Privacy Policy
               </Link>

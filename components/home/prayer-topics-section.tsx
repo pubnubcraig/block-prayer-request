@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 const topics = [
   { label: 'Anxiety', prefill: "I'm feeling anxious and need God's peace." },
   { label: 'Marriage', prefill: 'I need guidance and strength for my marriage.' },
@@ -44,6 +46,15 @@ export default function PrayerTopicsSection({
           </button>
         ))}
       </div>
+
+      <p className="mt-6 mb-0 text-[0.9rem]">
+        <Link
+          href="/prayers"
+          className="text-oceanblue hover:text-seateal transition-colors"
+        >
+          Browse all prayer topics &rarr;
+        </Link>
+      </p>
     </section>
   );
 }
