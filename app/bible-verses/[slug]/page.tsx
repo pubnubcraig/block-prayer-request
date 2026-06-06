@@ -113,12 +113,26 @@ export default async function BibleVerseTopicPage({ params }: Props) {
     ],
   });
 
-  const faqSchema = generateFAQSchema([
+  const faqItems = [
     {
       question: `What does the Bible say about ${topic.topic.toLowerCase()}?`,
       answer: `${topic.verseReference} says, "${topic.verseText}" This and other passages offer Scripture-based wisdom and encouragement for ${topic.topic.toLowerCase()}.`,
     },
-  ]);
+    {
+      question: `What is the best Bible verse for ${topic.topic.toLowerCase()}?`,
+      answer: `${topic.verseReference} is often cited for ${topic.topic.toLowerCase()}: "${topic.verseText}" Additional verses can be found on this page.`,
+    },
+    {
+      question: `How many Bible verses are there about ${topic.topic.toLowerCase()}?`,
+      answer: `The Bible contains many passages about ${topic.topic.toLowerCase()}. This page highlights ${topic.verseReference}${topic.additionalVerses ? ` along with ${(JSON.parse(topic.additionalVerses) as unknown[]).length} additional verses` : ''} to encourage and guide you.`,
+    },
+    {
+      question: `How can I pray using Bible verses about ${topic.topic.toLowerCase()}?`,
+      answer: `Read ${topic.verseReference}, reflect on its meaning for your situation, then bring your concern to God in prayer. GoFish.Life can generate a personalized prayer based on Scripture for ${topic.topic.toLowerCase()}.`,
+    },
+  ];
+
+  const faqSchema = generateFAQSchema(faqItems);
 
   return (
     <div className="max-w-[720px] mx-auto px-5 pt-8 pb-16">
@@ -226,6 +240,26 @@ export default async function BibleVerseTopicPage({ params }: Props) {
         >
           Submit a Prayer Request
         </Link>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="card mb-6">
+        <h2 className="text-lg font-bold mb-4 tracking-tight">
+          Frequently Asked Questions
+        </h2>
+        <div className="grid gap-3">
+          {faqItems.map((faq, i) => (
+            <details key={i} className="group">
+              <summary className="font-semibold text-[0.95rem] cursor-pointer list-none flex items-start gap-2 text-[var(--ink)] hover:text-seateal transition-colors [&::-webkit-details-marker]:hidden">
+                <span className="text-seateal mt-0.5 shrink-0 transition-transform group-open:rotate-90">&#9654;</span>
+                {faq.question}
+              </summary>
+              <p className="text-[var(--ink-muted)] text-[0.92rem] leading-relaxed mt-2 ml-5 mb-0">
+                {faq.answer}
+              </p>
+            </details>
+          ))}
+        </div>
       </section>
 
       {/* Related topics */}

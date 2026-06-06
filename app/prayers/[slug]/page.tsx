@@ -111,12 +111,28 @@ export default async function PrayerTopicPage({ params }: Props) {
     ],
   });
 
-  const faqSchema = generateFAQSchema([
+  const faqItems = [
     {
       question: `How do I pray about ${topic.topic.toLowerCase()}?`,
       answer: `Start with Scripture: ${topic.verseReference} says, "${topic.verseText}" Meditate on this verse, then bring your specific concern to God in honest prayer. GoFish.Life can help you receive a personalized, Scripture-based prayer for ${topic.topic.toLowerCase()}.`,
     },
-  ]);
+    {
+      question: `What Bible verse helps with ${topic.topic.toLowerCase()}?`,
+      answer: `${topic.verseReference} is a key verse for ${topic.topic.toLowerCase()}: "${topic.verseText}" You can find more verses on our Bible Verses About ${topic.topic} page.`,
+    },
+    {
+      question: `Can I get a personalized prayer for ${topic.topic.toLowerCase()}?`,
+      answer: `Yes. GoFish.Life lets you share your specific concern about ${topic.topic.toLowerCase()} and receive a personalized Bible verse, faithful interpretation, practical guidance, and a written prayer — completely free and private.`,
+    },
+    {
+      question: `Is there a sample prayer for ${topic.topic.toLowerCase()}?`,
+      answer: topic.samplePrayer
+        ? `Yes. Here is a sample prayer: "${topic.samplePrayer.slice(0, 200)}..." Visit GoFish.Life to read the full prayer and submit your own personalized request.`
+        : `GoFish.Life can generate a personalized prayer for ${topic.topic.toLowerCase()} based on Scripture. Share your specific concern to receive a prayer grounded in God's Word.`,
+    },
+  ];
+
+  const faqSchema = generateFAQSchema(faqItems);
 
   return (
     <div className="max-w-[720px] mx-auto px-5 pt-8 pb-16">
@@ -221,6 +237,26 @@ export default async function PrayerTopicPage({ params }: Props) {
         >
           Get a Personalized Prayer
         </Link>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="card mb-6">
+        <h2 className="text-lg font-bold mb-4 tracking-tight">
+          Frequently Asked Questions
+        </h2>
+        <div className="grid gap-3">
+          {faqItems.map((faq, i) => (
+            <details key={i} className="group">
+              <summary className="font-semibold text-[0.95rem] cursor-pointer list-none flex items-start gap-2 text-[var(--ink)] hover:text-seateal transition-colors [&::-webkit-details-marker]:hidden">
+                <span className="text-seateal mt-0.5 shrink-0 transition-transform group-open:rotate-90">&#9654;</span>
+                {faq.question}
+              </summary>
+              <p className="text-[var(--ink-muted)] text-[0.92rem] leading-relaxed mt-2 ml-5 mb-0">
+                {faq.answer}
+              </p>
+            </details>
+          ))}
+        </div>
       </section>
 
       {/* Related topics */}
