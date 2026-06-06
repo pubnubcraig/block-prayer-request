@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
@@ -16,11 +17,11 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
-async function getAllTopics() {
+const getAllTopics = cache(async () => {
   const db = getDb();
   if (!db) return [];
   return db.select().from(prayerTopics).where(eq(prayerTopics.active, true));
-}
+});
 
 async function findTopicBySlug(slug: string) {
   const topics = await getAllTopics();
