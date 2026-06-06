@@ -171,6 +171,30 @@ export default function AboutPage() {
       </section>
 
       <section className="card mb-6">
+        <h2 className="text-lg font-bold mb-3 tracking-tight">Learn More</h2>
+        <ul className="text-[var(--ink-muted)] text-[0.95rem] leading-relaxed m-0 p-0 list-none grid gap-2">
+          <li>
+            <Link
+              href="/about/statement-of-faith"
+              className="text-oceanblue hover:text-seateal transition-colors"
+            >
+              Statement of Faith
+            </Link>{' '}
+            &mdash; the foundational beliefs that guide our prayer responses
+          </li>
+          <li>
+            <Link
+              href="/about/editorial-policy"
+              className="text-oceanblue hover:text-seateal transition-colors"
+            >
+              Editorial Policy
+            </Link>{' '}
+            &mdash; how we generate responses and the standards we uphold
+          </li>
+        </ul>
+      </section>
+
+      <section className="card mb-6">
         <h2 className="text-lg font-bold mb-3 tracking-tight">
           Important Note
         </h2>

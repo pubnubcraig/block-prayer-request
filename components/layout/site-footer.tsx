@@ -26,6 +26,8 @@ export default function SiteFooter() {
             <li><Link href="/prayers" className={linkClass}>Prayer Topics</Link></li>
             <li><Link href="/bible-verses" className={linkClass}>Bible Verses</Link></li>
             <li><Link href="/about" className={linkClass}>About</Link></li>
+            <li><Link href="/about/statement-of-faith" className={linkClass}>Statement of Faith</Link></li>
+            <li><Link href="/about/editorial-policy" className={linkClass}>Editorial Policy</Link></li>
             <li><Link href="/faq" className={linkClass}>FAQ</Link></li>
             <li><Link href="/feedback" className={linkClass}>Feedback</Link></li>
           </ul>

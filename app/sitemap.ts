@@ -15,6 +15,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/bible-verses`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${BASE_URL}/faq`, lastModified: '2025-05-01', changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE_URL}/about`, lastModified: '2025-05-01', changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/about/statement-of-faith`, lastModified: '2025-06-05', changeFrequency: 'yearly', priority: 0.5 },
+    { url: `${BASE_URL}/about/editorial-policy`, lastModified: '2025-06-05', changeFrequency: 'yearly', priority: 0.5 },
     { url: `${BASE_URL}/feedback`, lastModified: '2025-05-01', changeFrequency: 'monthly', priority: 0.3 },
     { url: `${BASE_URL}/terms`, lastModified: '2025-05-01', changeFrequency: 'yearly', priority: 0.3 },
     { url: `${BASE_URL}/privacy`, lastModified: '2025-05-01', changeFrequency: 'yearly', priority: 0.3 },
