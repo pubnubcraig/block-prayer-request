@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { getDb } from '@/lib/db';
-import { prayerHistory, userProfiles } from '@/lib/db/schema';
-import { eq, and, isNull, desc, count, sql } from 'drizzle-orm';
+import { prayerHistory, prayerJournalEntries, userProfiles } from '@/lib/db/schema';
+import { eq, and, isNull, desc, count, max, inArray } from 'drizzle-orm';
 
 const FREE_TIER_LIMIT = 12;
 
@@ -33,28 +33,9 @@ export async function GET(req: NextRequest) {
     isNull(prayerHistory.deletedAt),
   );
 
-  const [items, [countRow]] = await Promise.all([
+  const [rows, [countRow]] = await Promise.all([
     db
-      .select({
-        id: prayerHistory.id,
-        requestText: prayerHistory.requestText,
-        bibleVerse: prayerHistory.bibleVerse,
-        verseContent: prayerHistory.verseContent,
-        interpretation: prayerHistory.interpretation,
-        advice: prayerHistory.advice,
-        prayer: prayerHistory.prayer,
-        bibleVersionUsed: prayerHistory.bibleVersionUsed,
-        status: prayerHistory.status,
-        createdAt: prayerHistory.createdAt,
-        journalCount: sql<number>`(
-          SELECT count(*)::int FROM prayer_journal_entries
-          WHERE prayer_id = ${prayerHistory.id}
-        )`.as('journal_count'),
-        lastJournalAt: sql<string | null>`(
-          SELECT max(created_at) FROM prayer_journal_entries
-          WHERE prayer_id = ${prayerHistory.id}
-        )`.as('last_journal_at'),
-      })
+      .select()
       .from(prayerHistory)
       .where(where)
       .orderBy(desc(prayerHistory.createdAt))
@@ -62,6 +43,31 @@ export async function GET(req: NextRequest) {
       .offset(offset),
     db.select({ total: count() }).from(prayerHistory).where(where),
   ]);
+
+  // Fetch journal stats for the returned prayers in a single query
+  const prayerIds = rows.map((r) => r.id);
+  const journalStats =
+    prayerIds.length > 0
+      ? await db
+          .select({
+            prayerId: prayerJournalEntries.prayerId,
+            entryCount: count(),
+            lastEntryAt: max(prayerJournalEntries.createdAt),
+          })
+          .from(prayerJournalEntries)
+          .where(inArray(prayerJournalEntries.prayerId, prayerIds))
+          .groupBy(prayerJournalEntries.prayerId)
+      : [];
+
+  const statsMap = new Map(journalStats.map((s) => [s.prayerId, s]));
+  const items = rows.map((row) => {
+    const stats = statsMap.get(row.id);
+    return {
+      ...row,
+      journalCount: stats?.entryCount ?? 0,
+      lastJournalAt: stats?.lastEntryAt ?? null,
+    };
+  });
 
   const total = countRow?.total ?? 0;
   // Free tier: cap visible items at FREE_TIER_LIMIT
