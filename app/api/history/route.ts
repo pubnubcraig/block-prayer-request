@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { getDb } from '@/lib/db';
 import { prayerHistory, prayerJournalEntries, userProfiles } from '@/lib/db/schema';
-import { eq, and, isNull, desc, count, max, inArray } from 'drizzle-orm';
+import { eq, and, or, isNull, desc, count, max, inArray, ilike, exists, notExists, sql } from 'drizzle-orm';
 
 const FREE_TIER_LIMIT = 12;
 
@@ -28,10 +28,48 @@ export async function GET(req: NextRequest) {
   );
   const offset = (page - 1) * limit;
 
-  const where = and(
+  // Parse filter params
+  const statusFilter = url.searchParams.get('status') ?? 'all';
+  const journalFilter = url.searchParams.get('journal') ?? 'all';
+  const searchQuery = url.searchParams.get('q')?.trim() ?? '';
+
+  const conditions = [
     eq(prayerHistory.userId, session.user.id),
     isNull(prayerHistory.deletedAt),
-  );
+  ];
+
+  if (statusFilter === 'active' || statusFilter === 'answered') {
+    conditions.push(eq(prayerHistory.status, statusFilter));
+  }
+
+  if (searchQuery) {
+    const pattern = `%${searchQuery}%`;
+    conditions.push(
+      or(
+        ilike(prayerHistory.requestText, pattern),
+        ilike(prayerHistory.bibleVerse, pattern),
+        ilike(prayerHistory.prayer, pattern),
+      )!,
+    );
+  }
+
+  if (journalFilter === 'has') {
+    conditions.push(
+      exists(
+        db.select({ one: sql`1` }).from(prayerJournalEntries)
+          .where(eq(prayerJournalEntries.prayerId, prayerHistory.id)),
+      ),
+    );
+  } else if (journalFilter === 'none') {
+    conditions.push(
+      notExists(
+        db.select({ one: sql`1` }).from(prayerJournalEntries)
+          .where(eq(prayerJournalEntries.prayerId, prayerHistory.id)),
+      ),
+    );
+  }
+
+  const where = and(...conditions);
 
   const [rows, [countRow]] = await Promise.all([
     db

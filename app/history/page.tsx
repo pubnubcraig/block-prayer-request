@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, Fragment } from 'react';
+import { useState, useEffect, useCallback, useRef, Fragment } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import SiteHeader from '@/components/layout/site-header';
@@ -80,11 +80,39 @@ export default function HistoryPage() {
   const [total, setTotal] = useState(0);
   const [plan, setPlan] = useState('free');
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'answered'>('all');
+  const [journalFilter, setJournalFilter] = useState<'all' | 'has' | 'none'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  const fetchHistory = useCallback(async (p: number) => {
+  function handleSearchChange(value: string) {
+    setSearchQuery(value);
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setDebouncedSearch(value);
+      setPage(1);
+    }, 300);
+  }
+
+  const filtersActive = statusFilter !== 'all' || journalFilter !== 'all' || debouncedSearch !== '';
+
+  function clearFilters() {
+    setStatusFilter('all');
+    setJournalFilter('all');
+    setSearchQuery('');
+    setDebouncedSearch('');
+    setPage(1);
+  }
+
+  const fetchHistory = useCallback(async (p: number, status: string, journal: string, q: string) => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/history?page=${p}&limit=12`);
+      const params = new URLSearchParams({ page: String(p), limit: '12' });
+      if (status !== 'all') params.set('status', status);
+      if (journal !== 'all') params.set('journal', journal);
+      if (q) params.set('q', q);
+      const res = await fetch(`/api/history?${params}`);
       if (!res.ok) return;
       const data = await res.json();
       setItems(data.items);
@@ -100,8 +128,8 @@ export default function HistoryPage() {
   }, []);
 
   useEffect(() => {
-    fetchHistory(page);
-  }, [fetchHistory, page]);
+    fetchHistory(page, statusFilter, journalFilter, debouncedSearch);
+  }, [fetchHistory, page, statusFilter, journalFilter, debouncedSearch]);
 
   function changeView(mode: ViewMode) {
     setViewMode(mode);
@@ -154,6 +182,65 @@ export default function HistoryPage() {
         )}
       </div>
 
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-3 mb-6">
+        {/* Status filter */}
+        <div className="flex rounded-[var(--radius-sm)] border border-[var(--border)] overflow-hidden">
+          {([['all', 'All'], ['active', 'Active'], ['answered', 'Answered']] as const).map(([key, label]) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => { setStatusFilter(key); setPage(1); }}
+              className={`px-3 py-1.5 text-[0.78rem] font-semibold tracking-wide border-none cursor-pointer transition-colors ${
+                statusFilter === key
+                  ? 'bg-seateal/15 text-seateal'
+                  : 'bg-transparent text-[var(--ink-muted)] hover:text-[var(--ink)]'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* Journal filter */}
+        <div className="flex rounded-[var(--radius-sm)] border border-[var(--border)] overflow-hidden">
+          {([['all', 'All'], ['has', 'Has journal'], ['none', 'No journal']] as const).map(([key, label]) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => { setJournalFilter(key); setPage(1); }}
+              className={`px-3 py-1.5 text-[0.78rem] font-semibold tracking-wide border-none cursor-pointer transition-colors ${
+                journalFilter === key
+                  ? 'bg-seateal/15 text-seateal'
+                  : 'bg-transparent text-[var(--ink-muted)] hover:text-[var(--ink)]'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* Search */}
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => handleSearchChange(e.target.value)}
+          placeholder="Search prayers…"
+          className="px-3 py-1.5 text-[0.85rem] rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] text-[var(--ink)] placeholder:text-[var(--ink-subtle)] outline-none focus:border-seateal transition-colors w-[200px] max-[600px]:w-full"
+        />
+
+        {/* Clear filters */}
+        {filtersActive && (
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="text-[0.78rem] text-oceanblue hover:text-seateal bg-transparent border-none cursor-pointer font-[inherit] transition-colors"
+          >
+            Clear filters
+          </button>
+        )}
+      </div>
+
       {/* Loading */}
       {loading && (
         <div className="text-center py-16">
@@ -164,15 +251,32 @@ export default function HistoryPage() {
       {/* Empty state */}
       {!loading && items.length === 0 && (
         <div className="card text-center py-12 px-6">
-          <p className="text-[var(--ink-muted)] text-[0.95rem] mb-4">
-            No prayer history yet. Your saved prayer responses will appear here.
-          </p>
-          <Link
-            href="/"
-            className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors text-[0.88rem]"
-          >
-            Submit a prayer request
-          </Link>
+          {filtersActive ? (
+            <>
+              <p className="text-[var(--ink-muted)] text-[0.95rem] mb-4">
+                No prayers match your filters.
+              </p>
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="text-oceanblue bg-transparent border-none border-b border-oceanblue/35 hover:text-seateal cursor-pointer text-[0.88rem] font-[inherit] transition-colors"
+              >
+                Clear filters
+              </button>
+            </>
+          ) : (
+            <>
+              <p className="text-[var(--ink-muted)] text-[0.95rem] mb-4">
+                No prayer history yet. Your saved prayer responses will appear here.
+              </p>
+              <Link
+                href="/"
+                className="text-oceanblue no-underline border-b border-oceanblue/35 hover:text-seateal hover:border-seateal transition-colors text-[0.88rem]"
+              >
+                Submit a prayer request
+              </Link>
+            </>
+          )}
         </div>
       )}
 
