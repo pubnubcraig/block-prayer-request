@@ -17,6 +17,8 @@ type HistoryEntry = {
   bibleVersionUsed: string | null;
   status: string | null;
   createdAt: string;
+  journalCount: number;
+  lastJournalAt: string | null;
 };
 
 type ViewMode = 'single-line' | 'multi-line' | 'tiles';
@@ -32,6 +34,29 @@ function formatDate(dateStr: string): string {
 function truncate(str: string | null, max: number): string {
   if (!str) return '';
   return str.length > max ? str.slice(0, max).trimEnd() + '\u2026' : str;
+}
+
+function formatRelativeDate(dateStr: string | null): string {
+  if (!dateStr) return '';
+  const diffMs = Date.now() - new Date(dateStr).getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return 'Yesterday';
+  if (diffDays < 7) return `${diffDays}d ago`;
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
+  return formatDate(dateStr);
+}
+
+function formatAge(dateStr: string): string {
+  const diffMs = Date.now() - new Date(dateStr).getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return '1 day';
+  if (diffDays < 30) return `${diffDays} days`;
+  const months = Math.floor(diffDays / 30);
+  if (months < 12) return `${months} ${months === 1 ? 'month' : 'months'}`;
+  const years = Math.floor(diffDays / 365);
+  return `${years} ${years === 1 ? 'year' : 'years'}`;
 }
 
 const VIEW_MODES: { key: ViewMode; label: string }[] = [
@@ -166,6 +191,9 @@ export default function HistoryPage() {
                 <th className="text-[0.72rem] font-bold tracking-[0.08em] uppercase text-seateal pb-3 pr-4">
                   Verse
                 </th>
+                <th className="text-[0.72rem] font-bold tracking-[0.08em] uppercase text-seateal pb-3 pr-4">
+                  Journal
+                </th>
                 <th className="text-[0.72rem] font-bold tracking-[0.08em] uppercase text-seateal pb-3 w-[80px]">
                   Actions
                 </th>
@@ -179,8 +207,12 @@ export default function HistoryPage() {
                 >
                   <td className="py-3 pr-4 whitespace-nowrap text-[var(--ink-subtle)]">
                     <span>{formatDate(item.createdAt)}</span>
+                    <span className="ml-1 text-[0.7rem] text-[var(--ink-subtle)]/60">
+                      ({formatAge(item.createdAt)})
+                    </span>
                     {item.status === 'answered' && (
-                      <span className="ml-2 text-[0.68rem] font-bold tracking-[0.06em] uppercase text-coral">
+                      <span className="ml-2 inline-flex items-center gap-0.5 text-[0.68rem] font-bold tracking-[0.06em] uppercase text-coral">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3"><path fillRule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z" clipRule="evenodd" /></svg>
                         Answered
                       </span>
                     )}
@@ -190,6 +222,18 @@ export default function HistoryPage() {
                   </td>
                   <td className="py-3 pr-4 text-seateal font-semibold whitespace-nowrap">
                     {item.bibleVerse}
+                  </td>
+                  <td className="py-3 pr-4 text-[var(--ink-muted)] whitespace-nowrap text-[0.82rem]">
+                    {item.journalCount > 0 ? (
+                      <span>
+                        {item.journalCount} {item.journalCount === 1 ? 'entry' : 'entries'}
+                        <span className="text-[var(--ink-subtle)] ml-1">
+                          ({formatRelativeDate(item.lastJournalAt)})
+                        </span>
+                      </span>
+                    ) : (
+                      <span className="text-[var(--ink-subtle)]">&mdash;</span>
+                    )}
                   </td>
                   <td className="py-3">
                     <div className="flex items-center gap-3">
@@ -231,6 +275,9 @@ export default function HistoryPage() {
                 <th className="text-[0.72rem] font-bold tracking-[0.08em] uppercase text-seateal pb-3 pr-4">
                   Version
                 </th>
+                <th className="text-[0.72rem] font-bold tracking-[0.08em] uppercase text-seateal pb-3 pr-4">
+                  Journal
+                </th>
                 <th className="text-[0.72rem] font-bold tracking-[0.08em] uppercase text-seateal pb-3 w-[80px]">
                   Actions
                 </th>
@@ -242,8 +289,12 @@ export default function HistoryPage() {
                   <tr>
                     <td className="pt-3 pr-4 whitespace-nowrap text-[var(--ink-subtle)] border-t border-[var(--border)]">
                       <span>{formatDate(item.createdAt)}</span>
+                      <span className="ml-1 text-[0.7rem] text-[var(--ink-subtle)]/60">
+                        ({formatAge(item.createdAt)})
+                      </span>
                       {item.status === 'answered' && (
-                        <span className="ml-2 text-[0.68rem] font-bold tracking-[0.06em] uppercase text-coral">
+                        <span className="ml-2 inline-flex items-center gap-0.5 text-[0.68rem] font-bold tracking-[0.06em] uppercase text-coral">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3"><path fillRule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z" clipRule="evenodd" /></svg>
                           Answered
                         </span>
                       )}
@@ -253,6 +304,13 @@ export default function HistoryPage() {
                     </td>
                     <td className="pt-3 pr-4 text-[var(--ink-subtle)] border-t border-[var(--border)]">
                       {item.bibleVersionUsed}
+                    </td>
+                    <td className="pt-3 pr-4 text-[var(--ink-muted)] whitespace-nowrap border-t border-[var(--border)] text-[0.82rem]">
+                      {item.journalCount > 0 ? (
+                        <span>{item.journalCount} {item.journalCount === 1 ? 'entry' : 'entries'}</span>
+                      ) : (
+                        <span className="text-[var(--ink-subtle)]">&mdash;</span>
+                      )}
                     </td>
                     <td className="pt-3 border-t border-[var(--border)]">
                       <div className="flex items-center gap-3">
@@ -275,7 +333,7 @@ export default function HistoryPage() {
                   </tr>
                   <tr>
                     <td
-                      colSpan={4}
+                      colSpan={5}
                       className="pb-4 pt-2 text-[0.82rem] text-[var(--ink-muted)] leading-relaxed"
                     >
                       <span className="text-[var(--ink-subtle)] font-semibold text-[0.72rem] uppercase tracking-wide">
@@ -289,6 +347,15 @@ export default function HistoryPage() {
                             Prayer:
                           </span>{' '}
                           {truncate(item.prayer, 100)}
+                        </>
+                      )}
+                      {item.journalCount > 0 && item.lastJournalAt && (
+                        <>
+                          <br />
+                          <span className="text-[var(--ink-subtle)] font-semibold text-[0.72rem] uppercase tracking-wide">
+                            Last journal:
+                          </span>{' '}
+                          {formatRelativeDate(item.lastJournalAt)}
                         </>
                       )}
                     </td>
@@ -314,15 +381,36 @@ export default function HistoryPage() {
                     {formatDate(item.createdAt)}
                   </span>
                   {item.status === 'answered' && (
-                    <span className="text-[0.68rem] font-bold tracking-[0.06em] uppercase text-coral">
+                    <span className="inline-flex items-center gap-0.5 text-[0.68rem] font-bold tracking-[0.06em] uppercase text-coral">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3"><path fillRule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z" clipRule="evenodd" /></svg>
                       Answered
                     </span>
                   )}
                 </div>
               </div>
-              <p className="text-[var(--ink-muted)] text-[0.88rem] m-0 mb-4 flex-1">
+              <p className="text-[var(--ink-muted)] text-[0.88rem] m-0 mb-3 flex-1">
                 {truncate(item.requestText, 120)}
               </p>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.75rem] text-[var(--ink-subtle)] mb-3">
+                <span>{formatAge(item.createdAt)} old</span>
+                {item.journalCount > 0 ? (
+                  <>
+                    <span>&middot;</span>
+                    <span>{item.journalCount} journal {item.journalCount === 1 ? 'entry' : 'entries'}</span>
+                    {item.lastJournalAt && (
+                      <>
+                        <span>&middot;</span>
+                        <span>Last activity {formatRelativeDate(item.lastJournalAt)}</span>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <span>&middot;</span>
+                    <span>No journal entries</span>
+                  </>
+                )}
+              </div>
               <div className="flex items-center gap-4 pt-2 border-t border-[var(--border)]">
                 <Link
                   href={`/history/${item.id}`}

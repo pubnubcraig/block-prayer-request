@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { getDb } from '@/lib/db';
 import { prayerHistory, userProfiles } from '@/lib/db/schema';
-import { eq, and, isNull, desc, count } from 'drizzle-orm';
+import { eq, and, isNull, desc, count, sql } from 'drizzle-orm';
 
 const FREE_TIER_LIMIT = 12;
 
@@ -35,7 +35,26 @@ export async function GET(req: NextRequest) {
 
   const [items, [countRow]] = await Promise.all([
     db
-      .select()
+      .select({
+        id: prayerHistory.id,
+        requestText: prayerHistory.requestText,
+        bibleVerse: prayerHistory.bibleVerse,
+        verseContent: prayerHistory.verseContent,
+        interpretation: prayerHistory.interpretation,
+        advice: prayerHistory.advice,
+        prayer: prayerHistory.prayer,
+        bibleVersionUsed: prayerHistory.bibleVersionUsed,
+        status: prayerHistory.status,
+        createdAt: prayerHistory.createdAt,
+        journalCount: sql<number>`(
+          SELECT count(*)::int FROM prayer_journal_entries
+          WHERE prayer_id = ${prayerHistory.id}
+        )`.as('journal_count'),
+        lastJournalAt: sql<string | null>`(
+          SELECT max(created_at) FROM prayer_journal_entries
+          WHERE prayer_id = ${prayerHistory.id}
+        )`.as('last_journal_at'),
+      })
       .from(prayerHistory)
       .where(where)
       .orderBy(desc(prayerHistory.createdAt))
