@@ -11,6 +11,7 @@ import {
   boolean,
   primaryKey,
   index,
+  uniqueIndex,
 } from 'drizzle-orm/pg-core';
 
 // ── Existing tables ─────────────────────────────────────────────────
@@ -161,6 +162,28 @@ export const prayerJournalEntries = pgTable(
     index('idx_journal_prayer_id').on(t.prayerId),
     index('idx_journal_user_id').on(t.userId),
     index('idx_journal_prayer_created').on(t.prayerId, t.createdAt),
+  ],
+);
+
+// ── Bible verse interpretation cache ─────────────────────────────────
+
+export const bibleVerseInterpretations = pgTable(
+  'bible_verse_interpretations',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    verseReference: varchar('verse_reference', { length: 100 }).notNull(),
+    translation: varchar('translation', { length: 50 }).notNull(),
+    verseContent: text('verse_content').notNull(),
+    interpretation: text('interpretation').notNull(),
+    promptVersion: varchar('prompt_version', { length: 50 }).notNull(),
+    modelUsed: varchar('model_used', { length: 50 }).notNull(),
+    usageCount: integer('usage_count').notNull().default(1),
+    lastUsedAt: timestamp('last_used_at').notNull().defaultNow(),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex('uq_verse_ref_translation').on(t.verseReference, t.translation),
+    index('idx_verse_ref').on(t.verseReference),
   ],
 );
 

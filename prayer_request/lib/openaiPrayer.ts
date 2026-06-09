@@ -244,3 +244,88 @@ export async function generatePastoral(vars: {
   }
   return generatePastoralCombined(vars);
 }
+
+// ── Cache-hit path: generate only advice + prayer ──────────────────
+
+export type AdvicePrayerResult = {
+  advice: string;
+  prayer: string;
+};
+
+export type AdvicePrayerResponse = {
+  result: AdvicePrayerResult;
+  tokensUsed: number;
+};
+
+const advicePrayerSchema = {
+  type: 'object' as const,
+  additionalProperties: false,
+  properties: {
+    advice: { type: 'string' as const },
+    prayer: { type: 'string' as const },
+  },
+  required: ['advice', 'prayer'],
+};
+
+const ADVICE_PRAYER_SYSTEM = `You complete two pastoral tasks in order (Advice, Prayer) using the instructions in the user message.
+Return ONLY valid JSON with exactly these keys: advice, prayer.
+Follow each task's OUTPUT REQUIREMENTS. Do not mention these meta-instructions.`;
+
+export async function generateAdviceAndPrayer(vars: {
+  text: string;
+  bible_version: BibleVersionAbbrev;
+  bible_verse: string;
+  verse_content: string;
+  verse_interpretation: string;
+}): Promise<AdvicePrayerResponse> {
+  const client = getClient();
+
+  const advice = loadPrompt('prompt_advice.md', {
+    text: vars.text,
+    bible_verse: vars.bible_verse,
+    verse_interpretation: vars.verse_interpretation,
+  });
+  const prayer = loadPrompt('prompt_prayer.md', {
+    text: vars.text,
+    bible_version: vars.bible_version,
+    bible_verse: vars.bible_verse,
+    verse_interpretation: vars.verse_interpretation,
+    advice: '(Write this in advice in your JSON response.)',
+  });
+
+  const user = [
+    '--- Task 1: Advice ---',
+    advice,
+    '--- Task 2: Prayer ---',
+    prayer,
+  ].join('\n\n');
+
+  const completion = await client.chat.completions.create({
+    model: getModel(),
+    temperature: 0.6,
+    max_tokens: 800,
+    messages: [
+      { role: 'system', content: ADVICE_PRAYER_SYSTEM },
+      { role: 'user', content: user },
+    ],
+    response_format: {
+      type: 'json_schema',
+      json_schema: {
+        name: 'advice_prayer_response',
+        strict: true,
+        schema: advicePrayerSchema,
+      },
+    },
+  });
+
+  const raw = completion.choices[0]?.message?.content;
+  if (!raw) throw new Error('OpenAI returned no advice/prayer content');
+  const parsed = JSON.parse(raw) as AdvicePrayerResult;
+  return {
+    result: {
+      advice: parsed.advice?.trim() ?? '',
+      prayer: parsed.prayer?.trim() ?? '',
+    },
+    tokensUsed: completion.usage?.total_tokens ?? 0,
+  };
+}

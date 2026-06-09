@@ -6,7 +6,9 @@
     "db:push": "drizzle-kit push",
     "build": "next build --webpack",
     "start": "next start",
-    "seed:content": "node scripts/seed-topic-content.js"
+    "seed:content": "node scripts/seed-topic-content.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.2",
@@ -37,6 +39,7 @@
     "@types/react-dom": "^19.2.3",
     "@vercel/node": "^4.0.0",
     "drizzle-kit": "^0.31.10",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "vitest": "^4.1.8"
   }
 }

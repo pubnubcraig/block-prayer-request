@@ -1,9 +1,10 @@
 import { parseRequest } from './parseRequest.js';
-import { selectVerse, generatePastoral } from './openaiPrayer.js';
+import { selectVerse, generatePastoral, generateAdviceAndPrayer } from './openaiPrayer.js';
 import { fetchPassageWithFallback } from './youversionBible.js';
 import { buildVerseLink } from './bibleComLink.js';
 import { normalizeBibleVersion } from './bibleVersions.js';
 import { moderateInput, detectCrisisKeywords } from './moderation.js';
+import { getCachedInterpretation, cacheInterpretation } from './verseInterpretationCache.js';
 
 export type PrayerRequestInput = {
   text: string;
@@ -99,14 +100,53 @@ export async function runPrayerCore(
       );
     }
 
-    onStatus?.('Preparing response…');
-    const pastoral = await generatePastoral({
-      text,
-      bible_version: version.abbrev,
-      bible_verse,
-      verse_content,
-    });
-    totalTokens += pastoral.tokensUsed;
+    // Check interpretation cache
+    const cached = await getCachedInterpretation(bible_verse, version.abbrev);
+
+    let verse_interpretation: string;
+    let adviceText: string;
+    let prayerText: string;
+    let pastoralTokens: number;
+
+    if (cached) {
+      // Cache HIT: generate only advice + prayer
+      onStatus?.('Preparing response (cached verse)…');
+      verse_interpretation = cached.interpretation;
+      const ap = await generateAdviceAndPrayer({
+        text,
+        bible_version: version.abbrev,
+        bible_verse,
+        verse_content,
+        verse_interpretation,
+      });
+      adviceText = ap.result.advice;
+      prayerText = ap.result.prayer;
+      pastoralTokens = ap.tokensUsed;
+    } else {
+      // Cache MISS: generate all three
+      onStatus?.('Preparing response…');
+      const pastoral = await generatePastoral({
+        text,
+        bible_version: version.abbrev,
+        bible_verse,
+        verse_content,
+      });
+      verse_interpretation = pastoral.result.verse_interpretation;
+      adviceText = pastoral.result.advice;
+      prayerText = pastoral.result.prayer;
+      pastoralTokens = pastoral.tokensUsed;
+
+      // Store interpretation for future requests (fire-and-forget)
+      cacheInterpretation(
+        bible_verse,
+        version.abbrev,
+        verse_content,
+        verse_interpretation,
+        process.env.OPENAI_MODEL ?? 'gpt-4o-mini',
+      ).catch((e) => console.error('[cache] Failed to store interpretation:', e));
+    }
+
+    totalTokens += pastoralTokens;
 
     // GPT-4o-mini blended rate: ~$0.375 per 1M tokens
     const costCents = Math.ceil(totalTokens * 0.0000375);
@@ -115,9 +155,9 @@ export async function runPrayerCore(
       bible_verse,
       verse_link,
       verse_content,
-      verse_interpretation: pastoral.result.verse_interpretation,
-      advice: pastoral.result.advice,
-      prayer: pastoral.result.prayer,
+      verse_interpretation,
+      advice: adviceText,
+      prayer: prayerText,
       bible_version_used: version.abbreviation,
       bible_version_fallback: version.usedFallback,
       ...(version.copyright ? { verse_copyright: version.copyright } : {}),
