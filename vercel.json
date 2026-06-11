@@ -5,6 +5,10 @@
     {
       "path": "/api/cron/fb-post",
       "schedule": "0 14 * * *"
+    },
+    {
+      "path": "/api/cron/fb-post-noon",
+      "schedule": "0 19 * * *"
     }
   ]
 }

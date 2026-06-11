@@ -204,13 +204,38 @@ export const prayerTopics = pgTable('prayer_topics', {
   verseContext: text('verse_context'),
 });
 
-export const facebookPostLog = pgTable('facebook_post_log', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  topicId: uuid('topic_id').references(() => prayerTopics.id),
-  postContent: text('post_content'),
-  facebookPostId: varchar('facebook_post_id', { length: 255 }),
-  postedAt: timestamp('posted_at'),
-  status: varchar('status', { length: 20 }).notNull(),
-  errorMessage: text('error_message'),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-});
+export const engagementTopics = pgTable(
+  'engagement_topics',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    contentType: varchar('content_type', { length: 50 }).notNull(),
+    prompt: text('prompt').notNull(),
+    verseReference: varchar('verse_reference', { length: 100 }),
+    verseText: text('verse_text'),
+    triviaAnswer: text('trivia_answer'),
+    active: boolean('active').notNull().default(true),
+    lastUsedAt: timestamp('last_used_at').notNull().defaultNow(),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (t) => [
+    index('idx_engagement_active').on(t.active),
+    index('idx_engagement_last_used').on(t.lastUsedAt),
+    index('idx_engagement_type').on(t.contentType),
+  ],
+);
+
+export const facebookPostLog = pgTable(
+  'facebook_post_log',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    topicId: uuid('topic_id').references(() => prayerTopics.id),
+    postContent: text('post_content'),
+    facebookPostId: varchar('facebook_post_id', { length: 255 }),
+    postedAt: timestamp('posted_at'),
+    status: varchar('status', { length: 20 }).notNull(),
+    errorMessage: text('error_message'),
+    postType: varchar('post_type', { length: 20 }).notNull().default('daily_prayer'),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (t) => [index('idx_fb_post_type').on(t.postType)],
+);

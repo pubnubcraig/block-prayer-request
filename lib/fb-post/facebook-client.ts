@@ -36,3 +36,31 @@ export async function publishToPage(
 
   return { postId: data.id };
 }
+
+export async function postComment(
+  postId: string,
+  message: string,
+): Promise<void> {
+  const accessToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+
+  if (!accessToken) {
+    throw new Error('FACEBOOK_PAGE_ACCESS_TOKEN not configured');
+  }
+
+  const url = `${GRAPH_API_BASE}/${postId}/comments`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      message,
+      access_token: accessToken,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(
+      `Facebook comment API error (${response.status}): ${errorBody}`,
+    );
+  }
+}
