@@ -1,8 +1,13 @@
 import { getDb } from '@/lib/db';
 import { engagementTopics } from '@/lib/db/schema';
-import { eq, and, lt, sql } from 'drizzle-orm';
+import { eq, and, lt, not, inArray, sql } from 'drizzle-orm';
 
-export async function selectEngagementTopic(contentType?: string) {
+type TopicFilter =
+  | { include: string }
+  | { exclude: string[] }
+  | undefined;
+
+export async function selectEngagementTopic(filter?: TopicFilter) {
   const db = getDb();
   if (!db) throw new Error('Database unavailable');
 
@@ -10,8 +15,11 @@ export async function selectEngagementTopic(contentType?: string) {
 
   const baseConditions = [
     eq(engagementTopics.active, true),
-    ...(contentType
-      ? [eq(engagementTopics.contentType, contentType)]
+    ...(filter && 'include' in filter
+      ? [eq(engagementTopics.contentType, filter.include)]
+      : []),
+    ...(filter && 'exclude' in filter
+      ? [not(inArray(engagementTopics.contentType, filter.exclude))]
       : []),
   ];
 

@@ -56,7 +56,7 @@ export async function GET(req: NextRequest) {
 
   try {
     // ── 4. Select prayer_poll topic ────────────────────────────────
-    const topic = await selectEngagementTopic('prayer_poll');
+    const topic = await selectEngagementTopic({ include: 'prayer_poll' });
     topicId = topic.id;
     console.log(
       `[fb-post-sunday-poll] Selected topic: "${topic.contentType}" (${topic.id})`,
