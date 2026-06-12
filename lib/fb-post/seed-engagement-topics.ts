@@ -4,6 +4,7 @@ export type SeedEngagementTopic = {
   verseReference?: string;
   verseText?: string;
   triviaAnswer?: string;
+  imageUrl?: string;
 };
 
 export const ENGAGEMENT_SEED_TOPICS: SeedEngagementTopic[] = [
@@ -1076,5 +1077,120 @@ export const ENGAGEMENT_SEED_TOPICS: SeedEngagementTopic[] = [
   {
     contentType: 'prayer_poll',
     prompt: 'What do you need to hear from God today?\n\n❤️ "I love you"\n👍 "I am with you"\n😮 "Trust me"\n🙏 "I have a plan"',
+  },
+
+  // Caption This (20 entries)
+  // Sunrises/Sunsets (5)
+  {
+    contentType: 'caption_this',
+    prompt: 'Give this image a Christian caption.',
+    imageUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4',
+  },
+  {
+    contentType: 'caption_this',
+    prompt: 'Give this image a Christian caption.',
+    imageUrl: 'https://images.unsplash.com/photo-1495616811223-4d98c6e9c869',
+  },
+  {
+    contentType: 'caption_this',
+    prompt: 'Give this image a Christian caption.',
+    imageUrl: 'https://images.unsplash.com/photo-1507608616759-54f48f0af0ee',
+  },
+  {
+    contentType: 'caption_this',
+    prompt: 'Give this image a Christian caption.',
+    imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b',
+  },
+  {
+    contentType: 'caption_this',
+    prompt: 'Give this image a Christian caption.',
+    imageUrl: 'https://images.unsplash.com/photo-1505142468610-359e7d316be0',
+  },
+
+  // Mountains (4)
+  {
+    contentType: 'caption_this',
+    prompt: 'Give this image a Christian caption.',
+    imageUrl: 'https://images.unsplash.com/photo-1519904981063-b0cf448d479e',
+  },
+  {
+    contentType: 'caption_this',
+    prompt: 'Give this image a Christian caption.',
+    imageUrl: 'https://images.unsplash.com/photo-1454496522488-7a8e488e8606',
+  },
+  {
+    contentType: 'caption_this',
+    prompt: 'Give this image a Christian caption.',
+    imageUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4',
+  },
+  {
+    contentType: 'caption_this',
+    prompt: 'Give this image a Christian caption.',
+    imageUrl: 'https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5',
+  },
+
+  // Oceans/Beaches (3)
+  {
+    contentType: 'caption_this',
+    prompt: 'Give this image a Christian caption.',
+    imageUrl: 'https://images.unsplash.com/photo-1505142468610-359e7d316be0',
+  },
+  {
+    contentType: 'caption_this',
+    prompt: 'Give this image a Christian caption.',
+    imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
+  },
+  {
+    contentType: 'caption_this',
+    prompt: 'Give this image a Christian caption.',
+    imageUrl: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19',
+  },
+
+  // Forests/Trees (3)
+  {
+    contentType: 'caption_this',
+    prompt: 'Give this image a Christian caption.',
+    imageUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e',
+  },
+  {
+    contentType: 'caption_this',
+    prompt: 'Give this image a Christian caption.',
+    imageUrl: 'https://images.unsplash.com/photo-1511497584788-876760111969',
+  },
+  {
+    contentType: 'caption_this',
+    prompt: 'Give this image a Christian caption.',
+    imageUrl: 'https://images.unsplash.com/photo-1448375240586-882707db888b',
+  },
+
+  // Starry Skies/Night (2)
+  {
+    contentType: 'caption_this',
+    prompt: 'Give this image a Christian caption.',
+    imageUrl: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a',
+  },
+  {
+    contentType: 'caption_this',
+    prompt: 'Give this image a Christian caption.',
+    imageUrl: 'https://images.unsplash.com/photo-1502134249126-9f3755a50d78',
+  },
+
+  // Valleys/Meadows (2)
+  {
+    contentType: 'caption_this',
+    prompt: 'Give this image a Christian caption.',
+    imageUrl: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429',
+  },
+  {
+    contentType: 'caption_this',
+    prompt: 'Give this image a Christian caption.',
+    imageUrl: 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29',
+  },
+
+  // Peaceful Waters (1)
+  {
+    contentType: 'caption_this',
+    prompt: 'Give this image a Christian caption.',
+    imageUrl: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05',
   },
 ];

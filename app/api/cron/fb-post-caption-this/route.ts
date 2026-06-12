@@ -4,7 +4,7 @@ import { engagementTopics, facebookPostLog } from '@/lib/db/schema';
 import { eq, and, gte } from 'drizzle-orm';
 import { selectEngagementTopic } from '@/lib/fb-post/select-engagement-topic';
 import { generateEngagementPost } from '@/lib/fb-post/generate-engagement-post';
-import { publishToPage, postComment } from '@/lib/fb-post/facebook-client';
+import { publishWithImage } from '@/lib/fb-post/facebook-client';
 import { notifyPostFailure } from '@/lib/fb-post/notify-failure';
 
 export const maxDuration = 60;
@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
   // ── 2. Check DB availability ───────────────────────────────────
   const db = getDb();
   if (!db) {
-    console.error('[fb-post-noon] Database unavailable');
+    console.error('[fb-post-caption-this] Database unavailable');
     return NextResponse.json({ error: 'DB unavailable' }, { status: 503 });
   }
 
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
     .from(facebookPostLog)
     .where(
       and(
-        eq(facebookPostLog.postType, 'engagement'),
+        eq(facebookPostLog.postType, 'caption_this'),
         eq(facebookPostLog.status, 'success'),
         gte(facebookPostLog.postedAt, todayStart),
       ),
@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
     .limit(1);
 
   if (existingPost) {
-    console.log('[fb-post-noon] Already posted today, skipping');
+    console.log('[fb-post-caption-this] Already posted today, skipping');
     return NextResponse.json({
       ok: true,
       skipped: true,
@@ -52,34 +52,38 @@ export async function GET(req: NextRequest) {
   let postContent: string | null = null;
 
   try {
-    // ── 4. Select engagement topic ───────────────────────────────
-    const topic = await selectEngagementTopic({ exclude: ['testimony', 'prayer_poll', 'caption_this'] });
+    // ── 4. Select caption_this topic ─────────────────────────────
+    const topic = await selectEngagementTopic({ include: 'caption_this' });
     topicId = topic.id;
     console.log(
-      `[fb-post-noon] Selected topic: "${topic.contentType}" (${topic.id})`,
+      `[fb-post-caption-this] Selected topic: "${topic.contentType}" (${topic.id})`,
     );
 
-    // ── 5. Generate engagement post (template-based, no AI) ──────
-    const { content, firstComment } = generateEngagementPost(topic);
+    // ── 5. Generate engagement post with image ───────────────────
+    const { content, imageUrl } = generateEngagementPost(topic);
     postContent = content;
 
-    // ── 6. Publish to Facebook (up to 3 retries) ─────────────────
+    if (!imageUrl) {
+      throw new Error('caption_this topic missing imageUrl');
+    }
+
+    // ── 6. Publish to Facebook with image (up to 3 retries) ─────
     let facebookPostId: string | null = null;
     let lastFbError: Error | null = null;
 
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
-        const result = await publishToPage(postContent);
+        const result = await publishWithImage(postContent, imageUrl);
         facebookPostId = result.postId;
         console.log(
-          `[fb-post-noon] Published to Facebook: ${facebookPostId}`,
+          `[fb-post-caption-this] Published to Facebook: ${facebookPostId}`,
         );
         break;
       } catch (fbError) {
         lastFbError =
           fbError instanceof Error ? fbError : new Error(String(fbError));
         console.warn(
-          `[fb-post-noon] Facebook attempt ${attempt}/3 failed:`,
+          `[fb-post-caption-this] Facebook attempt ${attempt}/3 failed:`,
           lastFbError.message,
         );
         if (attempt < 3) {
@@ -92,7 +96,7 @@ export async function GET(req: NextRequest) {
       // Facebook publish failed
       await db.insert(facebookPostLog).values({
         topicId: topic.id,
-        postType: 'engagement',
+        postType: 'caption_this',
         postContent,
         facebookPostId: null,
         postedAt: null,
@@ -106,11 +110,11 @@ export async function GET(req: NextRequest) {
           topicId: topic.id,
           contentType: topic.contentType,
           attempts: 3,
-          postType: 'engagement',
+          postType: 'caption_this',
         },
       ).catch((e) =>
         console.error(
-          '[fb-post-noon] Failed to send failure notification:',
+          '[fb-post-caption-this] Failed to send failure notification:',
           e,
         ),
       );
@@ -121,30 +125,16 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // ── 7. Post first comment if needed (trivia/finish verse) ────
-    if (firstComment) {
-      try {
-        await postComment(facebookPostId, firstComment);
-        console.log('[fb-post-noon] Posted answer in first comment');
-      } catch (commentError) {
-        console.warn(
-          '[fb-post-noon] Failed to post answer comment:',
-          commentError,
-        );
-        // Don't fail the entire job if comment fails
-      }
-    }
-
-    // ── 8. Update topic last_used_at ─────────────────────────────
+    // ── 7. Update topic last_used_at ─────────────────────────────
     await db
       .update(engagementTopics)
       .set({ lastUsedAt: new Date() })
       .where(eq(engagementTopics.id, topic.id));
 
-    // ── 9. Log success ───────────────────────────────────────────
+    // ── 8. Log success ───────────────────────────────────────────
     await db.insert(facebookPostLog).values({
       topicId: topic.id,
-      postType: 'engagement',
+      postType: 'caption_this',
       postContent,
       facebookPostId,
       postedAt: new Date(),
@@ -157,17 +147,18 @@ export async function GET(req: NextRequest) {
       facebookPostId,
       topicId: topic.id,
       contentType: topic.contentType,
+      imageUrl,
       status: 'success',
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error('[fb-post-noon] Unhandled error:', message);
+    console.error('[fb-post-caption-this] Unhandled error:', message);
 
     // Log the failure
     try {
       await db.insert(facebookPostLog).values({
         topicId,
-        postType: 'engagement',
+        postType: 'caption_this',
         postContent,
         facebookPostId: null,
         postedAt: null,
@@ -175,17 +166,17 @@ export async function GET(req: NextRequest) {
         errorMessage: message,
       });
     } catch (logErr) {
-      console.error('[fb-post-noon] Failed to log error:', logErr);
+      console.error('[fb-post-caption-this] Failed to log error:', logErr);
     }
 
     // Notify admin
     await notifyPostFailure(message, {
       topicId,
       phase: 'unhandled',
-      postType: 'engagement',
+      postType: 'caption_this',
     }).catch((e) =>
       console.error(
-        '[fb-post-noon] Failed to send failure notification:',
+        '[fb-post-caption-this] Failed to send failure notification:',
         e,
       ),
     );

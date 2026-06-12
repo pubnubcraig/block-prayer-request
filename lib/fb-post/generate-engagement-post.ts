@@ -5,11 +5,13 @@ export type EngagementTopic = {
   verseReference?: string | null;
   verseText?: string | null;
   triviaAnswer?: string | null;
+  imageUrl?: string | null;
 };
 
 export type GeneratedEngagementPost = {
   content: string;
   firstComment?: string;
+  imageUrl?: string;
 };
 
 /**
@@ -69,6 +71,16 @@ export function generateEngagementPost(
     case 'prayer_poll':
       // Emoji reaction poll for prayer needs
       return { content: topic.prompt };
+
+    case 'caption_this':
+      // Image post with caption prompt
+      if (!topic.imageUrl) {
+        throw new Error('caption_this requires imageUrl');
+      }
+      return {
+        content: topic.prompt,
+        imageUrl: topic.imageUrl,
+      };
 
     default:
       throw new Error(`Unknown engagement type: ${topic.contentType}`);

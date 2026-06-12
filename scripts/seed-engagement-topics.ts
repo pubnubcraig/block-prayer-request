@@ -44,6 +44,7 @@ async function seedEngagementTopics() {
         verseReference: t.verseReference ?? null,
         verseText: t.verseText ?? null,
         triviaAnswer: t.triviaAnswer ?? null,
+        imageUrl: t.imageUrl ?? null,
       })),
     );
 

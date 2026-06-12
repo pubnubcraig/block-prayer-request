@@ -17,6 +17,10 @@
     {
       "path": "/api/cron/fb-post-tuesday-testimony",
       "schedule": "0 16 * * 2"
+    },
+    {
+      "path": "/api/cron/fb-post-caption-this",
+      "schedule": "0 0 * * *"
     }
   ]
 }

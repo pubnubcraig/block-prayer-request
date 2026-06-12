@@ -213,6 +213,7 @@ export const engagementTopics = pgTable(
     verseReference: varchar('verse_reference', { length: 100 }),
     verseText: text('verse_text'),
     triviaAnswer: text('trivia_answer'),
+    imageUrl: text('image_url'),
     active: boolean('active').notNull().default(true),
     lastUsedAt: timestamp('last_used_at').notNull().defaultNow(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
