@@ -66,6 +66,10 @@ export function generateEngagementPost(
       // Personal story prompt
       return { content: topic.prompt };
 
+    case 'prayer_poll':
+      // Emoji reaction poll for prayer needs
+      return { content: topic.prompt };
+
     default:
       throw new Error(`Unknown engagement type: ${topic.contentType}`);
   }

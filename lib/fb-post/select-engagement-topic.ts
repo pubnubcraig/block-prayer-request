@@ -2,11 +2,18 @@ import { getDb } from '@/lib/db';
 import { engagementTopics } from '@/lib/db/schema';
 import { eq, and, lt, sql } from 'drizzle-orm';
 
-export async function selectEngagementTopic() {
+export async function selectEngagementTopic(contentType?: string) {
   const db = getDb();
   if (!db) throw new Error('Database unavailable');
 
   const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+
+  const baseConditions = [
+    eq(engagementTopics.active, true),
+    ...(contentType
+      ? [eq(engagementTopics.contentType, contentType)]
+      : []),
+  ];
 
   // Prefer topics unused in 90 days, distributed across content types
   const [topic] = await db
@@ -14,7 +21,7 @@ export async function selectEngagementTopic() {
     .from(engagementTopics)
     .where(
       and(
-        eq(engagementTopics.active, true),
+        ...baseConditions,
         lt(engagementTopics.lastUsedAt, ninetyDaysAgo),
       ),
     )
@@ -26,7 +33,7 @@ export async function selectEngagementTopic() {
     const [fallback] = await db
       .select()
       .from(engagementTopics)
-      .where(eq(engagementTopics.active, true))
+      .where(and(...baseConditions))
       .orderBy(engagementTopics.lastUsedAt)
       .limit(1);
 

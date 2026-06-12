@@ -995,4 +995,86 @@ export const ENGAGEMENT_SEED_TOPICS: SeedEngagementTopic[] = [
     contentType: 'testimony',
     prompt: 'What is a relationship God has restored in your life?',
   },
+
+  // Prayer Poll (20 entries)
+  {
+    contentType: 'prayer_poll',
+    prompt: 'What would you like prayer for this week?\n\n❤️ Family\n👍 Health\n😮 Finances\n🙏 Spiritual Growth',
+  },
+  {
+    contentType: 'prayer_poll',
+    prompt: 'What area of your life needs God\'s strength right now?\n\n❤️ Work\n👍 Relationships\n😮 Health\n🙏 Faith',
+  },
+  {
+    contentType: 'prayer_poll',
+    prompt: 'Where do you need God\'s peace today?\n\n❤️ Home\n👍 Workplace\n😮 Heart\n🙏 Future',
+  },
+  {
+    contentType: 'prayer_poll',
+    prompt: 'What are you trusting God with this week?\n\n❤️ A relationship\n👍 A decision\n😮 A financial need\n🙏 A health concern',
+  },
+  {
+    contentType: 'prayer_poll',
+    prompt: 'What do you need most from God today?\n\n❤️ Comfort\n👍 Direction\n😮 Healing\n🙏 Patience',
+  },
+  {
+    contentType: 'prayer_poll',
+    prompt: 'How can we pray for you this week?\n\n❤️ Marriage or family\n👍 Career or school\n😮 Anxiety or stress\n🙏 Purpose or calling',
+  },
+  {
+    contentType: 'prayer_poll',
+    prompt: 'What is your biggest prayer request right now?\n\n❤️ Healing\n👍 Provision\n😮 Restoration\n🙏 Guidance',
+  },
+  {
+    contentType: 'prayer_poll',
+    prompt: 'What season are you walking through?\n\n❤️ Waiting\n👍 Growing\n😮 Struggling\n🙏 Celebrating',
+  },
+  {
+    contentType: 'prayer_poll',
+    prompt: 'What would strengthen your faith this week?\n\n❤️ Answered prayer\n👍 Community\n😮 Scripture\n🙏 Worship',
+  },
+  {
+    contentType: 'prayer_poll',
+    prompt: 'What do you need God\'s wisdom for?\n\n❤️ A decision at work\n👍 A family matter\n😮 A friendship\n🙏 My next step in life',
+  },
+  {
+    contentType: 'prayer_poll',
+    prompt: 'What are you believing God for?\n\n❤️ Breakthrough\n👍 Healing\n😮 Restoration\n🙏 Open doors',
+  },
+  {
+    contentType: 'prayer_poll',
+    prompt: 'Where do you need courage today?\n\n❤️ A hard conversation\n👍 A new beginning\n😮 Letting go\n🙏 Standing firm in faith',
+  },
+  {
+    contentType: 'prayer_poll',
+    prompt: 'What is weighing on your heart this week?\n\n❤️ A loved one\n👍 My health\n😮 Uncertainty\n🙏 Loneliness',
+  },
+  {
+    contentType: 'prayer_poll',
+    prompt: 'What kind of prayer do you need most?\n\n❤️ Prayer for peace\n👍 Prayer for strength\n😮 Prayer for provision\n🙏 Prayer for protection',
+  },
+  {
+    contentType: 'prayer_poll',
+    prompt: 'How can the church pray for you?\n\n❤️ My family\n👍 My walk with God\n😮 A difficult trial\n🙏 My community',
+  },
+  {
+    contentType: 'prayer_poll',
+    prompt: 'What do you need to surrender to God?\n\n❤️ Fear\n👍 Control\n😮 Doubt\n🙏 Unforgiveness',
+  },
+  {
+    contentType: 'prayer_poll',
+    prompt: 'What is God teaching you right now?\n\n❤️ Trust\n👍 Patience\n😮 Humility\n🙏 Gratitude',
+  },
+  {
+    contentType: 'prayer_poll',
+    prompt: 'What would help you grow closer to God?\n\n❤️ Daily prayer\n👍 Bible study\n😮 Fellowship\n🙏 Serving others',
+  },
+  {
+    contentType: 'prayer_poll',
+    prompt: 'What area of life do you want God to move in?\n\n❤️ Finances\n👍 Relationships\n😮 Career\n🙏 Health',
+  },
+  {
+    contentType: 'prayer_poll',
+    prompt: 'What do you need to hear from God today?\n\n❤️ "I love you"\n👍 "I am with you"\n😮 "Trust me"\n🙏 "I have a plan"',
+  },
 ];
