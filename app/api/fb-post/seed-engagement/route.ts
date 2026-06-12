@@ -15,16 +15,23 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    // Get existing content types to only insert new ones
     const existing = await db.select().from(engagementTopics);
-    if (existing.length > 0) {
+    const existingTypes = new Set(existing.map((t) => t.contentType));
+
+    const newTopics = ENGAGEMENT_SEED_TOPICS.filter(
+      (t) => !existingTypes.has(t.contentType),
+    );
+
+    if (newTopics.length === 0) {
       return NextResponse.json({
         ok: true,
-        message: `Already seeded (${existing.length} topics)`,
+        message: `All content types already seeded (${existing.length} topics)`,
       });
     }
 
     await db.insert(engagementTopics).values(
-      ENGAGEMENT_SEED_TOPICS.map((t) => ({
+      newTopics.map((t) => ({
         contentType: t.contentType,
         prompt: t.prompt,
         verseReference: t.verseReference ?? null,
@@ -33,7 +40,12 @@ export async function POST(req: NextRequest) {
       })),
     );
 
-    return NextResponse.json({ ok: true, inserted: ENGAGEMENT_SEED_TOPICS.length });
+    const insertedTypes = [...new Set(newTopics.map((t) => t.contentType))];
+    return NextResponse.json({
+      ok: true,
+      inserted: newTopics.length,
+      contentTypes: insertedTypes,
+    });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error('[fb-post/seed-engagement] Error:', message);
