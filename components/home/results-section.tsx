@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { PrayerResult, escapeHtml } from '@/lib/types';
+import SharePrompt from './share-prompt';
 
 export default function ResultsSection({
   result,
@@ -216,6 +217,8 @@ export default function ResultsSection({
           </div>
         </div>
       </div>
+
+      <SharePrompt result={result} requestText={requestText} />
     </>
   );
 }

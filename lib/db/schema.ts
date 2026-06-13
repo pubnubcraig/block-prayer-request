@@ -225,6 +225,67 @@ export const engagementTopics = pgTable(
   ],
 );
 
+// ── Shared prayers (Prayer Share Wall) ────────────────────────────────
+
+export const sharedPrayers = pgTable(
+  'shared_prayers',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+
+    // Links back (both nullable — unauthenticated users can share)
+    prayerHistoryId: uuid('prayer_history_id').references(
+      () => prayerHistory.id,
+      { onDelete: 'set null' },
+    ),
+    userId: uuid('user_id').references(() => users.id, {
+      onDelete: 'set null',
+    }),
+
+    // Display identity
+    displayNameType: varchar('display_name_type', { length: 20 })
+      .notNull()
+      .default('anonymous'),
+    firstName: varchar('first_name', { length: 50 }),
+
+    // AI-generated public-facing content
+    publicTitle: varchar('public_title', { length: 200 }).notNull(),
+    publicSummary: text('public_summary').notNull(),
+
+    // Prayer content (stored at share time, immutable snapshot)
+    requestText: text('request_text').notNull(),
+    verseReference: varchar('verse_reference', { length: 255 }).notNull(),
+    verseText: text('verse_text').notNull(),
+    prayerExcerpt: text('prayer_excerpt').notNull(),
+    fullPrayer: text('full_prayer').notNull(),
+    interpretation: text('interpretation'),
+    practicalGuidance: text('practical_guidance'),
+
+    // URL + visibility
+    slug: varchar('slug', { length: 120 }).notNull().unique(),
+    isPublic: boolean('is_public').notNull().default(true),
+    isApproved: boolean('is_approved').notNull().default(true),
+
+    // Engagement counters
+    prayedCount: integer('prayed_count').notNull().default(0),
+    shareCount: integer('share_count').notNull().default(0),
+
+    // Consent + moderation
+    consentPublicUse: boolean('consent_public_use').notNull().default(false),
+    moderationPassed: boolean('moderation_passed').notNull().default(false),
+    moderationCategories: text('moderation_categories'),
+
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  (t) => [
+    index('idx_shared_prayers_slug').on(t.slug),
+    index('idx_shared_prayers_public').on(t.isPublic, t.isApproved, t.createdAt),
+    index('idx_shared_prayers_user').on(t.userId),
+  ],
+);
+
+// ── Facebook prayer posts ──────────────────────────────────────────
+
 export const facebookPostLog = pgTable(
   'facebook_post_log',
   {
