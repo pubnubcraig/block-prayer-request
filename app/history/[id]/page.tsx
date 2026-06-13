@@ -42,6 +42,7 @@ export default function HistoryDetailPage() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -118,7 +119,15 @@ export default function HistoryDetailPage() {
           )}
         </div>
         <div className="flex items-center gap-4">
-          <HistorySharePrompt entry={entry} />
+          {entry.requestText && entry.bibleVerse && entry.verseContent && entry.prayer && (
+            <button
+              type="button"
+              onClick={() => setShareOpen(true)}
+              className="text-seateal hover:text-oceanblue bg-transparent border-none cursor-pointer text-[0.82rem] font-[inherit] transition-colors"
+            >
+              Share to Prayer Wall
+            </button>
+          )}
           <button
             type="button"
             onClick={handleDelete}
@@ -194,6 +203,12 @@ export default function HistoryDetailPage() {
           </article>
         )}
       </div>
+
+      <HistorySharePrompt
+        entry={entry}
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+      />
 
       <JournalSection
         prayerId={entry.id}

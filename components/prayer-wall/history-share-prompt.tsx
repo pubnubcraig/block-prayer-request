@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import ShareButtons from './share-buttons';
 
-type Step = 'closed' | 'initial' | 'name-input' | 'preview' | 'submitting' | 'success' | 'error';
+type Step = 'initial' | 'name-input' | 'preview' | 'submitting' | 'success' | 'error';
 
 type HistoryPrayer = {
   requestText: string | null;
@@ -18,14 +18,20 @@ type HistoryPrayer = {
 
 export default function HistorySharePrompt({
   entry,
+  open,
+  onClose,
 }: {
   entry: HistoryPrayer;
+  open: boolean;
+  onClose: () => void;
 }) {
-  const [step, setStep] = useState<Step>('closed');
+  const [step, setStep] = useState<Step>('initial');
   const [displayNameType, setDisplayNameType] = useState<'anonymous' | 'first_name'>('anonymous');
   const [firstName, setFirstName] = useState('');
   const [slug, setSlug] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+
+  if (!open) return null;
 
   // Can't share if missing required fields
   if (!entry.requestText || !entry.bibleVerse || !entry.verseContent || !entry.prayer) {
@@ -69,17 +75,9 @@ export default function HistorySharePrompt({
     }
   }
 
-  // Trigger button (shown in the header area)
-  if (step === 'closed') {
-    return (
-      <button
-        type="button"
-        onClick={() => setStep('initial')}
-        className="text-seateal/60 hover:text-seateal bg-transparent border-none cursor-pointer text-[0.82rem] font-[inherit] transition-colors"
-      >
-        Share to Prayer Wall
-      </button>
-    );
+  function handleClose() {
+    setStep('initial');
+    onClose();
   }
 
   // Initial choice
@@ -115,7 +113,7 @@ export default function HistorySharePrompt({
           </button>
           <button
             type="button"
-            onClick={() => setStep('closed')}
+            onClick={handleClose}
             className="px-4 py-2 text-[0.85rem] text-[var(--ink-subtle)] hover:text-[var(--ink-muted)] transition-colors cursor-pointer bg-transparent border-none"
           >
             Cancel
@@ -304,7 +302,7 @@ export default function HistorySharePrompt({
         </button>
         <button
           type="button"
-          onClick={() => setStep('closed')}
+          onClick={handleClose}
           className="px-4 py-2 text-[0.85rem] text-[var(--ink-subtle)] hover:text-[var(--ink-muted)] transition-colors cursor-pointer bg-transparent border-none"
         >
           Dismiss
