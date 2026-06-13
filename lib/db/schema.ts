@@ -229,7 +229,7 @@ export const facebookPostLog = pgTable(
   'facebook_post_log',
   {
     id: uuid('id').defaultRandom().primaryKey(),
-    topicId: uuid('topic_id').references(() => prayerTopics.id),
+    topicId: uuid('topic_id'),
     postContent: text('post_content'),
     facebookPostId: varchar('facebook_post_id', { length: 255 }),
     postedAt: timestamp('posted_at'),
