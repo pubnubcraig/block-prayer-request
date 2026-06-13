@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import IPrayedButton from './i-prayed-button';
+import LoveButton from './love-button';
 import { SharedPrayerCard } from '@/lib/types';
 
 function timeAgo(dateStr: string): string {
@@ -60,7 +61,10 @@ export default function PrayerWallCard({
       </p>
 
       <div className="flex items-center justify-between gap-3 pt-2 mt-auto border-t border-[var(--border)]">
-        <IPrayedButton slug={prayer.slug} initialCount={prayer.prayedCount} />
+        <div className="flex items-center gap-2">
+          <IPrayedButton slug={prayer.slug} initialCount={prayer.prayedCount} />
+          <LoveButton slug={prayer.slug} />
+        </div>
 
         <Link
           href={`/prayer-wall/${prayer.slug}`}

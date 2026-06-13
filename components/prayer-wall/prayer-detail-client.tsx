@@ -1,6 +1,7 @@
 'use client';
 
 import IPrayedButton from './i-prayed-button';
+import LoveButton from './love-button';
 import ShareButtons from './share-buttons';
 import { SharedPrayerDetail } from '@/lib/types';
 
@@ -15,6 +16,7 @@ export default function PrayerDetailClient({
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center gap-3">
         <IPrayedButton slug={prayer.slug} initialCount={prayer.prayedCount} />
+        <LoveButton slug={prayer.slug} />
       </div>
 
       <div>

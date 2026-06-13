@@ -347,6 +347,14 @@ export default function HistoryPage() {
                       >
                         View
                       </Link>
+                      {item.requestText && item.bibleVerse && item.verseContent && item.prayer && (
+                        <Link
+                          href={`/history/${item.id}?share=1`}
+                          className="text-seateal no-underline hover:text-oceanblue transition-colors text-[0.82rem] font-semibold"
+                        >
+                          Share
+                        </Link>
+                      )}
                       <button
                         type="button"
                         onClick={() => handleDelete(item.id)}
@@ -424,6 +432,14 @@ export default function HistoryPage() {
                         >
                           View
                         </Link>
+                        {item.requestText && item.bibleVerse && item.verseContent && item.prayer && (
+                          <Link
+                            href={`/history/${item.id}?share=1`}
+                            className="text-seateal no-underline hover:text-oceanblue transition-colors text-[0.82rem] font-semibold"
+                          >
+                            Share
+                          </Link>
+                        )}
                         <button
                           type="button"
                           onClick={() => handleDelete(item.id)}
@@ -522,6 +538,14 @@ export default function HistoryPage() {
                 >
                   View details
                 </Link>
+                {item.requestText && item.bibleVerse && item.verseContent && item.prayer && (
+                  <Link
+                    href={`/history/${item.id}?share=1`}
+                    className="text-seateal no-underline hover:text-oceanblue transition-colors text-[0.82rem] font-semibold"
+                  >
+                    Share
+                  </Link>
+                )}
                 <button
                   type="button"
                   onClick={() => handleDelete(item.id)}

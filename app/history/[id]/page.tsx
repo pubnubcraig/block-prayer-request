@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import SiteHeader from '@/components/layout/site-header';
 import SiteFooter from '@/components/layout/site-footer';
 import JournalSection from '@/components/prayer-journal/journal-section';
@@ -36,13 +36,14 @@ function formatFullDate(dateStr: string): string {
 export default function HistoryDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const id = params.id as string;
 
   const [entry, setEntry] = useState<HistoryEntry | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [shareOpen, setShareOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(searchParams.get('share') === '1');
 
   useEffect(() => {
     async function load() {
@@ -123,7 +124,7 @@ export default function HistoryDetailPage() {
             <button
               type="button"
               onClick={() => setShareOpen(true)}
-              className="text-seateal hover:text-oceanblue bg-transparent border-none cursor-pointer text-[0.82rem] font-[inherit] transition-colors"
+              className="btn-submit text-[0.82rem] px-4 py-1.5"
             >
               Share to Prayer Wall
             </button>
