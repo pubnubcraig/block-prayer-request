@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import SiteHeader from '@/components/layout/site-header';
 import SiteFooter from '@/components/layout/site-footer';
 import JournalSection from '@/components/prayer-journal/journal-section';
+import HistorySharePrompt from '@/components/prayer-wall/history-share-prompt';
 
 type HistoryEntry = {
   id: string;
@@ -116,14 +117,17 @@ export default function HistoryDetailPage() {
             </span>
           )}
         </div>
-        <button
-          type="button"
-          onClick={handleDelete}
-          disabled={deleting}
-          className="text-coral/60 hover:text-coral bg-transparent border-none cursor-pointer text-[0.82rem] font-[inherit] disabled:opacity-50 transition-colors"
-        >
-          {deleting ? 'Deleting\u2026' : 'Delete'}
-        </button>
+        <div className="flex items-center gap-4">
+          <HistorySharePrompt entry={entry} />
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={deleting}
+            className="text-coral/60 hover:text-coral bg-transparent border-none cursor-pointer text-[0.82rem] font-[inherit] disabled:opacity-50 transition-colors"
+          >
+            {deleting ? 'Deleting\u2026' : 'Delete'}
+          </button>
+        </div>
       </div>
 
       {/* Original request */}
