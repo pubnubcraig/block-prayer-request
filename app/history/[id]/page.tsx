@@ -124,7 +124,7 @@ export default function HistoryDetailPage() {
             <button
               type="button"
               onClick={() => setShareOpen(true)}
-              className="btn-submit text-[0.82rem] px-4 py-1.5"
+              className="btn-submit text-[0.82rem] px-4 py-1.5 whitespace-nowrap"
             >
               Share to Prayer Wall
             </button>
