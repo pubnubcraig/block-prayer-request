@@ -4,6 +4,30 @@ export type FacebookPostResult = {
   postId: string;
 };
 
+export class FacebookAuthError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'FacebookAuthError';
+  }
+}
+
+function parseAndThrowFacebookError(status: number, body: string): never {
+  let code: number | undefined;
+  try {
+    const parsed = JSON.parse(body) as { error?: { code?: number } };
+    code = parsed.error?.code;
+  } catch {
+    // non-JSON response
+  }
+  // Code 190 = invalid/expired access token — retrying won't help
+  if (code === 190) {
+    throw new FacebookAuthError(
+      `Facebook API error (${status}): ${body} — FACEBOOK_PAGE_ACCESS_TOKEN is invalid or expired. Regenerate it in Vercel.`,
+    );
+  }
+  throw new Error(`Facebook API error (${status}): ${body}`);
+}
+
 export async function publishToPage(
   message: string,
 ): Promise<FacebookPostResult> {
@@ -28,7 +52,7 @@ export async function publishToPage(
 
   if (!response.ok) {
     const errorBody = await response.text();
-    throw new Error(`Facebook API error (${response.status}): ${errorBody}`);
+    parseAndThrowFacebookError(response.status, errorBody);
   }
 
   const data = (await response.json()) as { id?: string };
@@ -64,9 +88,7 @@ export async function publishWithImage(
 
   if (!response.ok) {
     const errorBody = await response.text();
-    throw new Error(
-      `Facebook photo API error (${response.status}): ${errorBody}`,
-    );
+    parseAndThrowFacebookError(response.status, errorBody);
   }
 
   const data = (await response.json()) as { id?: string; post_id?: string };
@@ -98,8 +120,6 @@ export async function postComment(
 
   if (!response.ok) {
     const errorBody = await response.text();
-    throw new Error(
-      `Facebook comment API error (${response.status}): ${errorBody}`,
-    );
+    parseAndThrowFacebookError(response.status, errorBody);
   }
 }

@@ -4,7 +4,7 @@ import { engagementTopics, facebookPostLog } from '@/lib/db/schema';
 import { eq, and, gte } from 'drizzle-orm';
 import { selectEngagementTopic } from '@/lib/fb-post/select-engagement-topic';
 import { generateEngagementPost } from '@/lib/fb-post/generate-engagement-post';
-import { publishWithImage } from '@/lib/fb-post/facebook-client';
+import { publishWithImage, FacebookAuthError } from '@/lib/fb-post/facebook-client';
 import { notifyPostFailure } from '@/lib/fb-post/notify-failure';
 
 export const maxDuration = 60;
@@ -86,6 +86,7 @@ export async function GET(req: NextRequest) {
           `[fb-post-caption-this] Facebook attempt ${attempt}/3 failed:`,
           lastFbError.message,
         );
+        if (lastFbError instanceof FacebookAuthError) break;
         if (attempt < 3) {
           await new Promise((r) => setTimeout(r, 2000 * attempt));
         }

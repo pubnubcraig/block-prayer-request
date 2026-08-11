@@ -4,7 +4,7 @@ import { getDb } from '@/lib/db';
 import { prayerHistory, prayerJournalEntries, userProfiles } from '@/lib/db/schema';
 import { eq, and, or, isNull, desc, count, max, inArray, ilike, exists, notExists, sql } from 'drizzle-orm';
 
-const FREE_TIER_LIMIT = 12;
+const PAGE_SIZE = 20;
 
 export async function GET(req: NextRequest) {
   const session = await auth();
@@ -23,8 +23,8 @@ export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const page = Math.max(1, parseInt(url.searchParams.get('page') ?? '1', 10));
   const limit = Math.min(
-    FREE_TIER_LIMIT,
-    Math.max(1, parseInt(url.searchParams.get('limit') ?? String(FREE_TIER_LIMIT), 10)),
+    100,
+    Math.max(1, parseInt(url.searchParams.get('limit') ?? String(PAGE_SIZE), 10)),
   );
   const offset = (page - 1) * limit;
 
@@ -108,16 +108,13 @@ export async function GET(req: NextRequest) {
   });
 
   const total = countRow?.total ?? 0;
-  // Free tier: cap visible items at FREE_TIER_LIMIT
-  const cappedTotal = Math.min(total, FREE_TIER_LIMIT);
 
   return NextResponse.json({
-    items: items.slice(0, FREE_TIER_LIMIT - offset),
+    items,
     page,
     limit,
-    total: cappedTotal,
-    totalPages: Math.ceil(cappedTotal / limit),
-    plan: 'free',
+    total,
+    totalPages: Math.ceil(total / limit),
   });
 }
 
@@ -144,23 +141,6 @@ export async function POST(req: NextRequest) {
   if (mode === 'do-not-save') {
     return NextResponse.json(
       { error: 'Saving is disabled in your profile settings.' },
-      { status: 403 },
-    );
-  }
-
-  // Check FREE_TIER_LIMIT
-  const [countRow] = await db
-    .select({ total: count() })
-    .from(prayerHistory)
-    .where(
-      and(
-        eq(prayerHistory.userId, session.user.id),
-        isNull(prayerHistory.deletedAt),
-      ),
-    );
-  if ((countRow?.total ?? 0) >= FREE_TIER_LIMIT) {
-    return NextResponse.json(
-      { error: 'Prayer history limit reached for free tier.' },
       { status: 403 },
     );
   }

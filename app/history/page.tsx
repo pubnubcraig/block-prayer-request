@@ -78,7 +78,6 @@ export default function HistoryPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
-  const [plan, setPlan] = useState('free');
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'answered'>('all');
   const [journalFilter, setJournalFilter] = useState<'all' | 'has' | 'none'>('all');
@@ -108,7 +107,7 @@ export default function HistoryPage() {
   const fetchHistory = useCallback(async (p: number, status: string, journal: string, q: string) => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({ page: String(p), limit: '12' });
+      const params = new URLSearchParams({ page: String(p) });
       if (status !== 'all') params.set('status', status);
       if (journal !== 'all') params.set('journal', journal);
       if (q) params.set('q', q);
@@ -119,7 +118,6 @@ export default function HistoryPage() {
       setPage(data.page);
       setTotalPages(data.totalPages);
       setTotal(data.total);
-      setPlan(data.plan ?? 'free');
     } catch {
       // silently fail
     } finally {
@@ -582,16 +580,6 @@ export default function HistoryPage() {
           >
             Next &rarr;
           </button>
-        </div>
-      )}
-
-      {/* Free tier notice */}
-      {!loading && items.length > 0 && plan === 'free' && (
-        <div className="mt-8 border-l-2 border-seateal/40 pl-4 py-2">
-          <p className="text-[0.82rem] text-[var(--ink-subtle)] m-0">
-            Free accounts show your 12 most recent prayers. Upgrade to a paid
-            plan for unlimited history.
-          </p>
         </div>
       )}
 
