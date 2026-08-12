@@ -9,6 +9,7 @@ import {
 } from '@/lib/fb-post/generate-post';
 import { publishToPage, FacebookAuthError } from '@/lib/fb-post/facebook-client';
 import { notifyPostFailure } from '@/lib/fb-post/notify-failure';
+import { sendMorningPrayerEmails } from '@/lib/fb-post/send-prayer-emails';
 
 export const maxDuration = 60;
 
@@ -125,16 +126,23 @@ export async function GET(req: NextRequest) {
         : 'success'
       : 'failed';
 
-    await db.insert(facebookPostLog).values({
+    const [logRow] = await db.insert(facebookPostLog).values({
       topicId: topic.id,
       postContent,
       facebookPostId,
       postedAt: facebookPostId ? new Date() : null,
       status,
       errorMessage: lastFbError?.message ?? null,
-    });
+    }).returning({ id: facebookPostLog.id });
 
-    // ── 9. Notify on failure ─────────────────────────────────────
+    // ── 9. Send subscriber emails (only on successful post) ──────
+    if (facebookPostId && logRow?.id) {
+      await sendMorningPrayerEmails(logRow.id, topic, postContent).catch((e) =>
+        console.error('[fb-post] Failed to send subscriber emails:', e),
+      );
+    }
+
+    // ── 10. Notify on failure ────────────────────────────────────
     if (!facebookPostId) {
       await notifyPostFailure(lastFbError?.message ?? 'Unknown error', {
         topicId: topic.id,

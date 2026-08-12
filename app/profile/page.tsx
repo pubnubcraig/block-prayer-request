@@ -46,6 +46,7 @@ export default function ProfilePage() {
   const [churchName, setChurchName] = useState('');
   const [timezone, setTimezone] = useState('');
   const [prayerHistoryMode, setPrayerHistoryMode] = useState('save-per-request');
+  const [dailyPrayerEmailOptIn, setDailyPrayerEmailOptIn] = useState(false);
 
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -90,6 +91,7 @@ export default function ProfilePage() {
           setPrayerHistoryMode(
             data.profile.prayerHistoryMode || 'save-per-request',
           );
+          setDailyPrayerEmailOptIn(data.profile.dailyPrayerEmailOptIn ?? false);
         }
       } catch {
         setError('Unable to load profile. Please try again later.');
@@ -194,6 +196,7 @@ export default function ProfilePage() {
           churchName: churchName || null,
           timezone: timezone || null,
           prayerHistoryMode,
+          dailyPrayerEmailOptIn,
         }),
       });
 
@@ -579,6 +582,21 @@ export default function ProfilePage() {
                 </label>
               ))}
             </div>
+          </div>
+
+          <div>
+            <span className={labelClass}>Morning prayer email</span>
+            <label className="flex items-start gap-3 cursor-pointer mt-2">
+              <input
+                type="checkbox"
+                checked={dailyPrayerEmailOptIn}
+                onChange={(e) => setDailyPrayerEmailOptIn(e.target.checked)}
+                className="accent-seateal mt-0.5 shrink-0"
+              />
+              <span className="text-[0.9rem] text-[var(--ink-muted)]">
+                Email me the daily morning prayer with Facebook and Instagram share buttons
+              </span>
+            </label>
           </div>
         </fieldset>
 

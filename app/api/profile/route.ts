@@ -42,6 +42,7 @@ export async function GET() {
       churchName: profile.churchName,
       timezone: profile.timezone,
       prayerHistoryMode: profile.prayerHistoryMode,
+      dailyPrayerEmailOptIn: profile.dailyPrayerEmailOptIn,
     },
   });
 }
@@ -80,7 +81,8 @@ export async function PUT(request: NextRequest) {
     churchName,
     timezone,
     prayerHistoryMode,
-  } = body as Record<string, string | string[] | null>;
+    dailyPrayerEmailOptIn,
+  } = body as Record<string, string | string[] | boolean | null>;
 
   try {
     await db
@@ -100,6 +102,7 @@ export async function PUT(request: NextRequest) {
         churchName: (churchName as string) || null,
         timezone: (timezone as string) || null,
         prayerHistoryMode: (prayerHistoryMode as string) || 'save-per-request',
+        dailyPrayerEmailOptIn: dailyPrayerEmailOptIn === true,
         updatedAt: new Date(),
       })
       .where(eq(userProfiles.userId, session.user.id));

@@ -117,6 +117,9 @@ export const userProfiles = pgTable('user_profiles', {
   prayerHistoryMode: varchar('prayer_history_mode', { length: 20 }).default(
     'save-per-request',
   ),
+  dailyPrayerEmailOptIn: boolean('daily_prayer_email_opt_in')
+    .default(false)
+    .notNull(),
 
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
@@ -197,6 +200,7 @@ export const prayerTopics = pgTable('prayer_topics', {
   verseText: text('verse_text').notNull(),
   active: boolean('active').notNull().default(true),
   lastUsedAt: timestamp('last_used_at'),
+  lastUsedAtInstagram: timestamp('last_used_at_instagram'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   samplePrayer: text('sample_prayer'),
   prayerPrompts: text('prayer_prompts'),
@@ -297,7 +301,52 @@ export const facebookPostLog = pgTable(
     status: varchar('status', { length: 20 }).notNull(),
     errorMessage: text('error_message'),
     postType: varchar('post_type', { length: 20 }).notNull().default('daily_prayer'),
+    emailNotificationSentAt: timestamp('email_notification_sent_at'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
   },
   (t) => [index('idx_fb_post_type').on(t.postType)],
+);
+
+// ── Instagram posts ──────────────────────────────────────────────
+
+export const instagramPostLog = pgTable(
+  'instagram_post_log',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    topicId: uuid('topic_id').references(() => prayerTopics.id, {
+      onDelete: 'set null',
+    }),
+    postType: varchar('post_type', { length: 30 }).notNull(),
+    postTheme: varchar('post_theme', { length: 50 }),
+    caption: text('caption'),
+    hashtags: text('hashtags'),
+    firstComment: text('first_comment'),
+    imageUrl: text('image_url'),
+    storyImageUrl: text('story_image_url'),
+    reelVideoUrl: text('reel_video_url'),
+    musicClipUrl: text('music_clip_url'),
+    instagramMediaId: varchar('instagram_media_id', { length: 255 }),
+    instagramPostId: varchar('instagram_post_id', { length: 255 }),
+    topicUrl: text('topic_url'),
+    postedAt: timestamp('posted_at'),
+    status: varchar('status', { length: 20 }).notNull(),
+    errorMessage: text('error_message'),
+
+    // Analytics (populated by ig-analytics cron)
+    reach: integer('reach'),
+    impressions: integer('impressions'),
+    saves: integer('saves'),
+    shares: integer('shares'),
+    comments: integer('comments'),
+    likes: integer('likes'),
+    profileVisits: integer('profile_visits'),
+    websiteClicks: integer('website_clicks'),
+
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (t) => [
+    index('idx_ig_post_type').on(t.postType),
+    index('idx_ig_post_status').on(t.status, t.postedAt),
+    index('idx_ig_post_topic').on(t.topicId),
+  ],
 );
