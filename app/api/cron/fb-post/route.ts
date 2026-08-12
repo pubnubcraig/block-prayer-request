@@ -35,6 +35,7 @@ export async function GET(req: NextRequest) {
     .from(facebookPostLog)
     .where(
       and(
+        eq(facebookPostLog.postType, 'daily_prayer'),
         inArray(facebookPostLog.status, ['success', 'fallback']),
         gte(facebookPostLog.postedAt, todayStart),
       ),
