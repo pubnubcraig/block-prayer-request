@@ -78,6 +78,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       url: `https://gofish.life/bible-verses/${slug}`,
       type: 'article',
+      images: [
+        {
+          url: '/gofish-og.png',
+          width: 1731,
+          height: 909,
+          alt: 'GoFish.Life — Scripture-Based Prayer Responses',
+        },
+      ],
     },
     alternates: {
       canonical: `https://gofish.life/bible-verses/${slug}`,
