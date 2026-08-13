@@ -21,6 +21,22 @@
     {
       "path": "/api/cron/fb-post-caption-this",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/ig-post-morning",
+      "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/cron/ig-post-noon",
+      "schedule": "0 19 * * *"
+    },
+    {
+      "path": "/api/cron/ig-post-evening",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/ig-analytics",
+      "schedule": "0 6 * * *"
     }
   ]
 }
