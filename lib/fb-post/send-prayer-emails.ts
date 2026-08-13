@@ -2,6 +2,7 @@ import { getDb } from '@/lib/db';
 import { users, userProfiles, facebookPostLog } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { sendEmail } from '@/lib/email';
+import { slugify } from '@/lib/utils/slugify';
 
 interface TopicInfo {
   topic: string;
@@ -58,9 +59,10 @@ export async function sendMorningPrayerEmails(
     day: 'numeric',
   });
 
-  const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://gofish.life')}`;
+  const topicPageUrl = `https://gofish.life/prayers/${slugify(topic.topic)}`;
+  const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(topicPageUrl)}`;
   const subject = `Today's Morning Prayer — ${topic.verseReference}`;
-  const html = buildPrayerEmailHtml({ date, topic, fbShareUrl, postContent });
+  const html = buildPrayerEmailHtml({ date, topic, fbShareUrl, topicPageUrl, postContent });
 
   let sentCount = 0;
   for (const subscriber of subscribers) {
@@ -93,8 +95,9 @@ function buildPrayerEmailHtml(opts: {
   topic: TopicInfo;
   postContent: string;
   fbShareUrl: string;
+  topicPageUrl: string;
 }): string {
-  const { date, topic, postContent, fbShareUrl } = opts;
+  const { date, topic, postContent, fbShareUrl, topicPageUrl } = opts;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -148,9 +151,9 @@ function buildPrayerEmailHtml(opts: {
                   </a>
                 </td>
                 <td style="padding-left:6px">
-                  <a href="https://www.instagram.com/gofish.life" target="_blank" rel="noopener noreferrer"
+                  <a href="${topicPageUrl}" target="_blank" rel="noopener noreferrer"
                     style="display:block;background-color:#FF6B4A;color:#ffffff;font-family:Arial,sans-serif;font-size:14px;font-weight:700;text-decoration:none;padding:13px 16px;border-radius:6px;text-align:center">
-                    Follow on Instagram
+                    Share on Instagram
                   </a>
                 </td>
               </tr>
