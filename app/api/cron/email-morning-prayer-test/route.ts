@@ -6,12 +6,7 @@ import { sendMorningPrayerEmails } from '@/lib/fb-post/send-prayer-emails';
 
 export const maxDuration = 60;
 
-export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
+export async function GET(_req: NextRequest) {
   const db = getDb();
   if (!db) {
     return NextResponse.json({ error: 'DB unavailable' }, { status: 503 });
